@@ -1,0 +1,116 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_style"
+    tools:context="pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.LoginFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Nick:"
+            android:paddingLeft="@dimen/padding_tiny"
+            android:paddingTop="@dimen/padding_medium"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/email"
+            android:hint="Wpisz nick"
+            style="@style/InputStyle"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="E-mail:"
+            android:paddingLeft="@dimen/padding_tiny"
+            android:paddingTop="@dimen/padding_medium"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/email"
+            android:hint="Wpisz adres e-mail"
+            style="@style/InputStyle"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Hasło:"
+            android:paddingLeft="@dimen/padding_tiny"
+            android:paddingTop="@dimen/padding_medium" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/pass"
+            android:hint="Wpisz hasło"
+            style="@style/InputStyle"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Powtórz hasło:"
+            android:paddingLeft="@dimen/padding_tiny"
+            android:paddingTop="@dimen/padding_medium"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/pass2"
+            android:hint="Wpisz hasło ponownie"
+            style="@style/InputStyle"/>
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zarejestruj się"
+            android:id="@+id/register"
+            style="@style/ButtonStyle"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rejestracja przez facebook"
+            android:layout_marginTop="@dimen/padding_big"
+            android:layout_gravity="center_horizontal"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="  Zaloguj przez Facebook"
+                style="@style/ButtonStyle"
+                android:layout_gravity="center_horizontal"
+                android:drawableLeft="@drawable/com_facebook_button_like_icon"
+                android:background="@color/com_facebook_blue"
+                android:id="@+id/fbLogin" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Posiadasz już konto?"
+            android:layout_marginTop="@dimen/padding_big"
+            android:layout_gravity="center_horizontal"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zaloguj się"
+            style="@style/ButtonStyle"
+            android:id="@+id/login"
+            android:layout_gravity="center_horizontal" />
+
+    </LinearLayout>
+</ScrollView>

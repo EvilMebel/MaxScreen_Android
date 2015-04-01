@@ -20,6 +20,28 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.3'
+    /*compile 'com.parse.bolts:bolts-android:1.1.4'
+            compile fileTree(dir: 'libs', include: 'Parse-*.jar')
+            compile fileTree(dir: 'libs', include: 'ParseCrashReporting-*.jar')*/
+    compile fileTree(dir: 'libs', include: '*.jar')
+    //roboguice framework
+    //compile 'com.facebook.android:facebook-android-sdk:3.20.0'
+    compile fileTree(dir: 'libs', include: 'Parse-*.jar')
+    compile fileTree(dir: 'libs', include: 'ParseCrashReporting-*.jar')
+    //compile fileTree(dir: 'libs', include: 'android-support-v4.jar')
+    //compile 'com.android.support:appcompat-v7:21.0.3'
+    //compile 'com.android.support:support-v4:21.0.3'
+    //compile 'com.google.android.gms:play-services:6.5.87'
+    //compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
+    //compile 'com.android.support:support-v4:18.0.+'
+    compile 'org.roboguice:roboguice:2.0'
+    compile 'com.google.guava:guava:18.0'
+    compile 'com.parse.bolts:bolts-android:1.1.4'
+    //compile 'com.android.support:support-v4:21.0.3'
+    //compile 'com.android.support:appcompat-v7:21.0.3'
+    compile 'com.google.guava:guava:18.0'
+    compile 'com.facebook.android:facebook-android-sdk:3.21.1'
+    compile files('libs/Parse-1.8.2.jar')
+    compile fileTree(dir: 'libs', include: 'universal-image-loader-1.9.3-with-sources.jar')
 }
