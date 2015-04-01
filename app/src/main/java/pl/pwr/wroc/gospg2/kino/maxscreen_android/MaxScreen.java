@@ -7,7 +7,7 @@ import android.util.Log;
 import com.google.common.eventbus.EventBus;
 
 
-public class Happen extends Application {
+public class MaxScreen extends Application {
     private static Context sContext;
     private static EventBus sBus;
 

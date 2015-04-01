@@ -27,6 +27,7 @@
                 android:layout_margin="@dimen/action_bar_padding"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_prev"
+                android:onClick="buttonClick"
                 android:visibility="gone"/>
 
             <ImageButton
@@ -40,7 +41,7 @@
                 android:layout_margin="@dimen/action_bar_padding"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_menu"
-                android:onClick="openDrawer"/>
+                android:onClick="buttonClick"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -105,7 +106,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/my_profile"
-            android:onClick="drawerButtonClick">
+            android:onClick="buttonClick">
             <ImageView
                 android:layout_width="@dimen/drawer_icon_size"
                 android:layout_height="@dimen/drawer_icon_size"
@@ -128,7 +129,7 @@
             android:id="@+id/promotions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="drawerButtonClick">
+            android:onClick="buttonClick">
             <ImageView
                 android:layout_width="@dimen/drawer_icon_size"
                 android:layout_height="@dimen/drawer_icon_size"
@@ -150,7 +151,7 @@
             android:id="@+id/my_reservations"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="drawerButtonClick">
+            android:onClick="buttonClick">
             <ImageView
                 android:layout_width="@dimen/drawer_icon_size"
                 android:layout_height="@dimen/drawer_icon_size"
@@ -172,7 +173,7 @@
             android:id="@+id/contact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="drawerButtonClick">
+            android:onClick="buttonClick">
             <ImageView
                 android:layout_width="@dimen/drawer_icon_size"
                 android:layout_height="@dimen/drawer_icon_size"
@@ -194,7 +195,7 @@
             android:id="@+id/login_out"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="drawerButtonClick">
+            android:onClick="buttonClick">
             <ImageView
                 android:layout_width="@dimen/drawer_icon_size"
                 android:layout_height="@dimen/drawer_icon_size"
@@ -216,7 +217,7 @@
             android:id="@+id/calendar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="drawerButtonClick">
+            android:onClick="buttonClick">
             <ImageView
                 android:layout_width="@dimen/drawer_icon_size"
                 android:layout_height="@dimen/drawer_icon_size"

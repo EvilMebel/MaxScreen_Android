@@ -1,0 +1,81 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.CalendarFragment"
+    android:background="@drawable/background_style"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_tiny"
+        android:layout_gravity="center_horizontal">
+
+        <ImageButton
+            android:layout_width="@dimen/arrow_width"
+            android:layout_height="@dimen/arrow_width"
+            android:src="@drawable/ic_prev"
+            android:id="@+id/prev_week"/>
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
+            android:layout_width="@dimen/day_width"
+            android:layout_height="@dimen/day_height" />
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
+            android:layout_width="@dimen/day_width"
+            android:layout_height="@dimen/day_height" />
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
+            android:layout_width="@dimen/day_width"
+            android:layout_height="@dimen/day_height" />
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
+            android:layout_width="@dimen/day_width"
+            android:layout_height="@dimen/day_height" />
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
+            android:layout_width="@dimen/day_width"
+            android:layout_height="@dimen/day_height" />
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
+            android:layout_width="@dimen/day_width"
+            android:layout_height="@dimen/day_height" />
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
+            android:layout_width="@dimen/day_width"
+            android:layout_height="@dimen/day_height" />
+
+
+
+        <ImageButton
+            android:layout_width="@dimen/arrow_width"
+            android:layout_height="@dimen/arrow_width"
+            android:src="@drawable/ic_next"
+            android:id="@+id/next_week"/>
+        </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/padding_gigant"
+        android:paddingLeft="@dimen/padding_small"
+        android:paddingBottom="@dimen/padding_tiny"
+        android:text="24-03-2015, poniedziałek"
+        android:id="@+id/dateTitle" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/films_divider"
+        android:background="@color/movie_description_divider"/>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/list">
+
+        </ListView>
+
+
+
+</LinearLayout>

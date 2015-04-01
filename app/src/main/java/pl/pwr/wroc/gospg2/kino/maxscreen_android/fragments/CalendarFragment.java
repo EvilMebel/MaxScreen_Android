@@ -7,25 +7,19 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
 import roboguice.fragment.RoboFragment;
-import roboguice.inject.InjectView;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link RegisterFragment.OnFragmentInteractionListener} interface
+ * {@link CalendarFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link RegisterFragment#newInstance} factory method to
+ * Use the {@link CalendarFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RegisterFragment extends RoboFragment {
+public class CalendarFragment extends RoboFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -35,29 +29,6 @@ public class RegisterFragment extends RoboFragment {
     private String mParam1;
     private String mParam2;
 
-    @InjectView(R.id.nick)
-    EditText mNickInput;
-
-    @InjectView(R.id.email)
-    EditText mEmailInput;
-
-    @InjectView (R.id.pass)
-    EditText mPasswordInput;
-
-    @InjectView (R.id.pass2)
-    EditText mPasswordRepInput;
-
-    @InjectView (R.id.register)
-    Button mRegister;
-
-    @InjectView (R.id.login)
-    Button mLogin;
-
-    @InjectView (R.id.fbLogin)
-    Button mFbRegister;
-
-
-
     private OnFragmentInteractionListener mListener;
 
     /**
@@ -66,11 +37,11 @@ public class RegisterFragment extends RoboFragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment RegisterFragment.
+     * @return A new instance of fragment CalendarFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static RegisterFragment newInstance(String param1, String param2) {
-        RegisterFragment fragment = new RegisterFragment();
+    public static CalendarFragment newInstance(String param1, String param2) {
+        CalendarFragment fragment = new CalendarFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -78,7 +49,7 @@ public class RegisterFragment extends RoboFragment {
         return fragment;
     }
 
-    public RegisterFragment() {
+    public CalendarFragment() {
         // Required empty public constructor
     }
 
@@ -95,22 +66,7 @@ public class RegisterFragment extends RoboFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_register, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        setListeners();
-    }
-
-    private void setListeners() {
-        mLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MaxScreen.getBus().post(new GoToLoginBus());
-            }
-        });
+        return inflater.inflate(R.layout.fragment_calendar, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -123,7 +79,7 @@ public class RegisterFragment extends RoboFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        /*try {
+/*        try {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
@@ -136,8 +92,6 @@ public class RegisterFragment extends RoboFragment {
         super.onDetach();
         mListener = null;
     }
-
-
 
     /**
      * This interface must be implemented by activities that contain this

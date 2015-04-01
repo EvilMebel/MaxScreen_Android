@@ -11,12 +11,16 @@ import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.common.eventbus.Subscribe;
 
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.LoginFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MainFragment;
@@ -25,7 +29,7 @@ import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.InjectView;
 
 
-public class MainActivity extends RoboFragmentActivity {
+public class MainActivity extends BaseFragmentActivity {
 
     @InjectView(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
@@ -41,6 +45,12 @@ public class MainActivity extends RoboFragmentActivity {
 
     @InjectView (R.id.title)
     TextView mTitle;
+
+    @InjectView (R.id.back)
+    ImageView mBack;
+
+    @InjectView (R.id.menu)
+    ImageView mMenu;
 
     private Fragment mFragment;
     private Fragment mSecondFragment;
@@ -123,7 +133,7 @@ public class MainActivity extends RoboFragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void drawerButtonClick(View view) {
+    public void buttonClick(View view) {
         switch (view.getId()) {
             case R.id.my_profile:
 
@@ -143,6 +153,17 @@ public class MainActivity extends RoboFragmentActivity {
                 break;
             case R.id.calendar://repertuar
 
+                break;
+
+
+            /*
+                    ACTION BAR
+             */
+            case R.id.back:
+                commitMainFragment();
+                break;
+            case R.id.menu:
+                openDrawer();
                 break;
             default:
                 Log.e(getClass().toString(),"not supported drawer button id=" + + view.getId());
@@ -169,6 +190,30 @@ public class MainActivity extends RoboFragmentActivity {
 
 
 
+    private void enableBackButton() {
+        if(mBack.getVisibility()==View.GONE) {
+            Animation anim = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
+            mBack.setAnimation(anim);
+            mBack.setVisibility(View.VISIBLE);
+
+            anim = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out);
+            mMenu.setAnimation(anim);
+            mMenu.setVisibility(View.GONE);
+        }
+    }
+
+    private void enableMenuButton() {
+        if(mMenu.getVisibility()==View.GONE) {
+            Animation anim = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in);
+            mMenu.setAnimation(anim);
+            mMenu.setVisibility(View.VISIBLE);
+
+            anim = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out);
+            mBack.setAnimation(anim);
+            mBack.setVisibility(View.GONE);
+        }
+
+    }
 
     /*
                     FRAGMENTS
@@ -177,31 +222,35 @@ public class MainActivity extends RoboFragmentActivity {
     private void commitMainFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         mFragment = new MainFragment();
+        //ft.setCustomAnimations(android.R.anim.fade_out, android.R.anim.fade_in);
 
         if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_MAIN_NEWS) == null) {
             ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_MAIN_NEWS).commit();
-        }
+        }//.setCustomAnimations(android.R.anim.fade_out,android.R.anim.fade_in) //TODO
         mTitle.setText(R.string.news);
+        enableMenuButton();
     }
 
     private void commitLoginFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         mFragment = new LoginFragment();
-
+        //ft.setCustomAnimations(android.R.anim.fade_out,android.R.anim.fade_in);
         if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_LOGIN) == null) {
             ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_LOGIN).commit();
         }
         mTitle.setText(R.string.login);
+        enableBackButton();
     }
 
     private void commitRegisterFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         mFragment = new RegisterFragment();
-
+        //ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
         if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_REGISTER) == null) {
             ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_REGISTER).commit();
         }
         mTitle.setText(R.string.registration);
+        enableBackButton();
     }
 
     /*
@@ -211,4 +260,11 @@ public class MainActivity extends RoboFragmentActivity {
     public void openRegistration(GoToRegistrationBus bus) {
         commitRegisterFragment();
     }
+
+    @Subscribe
+    public void openLogin(GoToLoginBus bus) {
+        commitLoginFragment();
+    }
+
+
 }
