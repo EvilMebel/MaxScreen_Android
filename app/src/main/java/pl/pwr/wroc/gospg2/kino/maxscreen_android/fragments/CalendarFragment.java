@@ -7,9 +7,19 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.sql.Time;
+import java.util.ArrayList;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.CalendarListAdapter;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.FilmFrame;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MyGridView;
 import roboguice.fragment.RoboFragment;
+import roboguice.inject.InjectView;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +38,11 @@ public class CalendarFragment extends RoboFragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    @InjectView (R.id.list)
+    ListView mList;
+
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -67,6 +82,27 @@ public class CalendarFragment extends RoboFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_calendar, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ArrayList<FilmFrame> items = new ArrayList<FilmFrame>();
+        ArrayList<FilmFrame.SSeans> hours = new ArrayList<FilmFrame.SSeans>();
+
+        for(int i =0; i<4          ; i++) {
+            FilmFrame f = new FilmFrame();
+            for (int j = 0; j < 4; j++) {
+                FilmFrame.SSeans s = new FilmFrame.SSeans();
+                s.time = new Time(System.currentTimeMillis());
+                hours.add(s);
+
+            }
+            f.setSeanses(hours);
+            items.add(f);
+
+        }
+        mList.setAdapter(new CalendarListAdapter(getActivity(),items));
     }
 
     // TODO: Rename method, update argument and hook method into UI event

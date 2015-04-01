@@ -20,4 +20,19 @@
     <dimen name="action_bar_button">26dp</dimen>
     <dimen name="action_bar_padding">11dp</dimen>
 
+    <!-- CALENDAR -->
+    <dimen name="arrow_width">25dp</dimen>
+    <dimen name="arrow_height">35dp</dimen>
+
+    <dimen name="day_height">35dp</dimen>
+    <dimen name="day_width">35dp</dimen>
+
+    <!-- FILMS -->
+    <dimen name="films_divider">2dp</dimen>
+
+    <!--CALENDAR-->
+    <dimen name="calendar_image_width">120dp</dimen>
+    <dimen name="calendar_image_height">160dp</dimen>
+    <dimen name="calendar_image_padding">@dimen/padding_small</dimen>
+
 </resources>

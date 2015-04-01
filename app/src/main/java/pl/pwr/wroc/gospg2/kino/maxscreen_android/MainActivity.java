@@ -22,6 +22,7 @@ import com.google.common.eventbus.Subscribe;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.CalendarFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.LoginFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MainFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.RegisterFragment;
@@ -152,6 +153,8 @@ public class MainActivity extends BaseFragmentActivity {
                 closeDrawer();
                 break;
             case R.id.calendar://repertuar
+                commitCalendarFragment();
+                closeDrawer();
 
                 break;
 
@@ -250,6 +253,18 @@ public class MainActivity extends BaseFragmentActivity {
             ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_REGISTER).commit();
         }
         mTitle.setText(R.string.registration);
+        enableBackButton();
+    }
+
+    private void commitCalendarFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        mFragment = new CalendarFragment();
+        //ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_CALENDAR) == null) {
+            ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_CALENDAR).commit();
+        }
+
+        mTitle.setText(R.string.calendar);
         enableBackButton();
     }
 
