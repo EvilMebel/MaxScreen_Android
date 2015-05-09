@@ -1,46 +1,26 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
 import roboguice.fragment.RoboFragment;
-import roboguice.inject.InjectView;
 
-public class LoginFragment extends RoboEventFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class RoomFragment extends RoboFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
-    @InjectView (R.id.email)
-    EditText mEmailInput;
-
-    @InjectView (R.id.pass)
-    EditText mPasswordInput;
-
-    //@InjectView (R.id.login)
-    //Button mLogin;
-
-    //@InjectView (R.id.fbLogin)
-    //Button mFbLogin;
-
-    @InjectView (R.id.register)
-    Button mRegister;
 
 
     /**
@@ -49,11 +29,11 @@ public class LoginFragment extends RoboEventFragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment LoginFragment.
+     * @return A new instance of fragment RoomFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
+    public static RoomFragment newInstance(String param1, String param2) {
+        RoomFragment fragment = new RoomFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -61,7 +41,7 @@ public class LoginFragment extends RoboEventFragment {
         return fragment;
     }
 
-    public LoginFragment() {
+    public RoomFragment() {
         // Required empty public constructor
     }
 
@@ -78,27 +58,13 @@ public class LoginFragment extends RoboEventFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        setListeners();
-    }
-
-    private void setListeners() {
-        mRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MaxScreen.getBus().post(new GoToRegistrationBus());
-            }
-        });
+        return inflater.inflate(R.layout.fragment_room, container, false);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
     }
 
     @Override
@@ -106,6 +72,23 @@ public class LoginFragment extends RoboEventFragment {
         super.onDetach();
     }
 
+
+    public void downloadRoom() {
+        String url = "url you want to download"; //todo url
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        request.setDescription("Some descrition");
+        request.setTitle("Some title");
+        // in order for this if to run, you must use the android 3.2 to compile your app
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            request.allowScanningByMediaScanner();
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        }
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "name-of-the-file.ext");
+
+        // get download service and enqueue file
+        DownloadManager manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+        manager.enqueue(request);
+    }
 
 
 }

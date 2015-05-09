@@ -3,22 +3,14 @@ package pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters;
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.MainActivity;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.FilmFrame;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.News;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.FlowTextHelper;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MyGridView;
-import roboguice.inject.InjectView;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.old.FilmFrame;
 
 /**
  * Created by Evil on 2015-04-01.

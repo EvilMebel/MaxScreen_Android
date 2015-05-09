@@ -92,8 +92,8 @@
                 android:text="  Zaloguj przez Facebook"
                 style="@style/ButtonStyle"
                 android:layout_gravity="center_horizontal"
-                android:drawableLeft="@drawable/com_facebook_button_like_icon"
-                android:background="@color/com_facebook_blue"
+                android:drawableLeft="@drawable/ic_login"
+                android:background="@android:color/holo_blue_dark"
                 android:id="@+id/fbLogin" />
 
 

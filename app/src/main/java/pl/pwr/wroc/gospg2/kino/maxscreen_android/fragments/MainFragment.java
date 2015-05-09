@@ -3,7 +3,6 @@ package pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +12,7 @@ import java.util.ArrayList;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.MainNewsAdapter;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.News;
-import roboguice.fragment.RoboFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.old.News;
 import roboguice.inject.InjectView;
 
 /**
@@ -25,7 +23,7 @@ import roboguice.inject.InjectView;
  * Use the {@link pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MainFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MainFragment extends RoboFragment {
+public class MainFragment extends RoboEventFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -13,11 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MainActivity;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.News;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.old.News;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.*;
 
 /**

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">MaxScreen_Android</string>
 
+    <string name="facebook_app_id">1035938343088835</string>
+
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
@@ -13,4 +15,11 @@
     <string name="news">Aktualności</string>
     <string name="registration">Rejestracja</string>
     <string name="calendar">Repertuar</string>
+    <string name="hello_user">Witamy </string>
+
+
+    <!--fb strings-->
+    <string name="cancelled">Cancelled</string>
+    <string name="permission_not_granted">Unable to perform selected action because permissions were not granted.</string>
+    <string name="ok">OK</string>
 </resources>

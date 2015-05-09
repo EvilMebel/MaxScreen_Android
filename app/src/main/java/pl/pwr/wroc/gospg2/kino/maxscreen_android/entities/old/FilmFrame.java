@@ -1,4 +1,4 @@
-package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
+package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.old;
 
 import java.sql.Time;
 import java.util.ArrayList;

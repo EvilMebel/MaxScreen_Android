@@ -1,55 +1,54 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
-import java.util.Calendar;
+import java.util.Date;
 
-/**
- * Created by Evil on 2015-03-31.
- */
 public class News {
-    int id;
-    Calendar date;
-    String image_src;
-    String text;
+	public static final String IDNEWS = "idNews";
+	public static final String TEXT = "Text";
+	public static final String IMAGE = "Image";
+	public static final String DATE = "Date";
+	public static final String TOPIC = "Topic";
+	
+	
+	private int idNews;
+	private String Text;
+	private String Image;
+	private Date date;
+	private String Topic;
+	
+	
+	public int getIdNews() {
+		return idNews;
+	}
+	public void setIdNews(int idNews) {
+		this.idNews = idNews;
+	}
+	public String getText() {
+		return Text;
+	}
+	public void setText(String text) {
+		Text = text;
+	}
+	public String getImage() {
+		return Image;
+	}
+	public void setImage(String image) {
+		Image = image;
+	}
+	public Date getDate() {
+		return date;
+	}
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	public String getTopic() {
+		return Topic;
+	}
+	public void setTopic(String topic) {
+		Topic = topic;
+	}
+	
+	
+	
 
-    public News(int id, Calendar date, String image_src, String text) {
-        this.id = id;
-        this.date = date;
-        this.image_src = image_src;
-        this.text = text;
-    }
-
-    public News() {
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Calendar getDate() {
-        return date;
-    }
-
-    public void setDate(Calendar date) {
-        this.date = date;
-    }
-
-    public String getImage_src() {
-        return image_src;
-    }
-
-    public void setImage_src(String image_src) {
-        this.image_src = image_src;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
 }
