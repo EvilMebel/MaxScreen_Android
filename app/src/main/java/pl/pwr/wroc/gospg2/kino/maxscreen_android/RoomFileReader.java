@@ -20,14 +20,24 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.SeatView;
  */
 public class RoomFileReader {
     String res;
-    static public void openFile(Context context, Intent data, RoomView roomView){//}, String is ) {
+    static public void openFile(RoomView roomView){//}, String is ) {
 
 		//InputStream is = context.getResources().openRawResource(R.raw.testowy);
         //BufferedReader br = new BufferedReader(is);*/
-        String is = "001111100\n"+
-                                        "001111100\n"+
-                                        "001101101\n"+
-                                        "001101101";
+        String is = "0011111111111111111111111111111\n" +
+                "0011111111111111111111111111111111\n" +
+                "0011111111111111111111111111111111\n" +
+                "0011111111111111111111111111111111\n" +
+                "0011111111111111111111111111111111\n" +
+                "0011111111111111111111111111111111\n" +
+                "001111111111111111111111111111111100011111\n" +
+                "001111111111111111111111111111111100011111\n" +
+                "001111111111111111111111111111111100011111\n" +
+                "001111111111111111111111111111111100011111\n" +
+                "11111111111111111111111111111111111111111";
+
+
+        Context context = MaxScreen.getContext();
 
         BufferedReader br = new BufferedReader(new StringReader(is));
 /*
@@ -40,45 +50,64 @@ public class RoomFileReader {
             BufferedReader br = new BufferedReader(fr);
 */
 
+        int maxX =0;
+        int maxY =0;
+
         boolean firstFrame = true;
         try {
             String test = null;
             int row = 1;
             int col = 1;
 
-            int x = 0;
-            int y = 0;
+            int x = 1;
+            int y = 1;
             char c;
 
             for(int i = 0; (test = br.readLine()) != null; i++) {
                 Log.d("reader", "reading: " + test);
                 //numbers from left to right
                 col = 1;
-                y=0;
+                x=1;
 
+                boolean first = true;
                 for(int j = 0; j< test.length(); j++) {
 
                     c = test.charAt(j);
                     if(c == '1') {
                         //add seat
+                        Log.d("read","row="+row + " col=" + col);
                         roomView.addView(new SeatView(context,x,y,row,col));
+                        //if first add ui
+                        if(first) {
+                            first = false;
+                            SeatView ui = new SeatView(context,x-1,y,row,col);
+                            ui.setStatus(SeatView.SeatStat.ONLY_VISUALIZATION);
+                            roomView.addView(ui);
+                        }
+
                         //new seat is a new column
                         col++;
                     } else {
                         //do nthg
                     }
                     //from left to right
-                    y++;
+                    x++;
+
+
                 }
 
 
-
-
-
+                if(x>maxX) {
+                    maxX = x;
+                }
 
                 //next row of seats
                 row++;
-                x++;
+                y++;
+
+                if(y>maxY) {
+                    maxY = y;
+                }
             }
 
         } catch (IOException e) {
@@ -91,7 +120,7 @@ public class RoomFileReader {
             }
         }
 
-
+        roomView.setMaxValues(maxX,maxY);
 
 //		InputStream is =  getResources().openRawResource(R.raw.testowy);
     }

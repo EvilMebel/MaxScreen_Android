@@ -7,32 +7,62 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Date;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.CalendarListAdapter;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MyGridView;
 import roboguice.inject.InjectView;
 
-public class CalendarFragment extends RoboEventFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
+public class MovieInfoFragment extends RoboEventFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    @InjectView (R.id.list)
-    ListView mList;
+    @InjectView (R.id.dateTitle)
+    TextView mDateTitle;
 
+    @InjectView (R.id.title)
+    TextView mTitle;
 
+    @InjectView (R.id.movie_cast)
+    TextView mCast;
+
+    @InjectView (R.id.movie_description)
+    TextView mDescription;
+
+    @InjectView (R.id.movie_director)
+    TextView mDirector;
+
+    @InjectView (R.id.movie_duration)
+    TextView mDuration;
+
+    @InjectView (R.id.movie_kind)
+    TextView mKind;
+
+    //TODO mark stars
+    @InjectView (R.id.movie_mark)
+    View mMark;
+
+    @InjectView (R.id.movie_scenario)
+    TextView mScenario;
+
+    @InjectView (R.id.image)
+    ImageView mImage;
+
+    @InjectView (R.id.movie_seances)
+    MyGridView mSeances;
+
+    @InjectView (R.id.comments_container)
+    LinearLayout mComments;
+
+    @InjectView (R.id.add_comment)
+    Button mAddComment;
 
     /**
      * Use this factory method to create a new instance of
@@ -40,11 +70,11 @@ public class CalendarFragment extends RoboEventFragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment CalendarFragment.
+     * @return A new instance of fragment MovieInfoFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static CalendarFragment newInstance(String param1, String param2) {
-        CalendarFragment fragment = new CalendarFragment();
+    public static MovieInfoFragment newInstance(String param1, String param2) {
+        MovieInfoFragment fragment = new MovieInfoFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -52,7 +82,7 @@ public class CalendarFragment extends RoboEventFragment {
         return fragment;
     }
 
-    public CalendarFragment() {
+    public MovieInfoFragment() {
         // Required empty public constructor
     }
 
@@ -69,30 +99,23 @@ public class CalendarFragment extends RoboEventFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calendar, container, false);
+        return inflater.inflate(R.layout.fragment_movie_info, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ArrayList<Movie> items = new ArrayList<Movie>();
 
+        loadData();
+        setListeners();
+    }
 
+    private void setListeners() {
 
-        //todo load data online
-        for(int i =0; i<4 ; i++) {
-            ArrayList<Seance> hours = new ArrayList<Seance>();
-            Movie f = new Movie();
-            for (int j = 0; j < 4; j++) {
-                Seance s = new Seance();
-                s.setDate(new Date(System.currentTimeMillis()));// = new Time();
-                hours.add(s);
-            }
-            f.setSeances(hours);
-            items.add(f);
+    }
 
-        }
-        mList.setAdapter(new CalendarListAdapter(getActivity(),items));
+    private void loadData() {
+
     }
 
     @Override

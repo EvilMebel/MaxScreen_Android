@@ -21,8 +21,9 @@ public class Seance {
 	private int Movie_idMove;
 	private Halls HallsEntity;
 	private Movie MovieEntity;
-	
-	
+	private int dateString;
+
+
 	public int getIdSeance() {
 		return idSeance;
 	}
@@ -70,5 +71,15 @@ public class Seance {
 	}
 	public void setMovieEntity(Movie movieEntity) {
 		MovieEntity = movieEntity;
+	}
+
+
+	/*
+					TOOLS
+	 */
+
+	//todo make it prettier!
+	public String getDateString() {
+		return getDate().toString();
 	}
 }

@@ -1,12 +1,159 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.RoomFragment">
+    android:background="@drawable/background_style"
+    tools:context="pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.ReservationRoomFragment"
+    android:orientation="vertical">
 
-    <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.RoomView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/padding_tiny"
+        android:id="@+id/linearLayout">
 
-    </pl.pwr.wroc.gospg2.kino.maxscreen_android.view.RoomView>
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            >
 
-</FrameLayout>
+            <FrameLayout
+                android:layout_width="@dimen/room_legend_sample_size"
+                android:layout_height="@dimen/room_legend_sample_size"
+                android:background="@drawable/seat_free"
+                android:layout_margin="@dimen/padding_small">
+
+
+
+            </FrameLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wolne"
+                />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal">
+
+            <FrameLayout
+                android:layout_width="@dimen/room_legend_sample_size"
+                android:layout_height="@dimen/room_legend_sample_size"
+                android:background="@drawable/seat_my_choose"
+                android:layout_margin="@dimen/padding_small">
+
+
+
+            </FrameLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wybrane"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal">
+
+            <FrameLayout
+                android:layout_width="@dimen/room_legend_sample_size"
+                android:layout_height="@dimen/room_legend_sample_size"
+                android:background="@drawable/seat_taken"
+                android:layout_margin="@dimen/padding_small">
+
+
+
+            </FrameLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Zajęte"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ekran"
+        android:gravity="center"
+        android:background="@drawable/screen_bg"
+        android:padding="@dimen/padding_small"
+        android:layout_below="@+id/linearLayout"
+        android:layout_marginRight="@dimen/padding_medium"
+        android:layout_marginLeft="@dimen/padding_medium"
+        android:id="@+id/textView3" />
+
+    <FrameLayout
+        android:layout_weight="2"
+        android:id="@+id/visualization_frame"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_below="@+id/textView3"
+        android:padding="@dimen/padding_tiny"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.RoomView
+            android:id="@+id/room"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </pl.pwr.wroc.gospg2.kino.maxscreen_android.view.RoomView>
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:background="@android:color/white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+"
+                android:id="@+id/zoom_in"
+                android:padding="@dimen/padding_small"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:id="@+id/zoom_out"
+                android:padding="@dimen/padding_small"/>
+        </LinearLayout>
+    </FrameLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Dalej"
+        style="@style/ButtonStyle"
+        android:id="@+id/next"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_below="@+id/visualization_frame"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
+
+
+</LinearLayout>

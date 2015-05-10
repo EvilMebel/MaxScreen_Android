@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.MainNewsAdapter;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.old.News;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.News;
 import roboguice.inject.InjectView;
 
 /**

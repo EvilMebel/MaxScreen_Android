@@ -1,11 +1,13 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.service.textservice.SpellCheckerService;
+import android.util.DisplayMetrics;
 
 import com.facebook.AccessToken;
 import com.facebook.Profile;
@@ -48,6 +50,18 @@ public class Utils {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static DisplayMetrics getDeviceMetrics(Activity a) {
+        DisplayMetrics metrics = new DisplayMetrics();
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            a.getWindowManager().getDefaultDisplay().getRealMetrics(metrics);
+        } else {
+            a.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        }
+
+        return metrics;
     }
 
 }

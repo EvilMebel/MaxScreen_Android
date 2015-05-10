@@ -35,10 +35,23 @@
     <dimen name="calendar_image_height">160dp</dimen>
     <dimen name="calendar_image_padding">@dimen/padding_small</dimen>
 
+    <dimen name="calendar_seance_height">30dp</dimen>
+    <dimen name="calendar_seance_text">12dp</dimen>
+
     <!--ROOM VIZUALIZATION -->
     <dimen name="seat_width">30dp</dimen>
     <dimen name="seat_height">30dp</dimen>
     <dimen name="seat_text_size">15dp</dimen>
+
+    <dimen name="room_legend_sample_size">40dp</dimen>
+
+    <color name="seat_free_bg">#efe4b0</color>
+    <color name="seat_my_choose_bg">#7092be</color>
+    <color name="seat_taken_bg">#a349a4</color>
+
+    <color name="room_screen_bg">#c8bfe7</color>
+
+
 
 
 </resources>

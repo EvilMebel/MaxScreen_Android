@@ -5,7 +5,7 @@
     android:background="@drawable/background_style"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -16,44 +16,34 @@
             android:layout_width="@dimen/arrow_width"
             android:layout_height="@dimen/arrow_width"
             android:src="@drawable/ic_prev"
+            android:background="@android:color/transparent"
             android:id="@+id/prev_week"/>
-
-        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
-            android:layout_width="@dimen/day_width"
-            android:layout_height="@dimen/day_height" />
-
-        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
-            android:layout_width="@dimen/day_width"
-            android:layout_height="@dimen/day_height" />
-
-        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
-            android:layout_width="@dimen/day_width"
-            android:layout_height="@dimen/day_height" />
-
-        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
-            android:layout_width="@dimen/day_width"
-            android:layout_height="@dimen/day_height" />
-
-        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
-            android:layout_width="@dimen/day_width"
-            android:layout_height="@dimen/day_height" />
-
-        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
-            android:layout_width="@dimen/day_width"
-            android:layout_height="@dimen/day_height" />
-
-        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateButton
-            android:layout_width="@dimen/day_width"
-            android:layout_height="@dimen/day_height" />
-
-
 
         <ImageButton
             android:layout_width="@dimen/arrow_width"
             android:layout_height="@dimen/arrow_width"
             android:src="@drawable/ic_next"
-            android:id="@+id/next_week"/>
-        </LinearLayout>
+            android:id="@+id/next_week"
+            android:background="@android:color/transparent"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"/>
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateViewPager
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:id="@+id/view"
+            android:layout_toRightOf="@+id/prev_week"
+            android:layout_toLeftOf="@+id/next_week">
+
+
+        </pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateViewPager>
+
+
+
+
+
+
+    </RelativeLayout>
 
     <TextView
         android:layout_width="wrap_content"

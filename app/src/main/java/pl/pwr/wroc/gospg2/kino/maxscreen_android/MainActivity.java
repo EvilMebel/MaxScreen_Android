@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -20,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookCallback;
@@ -38,13 +36,13 @@ import com.google.common.eventbus.Subscribe;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.enums.PendingAction;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenRoomEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.CalendarFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.LoginFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MainFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.RegisterFragment;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.RoomFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.ReservationRoomFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
-import roboguice.activity.RoboFragmentActivity;
 import roboguice.inject.InjectView;
 
 
@@ -456,13 +454,13 @@ public class MainActivity extends BaseFragmentActivity {
 
     private void commitRoomFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        mFragment = new RoomFragment();
+        mFragment = new ReservationRoomFragment();
         //ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
-        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_CALENDAR) == null) {
-            ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_CALENDAR).commit();
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_RESERVATION) == null) {
+            ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_RESERVATION).commit();
         }
 
-        mTitle.setText(R.string.calendar);
+        mTitle.setText("Widok sali kinowej");
         enableBackButton();
     }
 
@@ -477,6 +475,11 @@ public class MainActivity extends BaseFragmentActivity {
     @Subscribe
     public void openLogin(GoToLoginBus bus) {
         commitLoginFragment();
+    }
+
+    @Subscribe
+    public void openRoom(OpenRoomEventBus bus) {
+        commitRoomFragment();
     }
 
 

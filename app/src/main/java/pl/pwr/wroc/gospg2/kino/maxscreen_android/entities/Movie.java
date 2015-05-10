@@ -1,5 +1,7 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
+import java.util.List;
+
 public class Movie {
 	public static final String IDMOVE = "idMove";
 	public static final String TITLE = "Title";
@@ -20,6 +22,11 @@ public class Movie {
 	private String Cast;
 	private int WantToSeeThis;
 	private String Images;
+
+
+
+	//todo for adapter
+	private List<Seance> seances;
 	
 	
 	public int getIdMove() {
@@ -76,7 +83,12 @@ public class Movie {
 	public void setImages(String images) {
 		Images = images;
 	}
-	
-	
-	
+
+	public List<Seance> getSeances() {
+		return seances;
+	}
+
+	public void setSeances(List<Seance> seances) {
+		this.seances = seances;
+	}
 }

@@ -6,22 +6,42 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.google.common.eventbus.Subscribe;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.SeatClickEventBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.RoomView;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.SeatView;
 import roboguice.fragment.RoboFragment;
+import roboguice.inject.InjectView;
 
-public class RoomFragment extends RoboFragment {
+public class ReservationRoomFragment extends RoboEventFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
     private String mParam2;
 
+
+    @InjectView (R.id.zoom_in)
+    View mZoomIn;
+
+    @InjectView (R.id.zoom_out)
+    View mZoomOut;
+
+    @InjectView (R.id.next)
+    View mNext;
+
+    @InjectView (R.id.room)
+    RoomView mRoom;
 
     /**
      * Use this factory method to create a new instance of
@@ -32,8 +52,8 @@ public class RoomFragment extends RoboFragment {
      * @return A new instance of fragment RoomFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static RoomFragment newInstance(String param1, String param2) {
-        RoomFragment fragment = new RoomFragment();
+    public static ReservationRoomFragment newInstance(String param1, String param2) {
+        ReservationRoomFragment fragment = new ReservationRoomFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -41,7 +61,7 @@ public class RoomFragment extends RoboFragment {
         return fragment;
     }
 
-    public RoomFragment() {
+    public ReservationRoomFragment() {
         // Required empty public constructor
     }
 
@@ -59,6 +79,40 @@ public class RoomFragment extends RoboFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_room, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        fixViews();
+        loadData();
+        setListeners();
+    }
+
+    private void fixViews() {
+        DisplayMetrics metrics = Utils.getDeviceMetrics(getActivity());
+        mRoom.fitRoomToScreen(metrics.widthPixels);
+    }
+
+    private void setListeners() {
+        mZoomIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRoom.zoomIn();
+            }
+        });
+
+        mZoomOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRoom.zoomOut();
+            }
+        });
+    }
+
+    private void loadData() {
+
     }
 
     @Override
@@ -88,6 +142,16 @@ public class RoomFragment extends RoboFragment {
         // get download service and enqueue file
         DownloadManager manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
         manager.enqueue(request);
+    }
+
+
+
+    @Subscribe
+    public void seatClicked(SeatClickEventBus bus) {
+        SeatView seatView = bus.getSeatView();
+        String s = " Wybrano miejsce. Rzad " + seatView.getSeatRow() + " miejsce " + seatView.getSeatCol();
+
+        Toast.makeText(getActivity(),s,Toast.LENGTH_SHORT).show();
     }
 
 

@@ -2,30 +2,59 @@ package pl.pwr.wroc.gospg2.kino.maxscreen_android.view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.List;
+
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.RoomFileReader;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.SeatClickEventBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 
 /**
  * Created by Evil on 2015-05-08.
  */
-public class RoomView extends ViewGroup {
+public class RoomView extends ViewGroup implements View.OnTouchListener {
+
+    GestureDetector gestureDetector;
+    private int STANDARD_PADDING = -1;
+
     private int seatsCountX;
     private int seatsCountY;
 
     private float scale = 1f;
 
-    private int offsetX;
-    private int offsetY;
+
+    private int startTouchX;
+    private int startTouchY;
+
+
+    private int lastOffsetX;
+    private int lastOffsetY;
+
+    private int currentOffsetXPlus;
+    private int currentOffsetYPlus;
 
     private boolean roomLoaded = false;
 
 
     private boolean TEST_MODE = true;
     private String tag = "RoomView";
+
+
+    private int maxX;
+    private int maxY;
+    private float startScale = 1;
 
 
     public RoomView(Context context) {
@@ -57,16 +86,23 @@ public class RoomView extends ViewGroup {
     }
 
     private void init(AttributeSet attrs) {
-        if(TEST_MODE) {
-            initTest();
+        if(STANDARD_PADDING==-1) {
+            STANDARD_PADDING = getResources().getDimensionPixelSize(R.dimen.padding_tiny);
         }
+
+        if(TEST_MODE && !isInEditMode()) {
+            initTest();
+            RoomFileReader.openFile(this);
+        }
+
+        setOnTouchListener(this);
+        gestureDetector = new GestureDetector(getContext(), new GestureListener());
     }
 
     private void initTest() {
         seatsCountX = 10;
         seatsCountY = 5;
     }
-
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
@@ -76,18 +112,195 @@ public class RoomView extends ViewGroup {
         int right = 0;
         int bottom = 0;
 
-        int width = SeatView.STANDARD_WIDTH;
-        int height = SeatView.STANDARD_HEIGHT;
+        int width = (int) (SeatView.STANDARD_WIDTH * scale);
+        int height = (int) (SeatView.STANDARD_HEIGHT * scale);
+        STANDARD_PADDING = (int) (width * 0.05f);
         for(int i = 0; i<count; i++) {
             SeatView view = (SeatView) getChildAt(i);
 
-            left = (int) (view.getSeatPositionX() * width + offsetX);
-            top = (int) (view.getSeatPositionY() * height + offsetY);
-            right = left + view.getScaledWidth();
-            bottom = top + view.getScaledHeight();
-            Log.d(tag,"Seat:l="+left +" t=" + top +" r=" +right + " b=" +bottom);
+            left = (int) (view.getSeatPositionX() * width + lastOffsetX + currentOffsetXPlus) + STANDARD_PADDING;
+            top = (int) (view.getSeatPositionY() * height + lastOffsetY + currentOffsetYPlus) + STANDARD_PADDING;
+            right = left + view.getScaledWidth() - STANDARD_PADDING * 2;
+            bottom = top + view.getScaledHeight() - STANDARD_PADDING * 2;
+            //Log.d(tag,"Seat:l="+left +" t=" + top +" r=" +right + " b=" +bottom);
             view.layout(left,top,right,bottom);
 
         }
     }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        boolean doubleTap =gestureDetector.onTouchEvent(event);
+
+        if(true) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    startTouchX = (int) event.getX();
+                    startTouchY = (int) event.getY();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    lastOffsetY += currentOffsetYPlus;
+                    lastOffsetX += currentOffsetXPlus;
+
+                    currentOffsetYPlus = 0;
+                    currentOffsetXPlus = 0;
+
+                    startTouchY = 0;
+                    startTouchX = 0;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    currentOffsetXPlus = (int) (event.getX() - startTouchX);
+                    currentOffsetYPlus = (int) (event.getY() - startTouchY);
+                    break;
+            }
+
+
+            int offX = currentOffsetXPlus + lastOffsetX;
+            int offY = currentOffsetYPlus + lastOffsetY;
+            //Log.d(tag, "offset:" + offX + "x" + offY);
+            requestLayout();
+        }
+
+        return true;
+    }
+
+    public void setMaxValues(int maxX, int maxY) {
+        this.maxX = maxX;
+        this.maxY = maxY;
+    }
+
+    public void fitRoomToScreen(int screenWidth) {
+        float scale = (float)screenWidth/(maxX*SeatView.STANDARD_WIDTH);
+        /*float scale = (float)screenWidth/maxX;
+        scale = SeatView.STANDARD_WIDTH/scale;*/
+        startScale = scale;
+        Log.d(tag,"setFitScale=" + scale);
+        setScale(scale);
+    }
+
+    public void setScale(float scale) {
+        this.scale = scale;
+        int size = getChildCount();
+        for(int i =0; i<size; i++) {
+            SeatView seatView = (SeatView) getChildAt(i);
+            seatView.setScale(scale);
+
+        }
+
+    }
+
+    public void zoomIn() {
+        scale *= 1.2;
+        if(scale>2.5f)
+            scale = 2.5f;
+
+        setScale(scale);
+        requestLayout();
+    }
+
+    public void zoomOut() {
+        scale *= 0.8;
+        if(scale<startScale)
+            scale = startScale;
+
+        setScale(scale);
+        requestLayout();
+    }
+
+    public SeatView getSeatClicked(MotionEvent e) {
+        int count = getChildCount();
+        int left = 0;
+        int top = 0;
+        int right = 0;
+        int bottom = 0;
+
+        int x = (int) e.getX();
+        int y = (int) e.getY();
+
+        int width = (int) (SeatView.STANDARD_WIDTH * scale);
+        int height = (int) (SeatView.STANDARD_HEIGHT * scale);
+        STANDARD_PADDING = (int) (width * 0.05f);
+        for(int i = 0; i<count; i++) {
+            SeatView view = (SeatView) getChildAt(i);
+/*
+
+            left = (int) (view.getSeatPositionX() * width + lastOffsetX + currentOffsetXPlus) + STANDARD_PADDING;
+            top = (int) (view.getSeatPositionY() * height + lastOffsetY + currentOffsetYPlus) + STANDARD_PADDING;
+            right = left + view.getScaledWidth() - STANDARD_PADDING * 2;
+            bottom = top + view.getScaledHeight() - STANDARD_PADDING * 2;
+*/
+
+            //user cant click row number
+            //if(view.getStatus()!= SeatView.SeatStat.ONLY_VISUALIZATION) {
+
+            //gtrgtr
+                left = view.getLeft();
+                top = view.getTop();
+                right = view.getRight();
+                bottom = view.getBottom();
+                Log.d(tag, "Seat:l=" + left + " t=" + top + " r=" + right + " b=" + bottom);
+
+                if (y > top && y < bottom && x > left && x < right) {
+                    Log.d(tag, "clicked view with index =" + i);
+                    return view;
+                }
+            //}
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if(isInEditMode()) {
+            canvas.drawColor(Color.CYAN);
+        }
+
+        super.onDraw(canvas);
+    }
+
+
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        /*
+        onup
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return true;
+        }
+*/
+        // event when double tap occurs
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            float x = e.getX();
+            float y = e.getY();
+
+            zoomIn();
+
+            Log.d("Double Tap", "Tapped at: (" + x + "," + y + ")");
+
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            float x = e.getX();
+            float y = e.getY();
+
+            Log.d("Double Tap", "Single tap at: (" + x + "," + y + ")");
+
+            SeatView seatView = getSeatClicked(e);
+
+            if(seatView!=null) {
+                Log.d(tag,"view clicked " + seatView);
+                MaxScreen.getBus().post(new SeatClickEventBus(seatView));
+            } else {
+                Log.d(tag,"no action on single tap");
+            }
+
+            return true;
+        }
+    }
+
 }

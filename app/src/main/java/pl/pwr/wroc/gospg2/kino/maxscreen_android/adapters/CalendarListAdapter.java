@@ -10,32 +10,21 @@ import android.widget.BaseAdapter;
 import java.util.ArrayList;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.old.FilmFrame;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MyGridView;
 
 /**
  * Created by Evil on 2015-04-01.
  */
 public class CalendarListAdapter extends BaseAdapter {
 
-    private ArrayList<FilmFrame> mItems;
+    private ArrayList<Movie> mItems;
     //ArrayList<News> mIdMap = new ArrayList<News>();
     int layoutResId;
     Context mContext;
     private FragmentManager mFragmentManager;
 
-    /*public ResultListAdapter(Context context, FragmentManager mFragmentManager, int layoutResId,
-                              List<String> objects, View.OnTouchListener listener) {
-        super(context, layoutResId, objects);
-        this.mFragmentManager = mFragmentManager;
-        this.mContext = context;
-        this.layoutResId = layoutResId;
-        mTouchListener = listener;
-        for (int i = 0; i < objects.size(); ++i) {
-            mIdMap.put(objects.get(i), i);
-        }
-    }*/
-
-    public CalendarListAdapter(FragmentActivity fragmentActivity, ArrayList<FilmFrame> items) {
+    public CalendarListAdapter(FragmentActivity fragmentActivity, ArrayList<Movie> items) {
         mContext = fragmentActivity;
         mItems = items;
         mFragmentManager = fragmentActivity.getSupportFragmentManager();
@@ -78,6 +67,21 @@ public class CalendarListAdapter extends BaseAdapter {
 
 
             currentView = View.inflate(mContext, R.layout.calendar_item, null);
+
+            MyGridView myGridView = (MyGridView) currentView.findViewById(R.id.grid);
+
+
+            Movie movie = mItems.get(position);
+
+
+            //set data
+            myGridView.setMovie(movie);
+            myGridView.setSeances(movie.getSeances());
+
+
+
+            //old version
+
            /* ImageView thumbnailView = (ImageView) currentView.findViewById(R.id.thumbnail_view);
             TextView messageView = (TextView) currentView.findViewById(R.id.message_view);
             String text = mContext.getString(R.string.text);
