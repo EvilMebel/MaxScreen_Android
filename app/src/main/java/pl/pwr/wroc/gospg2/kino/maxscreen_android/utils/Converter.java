@@ -1,5 +1,6 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.utils;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 
@@ -53,6 +54,44 @@ public class Converter {
 		int d =  c.get(GregorianCalendar.DAY_OF_MONTH);
 		
 		return y+"." + m +"."+d;
+	}
+
+	public static String gregToStringWithDay(GregorianCalendar c) {
+		String s;
+		switch(c.get(Calendar.DAY_OF_WEEK)) {
+			default:
+			case GregorianCalendar.MONDAY:
+				s = "poniedzialek";
+				break;
+
+			case GregorianCalendar.TUESDAY:
+				s = "wtorek";
+				break;
+
+			case GregorianCalendar.WEDNESDAY:
+				s = "sroda";
+				break;
+
+			case GregorianCalendar.THURSDAY:
+				s = "czwartek";
+				break;
+
+			case GregorianCalendar.FRIDAY:
+				s = "piatek";
+				break;
+
+			case GregorianCalendar.SATURDAY:
+				s = "sobota";
+				break;
+
+			case GregorianCalendar.SUNDAY:
+				s = "niedziela";
+				break;
+
+
+		}
+
+		return gregToString(c) + ", " + s;
 	}
 	
 	public static GregorianCalendar MySQLformatToGreg(String s) {

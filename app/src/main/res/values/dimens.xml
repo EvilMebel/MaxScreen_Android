@@ -20,6 +20,10 @@
     <dimen name="action_bar_button">26dp</dimen>
     <dimen name="action_bar_padding">11dp</dimen>
 
+
+    <!--MY PROFILE-->
+    <dimen name="prof_avatar_size">80dp</dimen>
+
     <!-- CALENDAR -->
     <dimen name="arrow_width">25dp</dimen>
     <dimen name="arrow_height">35dp</dimen>

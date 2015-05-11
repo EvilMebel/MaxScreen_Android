@@ -1,6 +1,7 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class Coupon_DB {
 	public static final String IDCOUPON_DB = "idCoupon_DB";
@@ -13,7 +14,7 @@ public class Coupon_DB {
 	
 	private int idCoupon_DB;
 	private String ID_Coupon;
-	private Date date;
+	private GregorianCalendar date;
 	private String Description;
 	private int Discount;
 	private String Version;
@@ -31,10 +32,10 @@ public class Coupon_DB {
 	public void setID_Coupon(String iD_Coupon) {
 		ID_Coupon = iD_Coupon;
 	}
-	public Date getDate() {
+	public GregorianCalendar getDate() {
 		return date;
 	}
-	public void setDate(Date date) {
+	public void setDate(GregorianCalendar date) {
 		this.date = date;
 	}
 	public String getDescription() {

@@ -33,13 +33,20 @@ import com.facebook.login.widget.ProfilePictureView;
 import com.facebook.share.widget.ShareDialog;
 import com.google.common.eventbus.Subscribe;
 
+import org.apache.http.impl.io.ContentLengthOutputStream;
+
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.enums.PendingAction;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenMovieInfoEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenRoomEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.CalendarFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.LoginFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MainFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MovieInfoFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.ProfileFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.PromotionsFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.RegisterFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.ReservationRoomFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
@@ -100,8 +107,9 @@ public class MainActivity extends BaseFragmentActivity {
     private String FRAGMENT_TAG_MAIN_NEWS = "FRAGMENT_TAG_MAIN_NEWS";
     private String FRAGMENT_TAG_MY_RESERVATION = "FRAGMENT_TAG_MY_RESERVATION";
     private String FRAGMENT_TAG_MY_PROFILE = "FRAGMENT_TAG_MY_PROFILE";
+    private String FRAGMENT_TAG_MY_PROMOTIONS = "FRAGMENT_TAG_MY_PROMOTIONS";
     private String FRAGMENT_TAG_CALENDAR = "FRAGMENT_TAG_CALENDAR";
-    private String FRAGMENT_TAG_FILM_INFO = "FRAGMENT_TAG_FILM_INFO";
+    private String FRAGMENT_TAG_MOVIE_INFO = "FRAGMENT_TAG_MOVIE_INFO";
     private String FRAGMENT_TAG_RESERVATION = "FRAGMENT_TAG_RESERVATION";//Z WIDOKIEM SALI
     private String FRAGMENT_TAG_FINISH_RESERVATION = "FRAGMENT_TAG_FINISH_RESERVATION";
     private String FRAGMENT_TAG_CONTACT= "FRAGMENT_TAG_CONTACT";
@@ -271,8 +279,12 @@ public class MainActivity extends BaseFragmentActivity {
         switch (view.getId()) {
             case R.id.my_profile:
 
+                commitProfileMyFragment();
+                closeDrawer();
                 break;
             case R.id.promotions:
+                commitPromotionsFragment();
+                closeDrawer();
 
                 break;
             case R.id.my_reservations:
@@ -464,6 +476,44 @@ public class MainActivity extends BaseFragmentActivity {
         enableBackButton();
     }
 
+    private void commitPromotionsFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        mFragment = new PromotionsFragment();
+        //ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_MY_PROMOTIONS) == null) {
+            ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_MY_PROMOTIONS).commit();
+        }
+
+        mTitle.setText("Promocje");
+        enableBackButton();
+    }
+
+    private void commitProfileMyFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        mFragment = ProfileFragment.newInstance(true,"");
+        //ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_MY_PROFILE) == null) {
+            ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_MY_PROFILE).commit();
+        }
+
+        mTitle.setText("Moj profil");
+        enableBackButton();
+    }
+
+    private void commitMovieInfoFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        mFragment = new MovieInfoFragment();
+
+        //TODO ADD PARAMS
+        //ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_MOVIE_INFO) == null) {
+            ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_MOVIE_INFO).commit();
+        }
+
+        mTitle.setText("Info filmu");
+        enableBackButton();
+    }
+
     /*
                         EVENT BUS
      */
@@ -480,6 +530,21 @@ public class MainActivity extends BaseFragmentActivity {
     @Subscribe
     public void openRoom(OpenRoomEventBus bus) {
         commitRoomFragment();
+    }
+
+    @Subscribe
+    public void openMovieInfo(OpenMovieInfoEventBus bus) {
+        //save data in singleton
+        if(bus.getIdMovie()!=1) {
+            Movie movie = new Movie();
+            movie.setIdMove(bus.getIdMovie());
+            MSData.getInstance().setCurrentMovie(movie);
+        }
+        if(bus.getMovie()!=null) {
+            MSData.getInstance().setCurrentMovie(bus.getMovie());
+        }
+
+        commitMovieInfoFragment();
     }
 
 

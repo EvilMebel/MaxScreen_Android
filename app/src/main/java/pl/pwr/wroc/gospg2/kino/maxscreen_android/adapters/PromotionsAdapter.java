@@ -15,24 +15,22 @@ import java.util.ArrayList;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MainActivity;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Coupon_DB;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.News;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.*;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.FlowTextHelper;
 
 /**
  * Created by Evil on 2015-03-31.
  */
-public class MainNewsAdapter extends BaseAdapter {
+public class PromotionsAdapter extends BaseAdapter {
 
-    private ArrayList<News> mItems;
-    ArrayList<News> mIdMap = new ArrayList<News>();
-    int layoutResId;
+    private ArrayList<Coupon_DB> mItems;
     Context mContext;
-    private FragmentManager mFragmentManager;
 
-    public MainNewsAdapter(FragmentActivity fragmentActivity, ArrayList<News> items) {
+    public PromotionsAdapter(Context fragmentActivity, ArrayList<Coupon_DB> items) {
         mContext = fragmentActivity;
         mItems = items;
-        mFragmentManager = fragmentActivity.getSupportFragmentManager();
     }
 
     @Override
@@ -59,13 +57,20 @@ public class MainNewsAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View currentView, ViewGroup viewGroup) {
         if(currentView==null) {
-            currentView = View.inflate(mContext, R.layout.main_news_item, null);
+            currentView = View.inflate(mContext, R.layout.promotion_item, null);
             ImageView thumbnailView = (ImageView) currentView.findViewById(R.id.thumbnail_view);
             TextView messageView = (TextView) currentView.findViewById(R.id.message_view);
-            String text = mContext.getString(R.string.text);
+            TextView titleView = (TextView) currentView.findViewById(R.id.title);
 
-            Display display = ((MainActivity) mContext).getWindowManager().getDefaultDisplay();
-            FlowTextHelper.tryFlowText(text, thumbnailView, messageView, display);
+            Coupon_DB coupon_db = mItems.get(position);
+
+            String text = coupon_db.getDescription();//todo text from REST
+            String titleText = coupon_db.getID_Coupon() + " \n" + coupon_db.getVersion() + "\nDo " + Converter.gregToString(coupon_db.getDate());
+
+            /*Display display = ((MainActivity) mContext).getWindowManager().getDefaultDisplay();
+            FlowTextHelper.tryFlowText(text, thumbnailView, messageView, display);*/
+            messageView.setText(text);
+            titleView.setText(titleText);
         }
 
         return currentView;

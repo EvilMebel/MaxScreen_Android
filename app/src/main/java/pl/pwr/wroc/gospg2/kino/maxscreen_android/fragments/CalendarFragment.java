@@ -17,6 +17,7 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.CalendarListAdapter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateViewPager;
 import roboguice.inject.InjectView;
 
 public class CalendarFragment extends RoboEventFragment {
@@ -31,6 +32,15 @@ public class CalendarFragment extends RoboEventFragment {
 
     @InjectView (R.id.list)
     ListView mList;
+
+    @InjectView (R.id.calendar_pager)
+    DateViewPager mDatePager;
+
+    @InjectView (R.id.prev_week)
+    View mPrevWeek;
+
+    @InjectView (R.id.next_week)
+    View mNextWeek;
 
 
 
@@ -75,10 +85,11 @@ public class CalendarFragment extends RoboEventFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        setListeners();
+
+
         ArrayList<Movie> items = new ArrayList<Movie>();
-
-
-
         //todo load data online
         for(int i =0; i<4 ; i++) {
             ArrayList<Seance> hours = new ArrayList<Seance>();
@@ -93,6 +104,22 @@ public class CalendarFragment extends RoboEventFragment {
 
         }
         mList.setAdapter(new CalendarListAdapter(getActivity(),items));
+    }
+
+    private void setListeners() {
+        mPrevWeek.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDatePager.prevDaySmooth();
+            }
+        });
+
+        mNextWeek.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDatePager.nextDaySmooth();
+            }
+        });
     }
 
     @Override

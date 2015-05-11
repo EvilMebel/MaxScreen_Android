@@ -223,48 +223,53 @@ public class MyGridView extends ViewGroup implements View.OnClickListener {
 		
 	}
 
-	public void setSeances(List<Seance> seances) {
+	public void setSeances(List<Seance> seances, boolean fullInfo) {
 		this.seances.clear();
-		this.seances = seances;
-
-		Log.d(tag,"new seansec for movie:" +seances.size());
-
 		//clear all childrens
 		removeAllViews();
 		removeAllViewsInLayout();
 		removeViewsCustom();
 
-		int textHeight = getResources().getDimensionPixelSize(R.dimen.calendar_seance_text);
-		int viewHeight = getResources().getDimensionPixelSize(R.dimen.calendar_seance_height);
+		if(seances!=null) {
+			this.seances = seances;
+			Log.d(tag, "new seansec for movie:" + seances.size());
 
-		int size = seances.size();
-		for(int i = 0; i<size; i++ ) {
-			TextView v = new TextView(getContext());
-			//todo nicer text!
+			int textHeight = getResources().getDimensionPixelSize(R.dimen.calendar_seance_text);
+			int viewHeight = getResources().getDimensionPixelSize(R.dimen.calendar_seance_height);
 
-			if(isInEditMode()) {
-				v.setText(i+":30");
-			} else {
-				v.setText(seances.get(i).getDateString());
-				v.setText(i+":30");
+			int size = seances.size();
+			for (int i = 0; i < size; i++) {
+				TextView v = new TextView(getContext());
+				//todo nicer text!
+
+				if(fullInfo) {//print all data in movie info!
+
+				} else {
+					if (isInEditMode()) {
+						v.setText(i + ":30");
+					} else {
+						v.setText(seances.get(i).getDateString());
+						v.setText(i + ":30");
+					}
+				}
+
+				//set view
+				v.setTextSize(TypedValue.COMPLEX_UNIT_PX, textHeight);
+				LayoutParams lp = v.getLayoutParams();
+				if (lp != null) {
+					lp.height = viewHeight;
+				} else {
+					Log.e("setSeances", "lp is null");
+				}
+				v.setGravity(Gravity.CENTER);
+
+				//set id to get position
+				v.setId(i);
+				v.setOnClickListener(this);
+				addView(v);
 			}
-
-			//set view
-			v.setTextSize(TypedValue.COMPLEX_UNIT_PX, textHeight);
-			LayoutParams lp = v.getLayoutParams();
-			if(lp!=null) {
-				lp.height = viewHeight;
-			} else {
-				Log.e("setSeances","lp is null");
-			}
-			v.setGravity(Gravity.CENTER);
-
-			//set id to get position
-			v.setId(i);
-			v.setOnClickListener(this);
-			addView(v);
 		}
-
+		rowCount = (seances.size()+2)/colCount;
 		//refresh view
 		requestLayout();
 	}

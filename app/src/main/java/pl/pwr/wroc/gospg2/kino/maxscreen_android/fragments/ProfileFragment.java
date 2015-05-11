@@ -6,9 +6,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+
+import com.facebook.Profile;
+import com.facebook.login.widget.ProfilePictureView;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
+import roboguice.inject.InjectView;
 
 public class ProfileFragment extends RoboEventFragment {
     // TODO: Rename parameter arguments, choose names that match
@@ -19,6 +25,22 @@ public class ProfileFragment extends RoboEventFragment {
     // TODO: Rename and change types of parameters
     private boolean mMyProfle;
     private String mUserId;
+
+
+    @InjectView (R.id.profilePicture)
+    ProfilePictureView mAvatar;
+
+    @InjectView (R.id.username)
+    TextView mUsername;
+
+    @InjectView (R.id.prof_friends)
+    Button mFriends;
+
+    @InjectView (R.id.prof_seen_movies)
+    Button mSeenMovies;
+
+    @InjectView (R.id.prof_wanted_movies)
+    Button mWantedMovies;
 
     /**
      * Use this factory method to create a new instance of
@@ -68,6 +90,10 @@ public class ProfileFragment extends RoboEventFragment {
     private void getData() {
         if(mMyProfle) {
             if(Utils.isLoggedInFacebook()) {
+                Profile profile = Profile.getCurrentProfile();
+                //load avatar etc
+                mAvatar.setProfileId(profile.getId());
+                mUsername.setText(profile.getFirstName() + " " + profile.getLastName());
 
             } else {
 

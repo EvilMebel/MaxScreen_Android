@@ -9,8 +9,10 @@ import android.widget.BaseAdapter;
 
 import java.util.ArrayList;
 
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenMovieInfoEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MyGridView;
 
 /**
@@ -69,14 +71,24 @@ public class CalendarListAdapter extends BaseAdapter {
             currentView = View.inflate(mContext, R.layout.calendar_item, null);
 
             MyGridView myGridView = (MyGridView) currentView.findViewById(R.id.grid);
+            View root = currentView.findViewById(R.id.root);
 
 
-            Movie movie = mItems.get(position);
+            final Movie movie = mItems.get(position);
 
 
-            //set data
+            //set data - grid has EventBus for clicking seances
             myGridView.setMovie(movie);
             myGridView.setSeances(movie.getSeances());
+
+            root.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MaxScreen.getBus().post(new OpenMovieInfoEventBus(-1,movie));
+                }
+            });
+
+
 
 
 

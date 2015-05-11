@@ -7,64 +7,30 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.ListView;
 
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.MSData;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MyGridView;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.PromotionsAdapter;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Coupon_DB;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Coupons;
 import roboguice.inject.InjectView;
 
-
-public class MovieInfoFragment extends RoboEventFragment {
+public class PromotionsFragment extends RoboEventFragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
     private String mParam2;
 
-    @InjectView (R.id.dateTitle)
-    TextView mDateTitle;
 
-    @InjectView (R.id.title)
-    TextView mTitle;
+    @InjectView (R.id.list)
+    ListView mList;
 
-    @InjectView (R.id.movie_cast)
-    TextView mCast;
-
-    @InjectView (R.id.movie_description)
-    TextView mDescription;
-
-    @InjectView (R.id.movie_director)
-    TextView mDirector;
-
-    @InjectView (R.id.movie_duration)
-    TextView mDuration;
-
-    @InjectView (R.id.movie_kind)
-    TextView mKind;
-
-    //TODO mark stars
-    @InjectView (R.id.movie_mark)
-    View mMark;
-
-    @InjectView (R.id.movie_scenario)
-    TextView mScenario;
-
-    @InjectView (R.id.image)
-    ImageView mImage;
-
-    @InjectView (R.id.movie_seances)
-    MyGridView mSeances;
-
-    @InjectView (R.id.comments_container)
-    LinearLayout mComments;
-
-    @InjectView (R.id.add_comment)
-    Button mAddComment;
 
     /**
      * Use this factory method to create a new instance of
@@ -72,11 +38,10 @@ public class MovieInfoFragment extends RoboEventFragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment MovieInfoFragment.
+     * @return A new instance of fragment PromotionsFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static MovieInfoFragment newInstance(String param1, String param2) {
-        MovieInfoFragment fragment = new MovieInfoFragment();
+    public static PromotionsFragment newInstance(String param1, String param2) {
+        PromotionsFragment fragment = new PromotionsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -84,7 +49,7 @@ public class MovieInfoFragment extends RoboEventFragment {
         return fragment;
     }
 
-    public MovieInfoFragment() {
+    public PromotionsFragment() {
         // Required empty public constructor
     }
 
@@ -101,7 +66,7 @@ public class MovieInfoFragment extends RoboEventFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_movie_info, container, false);
+        return inflater.inflate(R.layout.fragment_promotions, container, false);
     }
 
     @Override
@@ -109,16 +74,24 @@ public class MovieInfoFragment extends RoboEventFragment {
         super.onViewCreated(view, savedInstanceState);
 
         loadData();
-        setListeners();
-    }
-
-    private void setListeners() {
-
     }
 
     private void loadData() {
+        //todo load seriously...
+        ArrayList<Coupon_DB> couponsList = new ArrayList<Coupon_DB>();
 
-        mSeances.setSeances(MSData.getInstance().getCurrentMovie().getSeances());
+        for(int i = 0; i<5; i++) {
+            Coupon_DB c = new Coupon_DB();
+            c.setDate(new GregorianCalendar(2015, 5, 15));
+            c.setDescription("Ale promocja!!!");
+            c.setID_Coupon("ABC4546FBF");
+            c.setDiscount(20);
+            c.setVersion("znizka procentowa");
+
+            couponsList.add(c);
+        }
+
+        mList.setAdapter(new PromotionsAdapter(getActivity(),couponsList));
 
     }
 
@@ -131,7 +104,6 @@ public class MovieInfoFragment extends RoboEventFragment {
     public void onDetach() {
         super.onDetach();
     }
-
 
 
 }

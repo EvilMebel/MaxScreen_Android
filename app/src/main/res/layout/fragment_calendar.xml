@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="@dimen/padding_tiny"
+        android:layout_marginBottom="@dimen/padding_small"
         android:layout_gravity="center_horizontal">
 
         <ImageButton
@@ -17,6 +18,7 @@
             android:layout_height="@dimen/arrow_width"
             android:src="@drawable/ic_prev"
             android:background="@android:color/transparent"
+            android:scaleType="fitXY"
             android:id="@+id/prev_week"/>
 
         <ImageButton
@@ -24,6 +26,7 @@
             android:layout_height="@dimen/arrow_width"
             android:src="@drawable/ic_next"
             android:id="@+id/next_week"
+            android:scaleType="fitXY"
             android:background="@android:color/transparent"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"/>
@@ -31,7 +34,7 @@
         <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.DateViewPager
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:id="@+id/view"
+            android:id="@+id/calendar_pager"
             android:layout_toRightOf="@+id/prev_week"
             android:layout_toLeftOf="@+id/next_week">
 
@@ -45,7 +48,7 @@
 
     </RelativeLayout>
 
-    <TextView
+    TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/padding_gigant"

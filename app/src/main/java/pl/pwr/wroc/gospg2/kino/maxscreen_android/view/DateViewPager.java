@@ -39,26 +39,31 @@ public class DateViewPager extends ViewPager {
         adapter = new DatePagerAdapter(getContext());
         setAdapter(adapter);
 
+
+
         setCurrentItem(1, true);
         setOnPageChangeListener(new OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+                if(positionOffset == 0 && positionOffsetPixels==0) {
+                    switch (position) {
+                        case 0:
+                            prevDay();
+                            break;
+                        case 2:
+                            nextDay();
+                            break;
+
+                        default:
+                            return;
+                    }
+                }
+
             }
 
             @Override
             public void onPageSelected(int position) {
-                switch (position) {
-                    case 0:
-                        prevDay();
-                        break;
-                    case 2:
-                        nextDay();
-                        break;
-
-                }
-                setCurrentItem(1,false);
-                adapter.notifyDataSetChanged();
 
             }
 
@@ -69,24 +74,28 @@ public class DateViewPager extends ViewPager {
         });
     }
 
+    public void nextDaySmooth() {
+        setCurrentItem(2, true);
+    }
 
-    public void nextDay() {
-        calendar.add(GregorianCalendar.DAY_OF_WEEK, 7);
+    public void prevDaySmooth() {
+        setCurrentItem(0,true);
+    }
+
+    private void nextDay() {
+        calendar.add(GregorianCalendar.DAY_OF_MONTH, 1);
         prepareDateString();
     }
 
-    public void prevDay() {
-        calendar.add(GregorianCalendar.DAY_OF_WEEK, -7);
+    private void prevDay() {
+        calendar.add(GregorianCalendar.DAY_OF_MONTH, -1);
         prepareDateString();
     }
 
     private void prepareDateString() {
-        GregorianCalendar end = (GregorianCalendar) calendar.clone();
-        end.add(GregorianCalendar.DAY_OF_WEEK, 6);
-
-        String s = Converter.gregToString(calendar) + " - "
-                + Converter.gregToString(end);
-        //todo ? doci_date.setText(s);
+        adapter = new DatePagerAdapter(getContext());
+        setAdapter(adapter);
+        setCurrentItem(1);
     }
 
 
@@ -95,7 +104,6 @@ public class DateViewPager extends ViewPager {
 
     /*
                     adapter
-
      */
 
     private class DatePagerAdapter extends PagerAdapter {
@@ -127,17 +135,15 @@ public class DateViewPager extends ViewPager {
 
             switch (position) {
                 case 0:
-                    cal.add(GregorianCalendar.DAY_OF_WEEK, 7);
+                    cal.add(GregorianCalendar.DAY_OF_MONTH, -1);
                     break;
                 case 1:
                     break;
                 case 2: //next day
-                    cal.add(GregorianCalendar.DAY_OF_WEEK, -7);
+                    cal.add(GregorianCalendar.DAY_OF_MONTH, 1);
                     break;
             }
-            view.setText(Converter.gregToMySQLformat(calendar));
-
-            //view.setText("lol2");
+            view.setText(Converter.gregToStringWithDay(cal));
             container.addView(view);
 
             return view;
