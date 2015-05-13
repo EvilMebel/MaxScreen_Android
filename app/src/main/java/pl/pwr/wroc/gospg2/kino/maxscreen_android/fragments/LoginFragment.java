@@ -1,10 +1,13 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +31,12 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.CalendarListAdapter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.LoadingDialogFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 
@@ -50,11 +56,11 @@ public class LoginFragment extends RoboEventFragment {
     @InjectView (R.id.pass)
     EditText mPasswordInput;
 
-    //@InjectView (R.id.login)
-    //Button mLogin;
+    @InjectView (R.id.login)
+    Button mLogin;
 
-    //@InjectView (R.id.fbLogin)
-    //Button mFbLogin;
+    @InjectView (R.id.fbLogin)
+    Button mFbLogin;
 
     @InjectView (R.id.register)
     Button mRegister;
@@ -114,6 +120,15 @@ public class LoginFragment extends RoboEventFragment {
                 MaxScreen.getBus().post(new GoToRegistrationBus());
             }
         });
+
+        mLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isntEmpty(mPasswordInput) && isntEmpty(mEmailInput)) {
+                    tryLogin();
+                }
+            }
+        });
     }
 
     @Override
@@ -132,50 +147,115 @@ public class LoginFragment extends RoboEventFragment {
         mLoadingDialogFragment.show(getFragmentManager(), null);
     }
 
-
-    class BgAsyncTask extends AsyncTask<String, String, ArrayList<Movie>> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            //showLoadingDialog();
-        }
-
-        protected ArrayList<Movie> doInBackground(String... args) {
-
-            //todo
-
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        protected void onPostExecute(ArrayList<Movie> items) {
-            /*if(items!=null) {
-                mList.setAdapter(new CalendarListAdapter(getActivity(), items));
-            } else {
-                //else return empty
-                mList.setAdapter(new CalendarListAdapter(getActivity(), new ArrayList<Movie>()));
-                Toast.makeText(getActivity(), "Blad podczas wczytywania.\nPrzepraszamy :(", Toast.LENGTH_SHORT).show();
-            }*/
-
-            mLoadingDialogFragment.dismiss();
-
-
-        }
-    }
-
-
-
-
     private void hideLoadingDialog() {
         if(mLoadingDialogFragment!=null)
             mLoadingDialogFragment.dismiss();
     }
 
+    private boolean isntEmpty(TextView tv) {
+        if (tv.getText().toString().matches("")) {
+            setFieldError(tv);
+            return false;
+        } else {
+            setFieldGood(tv);
+            return true;
+        }
+    }
+
+    private void setField(TextView tv, boolean isOk) {
+        if (isOk) {
+            setFieldGood(tv);
+        } else {
+            setFieldError(tv);
+        }
+    }
+
+    private void setFieldError(TextView tv) {
+        tv.setBackgroundResource(R.color.input_background_error);
+        tv.setTextColor(Color.WHITE);
+    }
+
+    private void setFieldGood(TextView tv) {
+        tv.setBackgroundResource(R.color.input_background);
+        tv.setTextColor(Color.BLACK);
+    }
+
+    public boolean isValidEmail(CharSequence target) {
+        if (TextUtils.isEmpty(target)) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+        }
+    }
+
+
+
+    public void tryLogin(){
+        RequestParams params = new RequestParams();
+        params.add(Customers.E_MAIL, mEmailInput.getText().toString());
+        params.add(Customers.PASSMD5, Utils.MD5(mPasswordInput.getText().toString()));
+        // Show Progress Dialog
+        showLoadingDialog();
+        // Make RESTful webservice call using AsyncHttpClient object
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(Net.dbIp + "/login/dologin", params, new AsyncHttpResponseHandler() {
+
+
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // Hide Progress Dialog
+                //todfokjfgnbfkjn
+                Log.d(getTag(), "response:" + response);
+
+                boolean status = true;
+                String msg = "";
+
+                try {
+                    JSONObject object = new JSONObject(response);
+                    status = object.getBoolean("status");
+
+                    if(!status) {
+                        msg = object.getString("error_msg");
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                if(status) {
+                    msg = "Logowanie powiodlo sie!";
+                }
+                //todo zamknac okno logowania?
+
+                Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
+
+                hideLoadingDialog();
+            }
+
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                                  String content) {
+                // Hide Progress Dialog
+                hideLoadingDialog();
+                // When Http response code is '404'
+                if (statusCode == 404) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code is '500'
+                else if (statusCode == 500) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code other than 404, 500
+                else {
+                    Log.e(getTag(),"ERROR:" + error.getMessage());
+                    Toast.makeText(getActivity().getApplicationContext(), statusCode + "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
 
 }

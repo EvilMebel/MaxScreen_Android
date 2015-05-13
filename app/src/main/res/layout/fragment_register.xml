@@ -13,15 +13,30 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Nick:"
+            android:text="Imię:"
             android:paddingLeft="@dimen/padding_tiny"
             android:paddingTop="@dimen/padding_medium"/>
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/nick"
-            android:hint="Wpisz nick"
+            android:id="@+id/name"
+            android:hint="Wpisz Imię"
+            style="@style/InputStyle"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Nazwisko:"
+            android:paddingLeft="@dimen/padding_tiny"
+            android:paddingTop="@dimen/padding_medium"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/surname"
+            android:hint="Wpisz Nazwisko"
             style="@style/InputStyle"/>
 
 
@@ -53,6 +68,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/pass"
             android:hint="Wpisz hasło"
+            android:password="true"
             style="@style/InputStyle"/>
 
         <TextView
@@ -68,6 +84,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/pass2"
             android:hint="Wpisz hasło ponownie"
+            android:password="true"
             style="@style/InputStyle"/>
 
 

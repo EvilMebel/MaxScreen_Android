@@ -4,7 +4,7 @@ public class Customers {
 	public static final String IDCUSTOMER = "idCustomer";
 	public static final String NAME = "Name";
 	public static final String SURNAME = "Surname";
-	public static final String E_MAIL = "E-Mail";
+	public static final String E_MAIL = "Email";
 	public static final String TELEFON = "Telefon";
 	public static final String NICK = "Nick";
 	public static final String PASSMD5 = "PassMD5";

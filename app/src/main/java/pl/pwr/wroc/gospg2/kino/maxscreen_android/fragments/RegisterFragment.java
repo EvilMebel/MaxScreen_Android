@@ -1,30 +1,43 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.MainNewsAdapter;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.LoadingDialogFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.News;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link RegisterFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link RegisterFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class RegisterFragment extends RoboEventFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -35,8 +48,11 @@ public class RegisterFragment extends RoboEventFragment {
     private String mParam1;
     private String mParam2;
 
-    @InjectView(R.id.nick)
-    EditText mNickInput;
+    @InjectView(R.id.name)
+    EditText mName;
+
+    @InjectView(R.id.surname)
+    EditText mSurname;
 
     @InjectView(R.id.email)
     EditText mEmailInput;
@@ -57,8 +73,7 @@ public class RegisterFragment extends RoboEventFragment {
     Button mFbRegister;
 
 
-
-    private OnFragmentInteractionListener mListener;
+    private LoadingDialogFragment mLoadingDialogFragment;
 
     /**
      * Use this factory method to create a new instance of
@@ -111,47 +126,176 @@ public class RegisterFragment extends RoboEventFragment {
                 MaxScreen.getBus().post(new GoToLoginBus());
             }
         });
+
+        mRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (validateInputs()) {
+                    tryRegister();
+                }
+            }
+        });
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        /*try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
 
+    private void showLoadingDialog() {
+        mLoadingDialogFragment = new LoadingDialogFragment();
+        mLoadingDialogFragment.show(getFragmentManager(), null);
+    }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+    private void hideLoadingDialog() {
+        if(mLoadingDialogFragment!=null)
+            mLoadingDialogFragment.dismiss();
+    }
+
+    private boolean validateInputs() {
+        isntEmpty(mSurname);
+        isntEmpty(mName);
+        isntEmpty(mEmailInput);
+        isntEmpty(mPasswordRepInput);
+        isntEmpty(mPasswordInput);
+        boolean ok =  isntEmpty(mSurname) && isntEmpty(mName) && isntEmpty(mEmailInput);
+        return ok && checkPassword();
+    }
+
+    private boolean checkPassword() {
+        boolean isOk = isntEmpty(mPasswordInput) && isntEmpty(mPasswordRepInput);
+
+        if (isOk) {
+            if (mPasswordInput.getText().toString().length() < 5) {
+                isOk = false;
+                Toast.makeText(getActivity(),"Haslo jest za krotkie!",Toast.LENGTH_SHORT).show();
+            } else if(!mPasswordInput.getText().toString().equals(mPasswordRepInput.getText().toString())) {
+                isOk = false;
+                Toast.makeText(getActivity(),"Hasla nie sa takie same!",Toast.LENGTH_SHORT).show();
+            } else if(isValidEmail(mPasswordInput.getText())) {
+                isOk = false;
+                Toast.makeText(getActivity(),"Nieprawidlowy adres email!",Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        setField(mPasswordInput, isOk);
+        setField(mPasswordRepInput, isOk);
+        return isOk;
+    }
+
+    private boolean isntEmpty(TextView tv) {
+        if (tv.getText().toString().matches("")) {
+            setFieldError(tv);
+            return false;
+        } else {
+            setFieldGood(tv);
+            return true;
+        }
+    }
+
+    private void setField(TextView tv, boolean isOk) {
+        if (isOk) {
+            setFieldGood(tv);
+        } else {
+            setFieldError(tv);
+        }
+    }
+
+    private void setFieldError(TextView tv) {
+        tv.setBackgroundResource(R.color.input_background_error);
+        tv.setTextColor(Color.WHITE);
+    }
+
+    private void setFieldGood(TextView tv) {
+        tv.setBackgroundResource(R.color.input_background);
+        tv.setTextColor(Color.BLACK);
+    }
+
+    public boolean isValidEmail(CharSequence target) {
+        if (TextUtils.isEmpty(target)) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+        }
+    }
+
+
+    public void tryRegister(){
+        RequestParams params = new RequestParams();
+        params.add(Customers.NAME,mName.getText().toString());
+        params.add(Customers.SURNAME,mSurname.getText().toString());
+        params.add(Customers.E_MAIL, mEmailInput.getText().toString());
+        params.add(Customers.PASSMD5, Utils.MD5(mPasswordInput.getText().toString()));
+        // Show Progress Dialog
+        showLoadingDialog();
+        // Make RESTful webservice call using AsyncHttpClient object
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(Net.dbIp + "/register", params, new AsyncHttpResponseHandler() {
+
+
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // Hide Progress Dialog
+                //todfokjfgnbfkjn
+                Log.d(getTag(), "response:" + response);
+
+                boolean status = true;
+                String msg = "";
+
+                try {
+                    JSONObject object = new JSONObject(response);
+                    status = object.getBoolean("status");
+
+                    if(!status) {
+                        msg = object.getString("error_msg");
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                if(status) {
+                    msg = "Rejestracja powiodla sie!";
+                }
+                //todo autologin?
+
+                Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
+
+                hideLoadingDialog();
+            }
+
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                                  String content) {
+                // Hide Progress Dialog
+                hideLoadingDialog();
+                // When Http response code is '404'
+                if (statusCode == 404) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code is '500'
+                else if (statusCode == 500) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code other than 404, 500
+                else {
+                    Log.e(getTag(),"ERROR:" + error.getMessage());
+                    Toast.makeText(getActivity().getApplicationContext(), statusCode + "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
 }

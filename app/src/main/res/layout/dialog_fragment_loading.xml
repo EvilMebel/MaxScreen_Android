@@ -4,9 +4,8 @@
     android:background="@color/loading_background">
 
 
-    <pl.essentialapps.happen.view.MaterialProgressBar
+    <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MaterialProgressBar
         android:layout_width="@dimen/material_progress_size_big"
         android:layout_height="@dimen/material_progress_size_big"
-        android:text="New Text"
         android:layout_gravity="center" />
 </FrameLayout>

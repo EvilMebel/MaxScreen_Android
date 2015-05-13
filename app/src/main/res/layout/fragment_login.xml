@@ -39,6 +39,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/pass"
         android:hint="Wpisz hasło"
+        android:password="true"
         style="@style/InputStyle"/>
 
     <TextView
@@ -76,6 +77,7 @@
             android:id="@+id/login" />
 
         <com.facebook.login.widget.LoginButton
+            android:id="@+id/fbLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"

@@ -4,6 +4,7 @@
     <color name="button_text">@android:color/white</color>
 
     <color name="input_background">#989898</color>
+    <color name="input_background_error">#B71C1C</color>
     <color name="input_text">@android:color/white</color>
 
     <color name="reservation_text">#c85353</color>
