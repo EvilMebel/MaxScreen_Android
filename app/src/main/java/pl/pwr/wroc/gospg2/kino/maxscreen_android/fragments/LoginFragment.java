@@ -2,6 +2,7 @@ package pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,9 +11,25 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.CalendarListAdapter;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.LoadingDialogFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
 import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
@@ -41,6 +58,9 @@ public class LoginFragment extends RoboEventFragment {
 
     @InjectView (R.id.register)
     Button mRegister;
+
+
+    private LoadingDialogFragment mLoadingDialogFragment;
 
 
     /**
@@ -106,6 +126,56 @@ public class LoginFragment extends RoboEventFragment {
         super.onDetach();
     }
 
+
+    private void showLoadingDialog() {
+        mLoadingDialogFragment = new LoadingDialogFragment();
+        mLoadingDialogFragment.show(getFragmentManager(), null);
+    }
+
+
+    class BgAsyncTask extends AsyncTask<String, String, ArrayList<Movie>> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            //showLoadingDialog();
+        }
+
+        protected ArrayList<Movie> doInBackground(String... args) {
+
+            //todo
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        protected void onPostExecute(ArrayList<Movie> items) {
+            /*if(items!=null) {
+                mList.setAdapter(new CalendarListAdapter(getActivity(), items));
+            } else {
+                //else return empty
+                mList.setAdapter(new CalendarListAdapter(getActivity(), new ArrayList<Movie>()));
+                Toast.makeText(getActivity(), "Blad podczas wczytywania.\nPrzepraszamy :(", Toast.LENGTH_SHORT).show();
+            }*/
+
+            mLoadingDialogFragment.dismiss();
+
+
+        }
+    }
+
+
+
+
+    private void hideLoadingDialog() {
+        if(mLoadingDialogFragment!=null)
+            mLoadingDialogFragment.dismiss();
+    }
 
 
 }

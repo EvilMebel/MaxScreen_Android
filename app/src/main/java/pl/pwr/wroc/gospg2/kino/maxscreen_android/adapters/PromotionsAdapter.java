@@ -2,6 +2,7 @@ package pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.view.Display;
@@ -10,6 +11,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.ArrayList;
 
@@ -27,10 +33,19 @@ public class PromotionsAdapter extends BaseAdapter {
 
     private ArrayList<Coupon_DB> mItems;
     Context mContext;
+    private DisplayImageOptions mDisplayImageOptions;
 
     public PromotionsAdapter(Context fragmentActivity, ArrayList<Coupon_DB> items) {
         mContext = fragmentActivity;
         mItems = items;
+
+
+        mDisplayImageOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .considerExifParams(true)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .build();
     }
 
     @Override
@@ -56,22 +71,35 @@ public class PromotionsAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View currentView, ViewGroup viewGroup) {
+        ItemViewHolder itemViewHolder;
+
         if(currentView==null) {
+            itemViewHolder = new ItemViewHolder();
             currentView = View.inflate(mContext, R.layout.promotion_item, null);
-            ImageView thumbnailView = (ImageView) currentView.findViewById(R.id.thumbnail_view);
-            TextView messageView = (TextView) currentView.findViewById(R.id.message_view);
-            TextView titleView = (TextView) currentView.findViewById(R.id.title);
 
-            Coupon_DB coupon_db = mItems.get(position);
+            itemViewHolder.image = (ImageView) currentView.findViewById(R.id.thumbnail_view);
+            itemViewHolder.title = (TextView) currentView.findViewById(R.id.title);
+            itemViewHolder.msg = (TextView) currentView.findViewById(R.id.message_view);
 
-            String text = coupon_db.getDescription();//todo text from REST
-            String titleText = coupon_db.getID_Coupon() + " \n" + coupon_db.getVersion() + "\nDo " + Converter.gregToString(coupon_db.getDate());
+            currentView.setTag(itemViewHolder);
+        } else {
+            itemViewHolder = (ItemViewHolder) currentView.getTag();
+        }
+
+
+        Coupon_DB coupon_db = mItems.get(position);
+
+        String text = coupon_db.getDescription();//todo text from REST
+
+        //todo string buffer?
+        String titleText = coupon_db.getID_Coupon() + " \n" + coupon_db.getVersion() + "\nDo " + Converter.gregToString(coupon_db.getDate());
 
             /*Display display = ((MainActivity) mContext).getWindowManager().getDefaultDisplay();
             FlowTextHelper.tryFlowText(text, thumbnailView, messageView, display);*/
-            messageView.setText(text);
-            titleView.setText(titleText);
-        }
+        itemViewHolder.msg.setText(text);
+        itemViewHolder.title.setText(titleText);
+
+        setImage(coupon_db,itemViewHolder);
 
         return currentView;
     }
@@ -79,4 +107,40 @@ public class PromotionsAdapter extends BaseAdapter {
     public void remove(Object item) {
         mItems.remove(item);
     }
+
+    private void setImage(Coupon_DB coupon, ItemViewHolder item) {
+        //todo image field for coupon
+        /*
+        if(coupon!=null && coupon.get!=null) {
+            String url = coupon.getImage();
+            item.image.setImageBitmap(null);
+
+            if (url != null) {
+                ImageLoader.getInstance().displayImage(url, item.image, mDisplayImageOptions, new ImageLoadingListener() {
+                    @Override
+                    public void onLoadingStarted(String s, View view) {
+                    }
+
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason) {
+                    }
+
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                    }
+
+                    @Override
+                    public void onLoadingCancelled(String s, View view) {
+                    }
+                });
+            }
+        }*/
+    }
+
+    private class ItemViewHolder {
+        public ImageView image;
+        public TextView title;
+        public TextView msg;
+    }
+
 }

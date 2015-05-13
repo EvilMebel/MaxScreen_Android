@@ -1,6 +1,15 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 
 public class Seance {
 	public static final String IDSEANCE = "idSeance";
@@ -8,12 +17,11 @@ public class Seance {
 	public static final String TYPE = "Type";
 	public static final String PRICE = "Price";
 	//keys
-	public static final String HALLS_IDHALL = "Halls_idHall";
+	public static final String HALLS_IDHALL = "Hall_idHall";
 	public static final String MOVIE_IDMOVE = "Movie_idMove";
-	
-	
+
 	private int idSeance;
-	private Date date;
+	private GregorianCalendar date;
 	private String Type;
 	private int Price;
 	//keys
@@ -23,17 +31,16 @@ public class Seance {
 	private Movie MovieEntity;
 	private int dateString;
 
-
 	public int getIdSeance() {
 		return idSeance;
 	}
 	public void setIdSeance(int idSeance) {
 		this.idSeance = idSeance;
 	}
-	public Date getDate() {
+	public GregorianCalendar getDate() {
 		return date;
 	}
-	public void setDate(Date date) {
+	public void setDate(GregorianCalendar date) {
 		this.date = date;
 	}
 	public String getType() {
@@ -73,13 +80,34 @@ public class Seance {
 		MovieEntity = movieEntity;
 	}
 
-
 	/*
 					TOOLS
 	 */
 
 	//todo make it prettier!
 	public String getDateString() {
-		return getDate().toString();
+		Log.d("Seance","Date=" + getDate().get(Calendar.HOUR));
+		return Converter.getHourFromGreCale(getDate());
+	}
+
+	public static Seance parseEntity(JSONObject object) {
+		Seance n = new Seance();
+
+		try {
+			n.setIdSeance(object.getInt(Seance.IDSEANCE));
+			String date = object.getString(Seance.DATE);
+			GregorianCalendar calendar = Converter.DATETIMEformatToGreg(date);
+			n.setDate(calendar);
+			n.setType(object.getString(Seance.TYPE));
+			n.setPrice(object.getInt(Seance.PRICE));
+			n.setHalls_idHall(object.getInt(Seance.HALLS_IDHALL));
+			n.setMovie_idMove(object.getInt(Seance.MOVIE_IDMOVE));
+		} catch (JSONException e) {
+			Log.e("parse","error parse");
+			e.printStackTrace();
+			n = null;
+		}
+
+		return n;
 	}
 }

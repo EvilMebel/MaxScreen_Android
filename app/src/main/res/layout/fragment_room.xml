@@ -120,6 +120,27 @@
 
         </pl.pwr.wroc.gospg2.kino.maxscreen_android.view.RoomView>
 
+        <LinearLayout
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MaterialProgressBar
+            android:layout_gravity="center"
+            android:layout_width="@dimen/material_progress_size_medium"
+            android:layout_height="@dimen/material_progress_size_medium" />
+
+            <TextView
+                android:id="@+id/loading_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trwa ladowanie sali..."
+                android:layout_gravity="center"
+                android:padding="@dimen/padding_medium"/>
+
+        </LinearLayout>
+
 
         <LinearLayout
             android:orientation="horizontal"

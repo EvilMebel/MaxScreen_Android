@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -22,6 +23,8 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 public class DateViewPager extends ViewPager {
     private GregorianCalendar calendar;
     private DatePagerAdapter adapter;
+
+    private OnDateChanged listener; //todo on changed date call listener!
 
     public DateViewPager(Context context) {
         super(context);
@@ -50,9 +53,13 @@ public class DateViewPager extends ViewPager {
                     switch (position) {
                         case 0:
                             prevDay();
+                            if(listener!=null)
+                                listener.onDateChanged(calendar);
                             break;
                         case 2:
                             nextDay();
+                            if(listener!=null)
+                                listener.onDateChanged(calendar);
                             break;
 
                         default:
@@ -159,5 +166,23 @@ public class DateViewPager extends ViewPager {
             return (view == object);
         }
     }
+
+    public OnDateChanged getListener() {
+        return listener;
+    }
+
+    public void setListener(OnDateChanged listener) {
+        this.listener = listener;
+    }
+
+    public GregorianCalendar getCalendar() {
+        return calendar;
+    }
+
+    public interface OnDateChanged {
+        public void onDateChanged(GregorianCalendar calendar);
+    }
+
+
 
 }

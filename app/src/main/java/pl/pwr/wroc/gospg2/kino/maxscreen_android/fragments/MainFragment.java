@@ -3,26 +3,29 @@ package pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.MainNewsAdapter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.News;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
 import roboguice.inject.InjectView;
 
-/**
- * A simple {@link android.app.Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MainFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MainFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class MainFragment extends RoboEventFragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,7 +40,9 @@ public class MainFragment extends RoboEventFragment {
     private ListView mList;
     private MainNewsAdapter mAdapter;
 
-    private OnFragmentInteractionListener mListener;
+    @InjectView (R.id.loading)
+    View mLoading;
+
 
     /**
      * Use this factory method to create a new instance of
@@ -80,52 +85,105 @@ public class MainFragment extends RoboEventFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+
+        //todo async
+        downloadNewsAsync();
+
+    }
+
+    private void onLoadingFinished() {
         ArrayList<News> items = new ArrayList<News>();
         for(int i =0 ; i<5; i++) {
             items.add(new News());
         }
 
-        mList.setAdapter(new MainNewsAdapter(getActivity(),items));
-
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+        mList.setAdapter(new MainNewsAdapter(getActivity(), items));
+        mLoading.setVisibility(View.GONE);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        /*try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+
+
+    public void downloadNewsAsync(){
+        RequestParams params = new RequestParams();
+        // Show Progress Dialog
+        mLoading.setVisibility(View.VISIBLE);
+        // Make RESTful webservice call using AsyncHttpClient object
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(Net.dbIp + "/news/get", params, new AsyncHttpResponseHandler() {
+
+
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // Hide Progress Dialog
+
+                ArrayList<News> items = null;
+
+
+                try {
+                    // JSON Object
+                    Log.d(getTag(),"response:"+response);
+                    JSONArray obj = new JSONArray(response);
+
+                    items = new ArrayList<News>();
+
+                    int size = obj.length();
+                    for(int i = 0; i<size; i++) {
+                        JSONObject item = obj.getJSONObject(i);
+
+                        News n = News.parseEntity(item);
+                        items.add(n);
+                    }
+
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    Toast.makeText(getActivity().getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                if(items!=null) {
+                    mList.setAdapter(new MainNewsAdapter(getActivity(), items));
+                }
+
+                hideLoadingDialog();
+            }
+
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                                  String content) {
+                // Hide Progress Dialog
+                hideLoadingDialog();
+                // When Http response code is '404'
+                if (statusCode == 404) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code is '500'
+                else if (statusCode == 500) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code other than 404, 500
+                else {
+                    Log.e(getTag(),"ERROR:" + error.getMessage());
+                    Toast.makeText(getActivity().getApplicationContext(), statusCode + "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void hideLoadingDialog() {
+        mLoading.setVisibility(View.INVISIBLE);
     }
 
 }

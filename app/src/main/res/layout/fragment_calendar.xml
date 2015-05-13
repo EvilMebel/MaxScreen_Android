@@ -62,12 +62,24 @@
         android:layout_height="@dimen/films_divider"
         android:background="@color/movie_description_divider"/>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MaterialProgressBar
+            android:id="@+id/loading"
+            android:layout_gravity="center"
+            android:layout_width="@dimen/material_progress_size_medium"
+            android:layout_height="@dimen/material_progress_size_medium" />
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/list">
 
         </ListView>
+
+    </FrameLayout>
 
 
 

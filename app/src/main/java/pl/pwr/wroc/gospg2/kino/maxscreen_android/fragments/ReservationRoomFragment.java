@@ -8,15 +8,33 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.common.eventbus.Subscribe;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.MSData;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.CalendarListAdapter;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Halls;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.SeatClickEventBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.RoomView;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.SeatView;
@@ -42,6 +60,12 @@ public class ReservationRoomFragment extends RoboEventFragment {
 
     @InjectView (R.id.room)
     RoomView mRoom;
+
+    @InjectView (R.id.loading)
+    View mLoading;
+
+    Halls hall;
+    private Seance seance;
 
     /**
      * Use this factory method to create a new instance of
@@ -113,6 +137,18 @@ public class ReservationRoomFragment extends RoboEventFragment {
 
     private void loadData() {
 
+        //todo REST!
+        Seance seance = MSData.getInstance().getSeance();
+
+        if(seance!=null) {
+            this.seance = seance;
+            downloadHall();
+        } else {
+            //todo exit!! D:
+        }
+
+        mLoading.setVisibility(View.INVISIBLE);
+
     }
 
     @Override
@@ -127,31 +163,144 @@ public class ReservationRoomFragment extends RoboEventFragment {
     }
 
 
-    public void downloadRoom() {
-        String url = "url you want to download"; //todo url
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
-        request.setDescription("Some descrition");
-        request.setTitle("Some title");
-        // in order for this if to run, you must use the android 3.2 to compile your app
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            request.allowScanningByMediaScanner();
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        }
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "name-of-the-file.ext");
-
-        // get download service and enqueue file
-        DownloadManager manager = (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
-        manager.enqueue(request);
-    }
-
-
-
     @Subscribe
     public void seatClicked(SeatClickEventBus bus) {
         SeatView seatView = bus.getSeatView();
         String s = " Wybrano miejsce. Rzad " + seatView.getSeatRow() + " miejsce " + seatView.getSeatCol();
+        mRoom.clickSeat(seatView);
 
         Toast.makeText(getActivity(),s,Toast.LENGTH_SHORT).show();
+    }
+
+
+    public void downloadHall(){
+        RequestParams params = new RequestParams();
+        params.add("id", String.valueOf(seance.getHalls_idHall()));
+        // Show Progress Dialog
+        mLoading.setVisibility(View.VISIBLE);
+        // Make RESTful webservice call using AsyncHttpClient object
+        AsyncHttpClient task = new AsyncHttpClient();
+        task.get(Net.dbIp + "/hall/get", params, new AsyncHttpResponseHandler() {
+
+
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // Hide Progress Dialog
+
+                Halls h = null;
+
+                try {
+                    // JSON Object
+                    Log.e(getTag(), "response:" + response);
+                    JSONObject obj = new JSONObject(response);
+                    h = Halls.parseEntity(obj);
+
+                    Log.e(getTag(), "hall :" + h);
+
+                } catch (JSONException e) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                if (h != null) {
+                    hall = h;
+                    mRoom.loadRoom(hall);
+                    fixViews();
+                    mRoom.setVisibility(View.VISIBLE);
+                } else {
+                    //todo exit!! D:
+                    Log.e(getTag(), "NULL D:");
+                }
+
+                mLoading.setVisibility(View.INVISIBLE);
+            }
+
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                                  String content) {
+                // Hide Progress Dialog
+                mLoading.setVisibility(View.INVISIBLE);
+                // When Http response code is '404'
+                if (statusCode == 404) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code is '500'
+                else if (statusCode == 500) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code other than 404, 500
+                else {
+                    Log.e(getTag(), "ERROR:" + error.getMessage());
+                    Toast.makeText(getActivity().getApplicationContext(), statusCode + "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    public void downloadTakenSeats(){
+        RequestParams params = new RequestParams();
+        params.add("id", String.valueOf(seance.getHalls_idHall()));
+        // Show Progress Dialog
+        mLoading.setVisibility(View.VISIBLE);
+        // Make RESTful webservice call using AsyncHttpClient object
+        AsyncHttpClient task = new AsyncHttpClient();
+        task.get(Net.dbIp + "/hall/get", params, new AsyncHttpResponseHandler() {
+
+
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // Hide Progress Dialog
+
+                Halls h = null;
+
+                try {
+                    // JSON Object
+                    Log.e(getTag(),"response:" + response);
+                    JSONObject obj = new JSONObject(response);
+                    h = Halls.parseEntity(obj);
+
+                    Log.e(getTag(),"hall :" + h);
+
+                } catch (JSONException e) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                if(h!=null) {
+                    hall = h;
+                    mRoom.loadRoom(hall);
+                    fixViews();
+                    mRoom.setVisibility(View.VISIBLE);
+                } else {
+                    //todo exit!! D:
+                    Log.e(getTag(),"NULL D:");
+                }
+
+                mLoading.setVisibility(View.INVISIBLE);
+            }
+
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                                  String content) {
+                // Hide Progress Dialog
+                mLoading.setVisibility(View.INVISIBLE);
+                // When Http response code is '404'
+                if (statusCode == 404) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code is '500'
+                else if (statusCode == 500) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code other than 404, 500
+                else {
+                    Log.e(getTag(),"ERROR:" + error.getMessage());
+                    Toast.makeText(getActivity().getApplicationContext(), statusCode + "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
 

@@ -1,6 +1,13 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
-import java.util.Date;
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.GregorianCalendar;
+
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 
 public class News {
 	public static final String IDNEWS = "idNews";
@@ -13,7 +20,7 @@ public class News {
 	private int idNews;
 	private String Text;
 	private String Image;
-	private Date date;
+	private GregorianCalendar date;
 	private String Topic;
 	
 	
@@ -35,10 +42,10 @@ public class News {
 	public void setImage(String image) {
 		Image = image;
 	}
-	public Date getDate() {
+	public GregorianCalendar getDate() {
 		return date;
 	}
-	public void setDate(Date date) {
+	public void setDate(GregorianCalendar date) {
 		this.date = date;
 	}
 	public String getTopic() {
@@ -46,6 +53,25 @@ public class News {
 	}
 	public void setTopic(String topic) {
 		Topic = topic;
+	}
+
+	public static News parseEntity(JSONObject object) {
+		News n = new News();
+		Log.d("News","Parse:" +object.toString());
+
+		try {
+			n.setIdNews(object.getInt(News.IDNEWS));
+			String date = object.getString(News.DATE);
+			GregorianCalendar calendar = Converter.DATETIMEformatToGreg(date);
+			n.setDate(calendar);
+			n.setImage(object.getString(News.IMAGE));
+			n.setText(object.getString(News.TEXT));
+			n.setTopic(object.getString(News.TOPIC));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return n;
 	}
 	
 	

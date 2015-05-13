@@ -18,6 +18,7 @@ import java.util.List;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.RoomFileReader;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Halls;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.SeatClickEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 
@@ -48,7 +49,7 @@ public class RoomView extends ViewGroup implements View.OnTouchListener {
     private boolean roomLoaded = false;
 
 
-    private boolean TEST_MODE = true;
+    private boolean TEST_MODE = false;
     private String tag = "RoomView";
 
 
@@ -90,9 +91,12 @@ public class RoomView extends ViewGroup implements View.OnTouchListener {
             STANDARD_PADDING = getResources().getDimensionPixelSize(R.dimen.padding_tiny);
         }
 
+        seatsCountX = 10;
+        seatsCountY = 5;
+
         if(TEST_MODE && !isInEditMode()) {
             initTest();
-            RoomFileReader.openFile(this);
+            //RoomFileReader.openFile(this);
         }
 
         setOnTouchListener(this);
@@ -259,6 +263,20 @@ public class RoomView extends ViewGroup implements View.OnTouchListener {
         super.onDraw(canvas);
     }
 
+    public void loadRoom(Halls hall) {
+        RoomFileReader.openFile(this, hall.getStructureFile());
+    }
+
+    public void clickSeat(SeatView seatView) {
+        switch (seatView.getStatus()) {
+            case MY_CHOICE:
+                seatView.setStatus(SeatView.SeatStat.FREE);
+                break;
+            case FREE:
+                seatView.setStatus(SeatView.SeatStat.MY_CHOICE);
+                break;
+        }
+    }
 
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {

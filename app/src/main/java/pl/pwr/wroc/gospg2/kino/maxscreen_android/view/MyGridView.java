@@ -26,6 +26,7 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Halls;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenRoomEventBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 
 public class MyGridView extends ViewGroup implements View.OnClickListener {
 	private int pixelWidth;
@@ -64,32 +65,7 @@ public class MyGridView extends ViewGroup implements View.OnClickListener {
 		int size = colCount *  rowCount;
 
 		seances = new ArrayList<Seance>();
-/*
-		for (int j = 0; j < 4; j++) {
-			Seance s = new Seance();
-			if(!isInEditMode()) {
-				s.setDate(new Date(System.currentTimeMillis()));// = new Time();
-			}
-			seances.add(s);
-		}
-		setSeances(seances);*/
 
-
-
-/*
-		for(int i = 0; i<size; i++ ) {
-			View v = new View(getContext());
-			if(i%2 == 1)
-				v.setBackgroundColor(white);
-			else
-				v.setBackgroundColor(black);
-			
-			addView(v);
-		}*/
-		
-		
-		//prepare drawable for unfocused rects
-		//unfocused = getResources().getbac
 	}
 
 	@Override
@@ -111,7 +87,7 @@ public class MyGridView extends ViewGroup implements View.OnClickListener {
 				
 			}
 
-			mHeight = MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(frameH) * colCount,MeasureSpec.EXACTLY);
+			mHeight = MeasureSpec.makeMeasureSpec((frameW/2) * colCount,MeasureSpec.EXACTLY);
 		}
 
 		// = MeasureSpec.makeMeasureSpec()
@@ -155,31 +131,6 @@ public class MyGridView extends ViewGroup implements View.OnClickListener {
 			}
 		}
 	}
-	
-	/*public void setFrame(Frame f) {
-		Log.d("screenView", "setFrame!");
-		Iterator<Integer> pixels = f.iterator();
-		//int c = f.getPixelAt(1, 1);
-		
-		int count = getChildCount();
-		for(int i = 0 ; i < count; i++) {
-			try {
-				int color = pixels.next();
-				
-				View v = getChildAt(i);
-//				if(c%2==1)
-//					v.setBackgroundColor(color);//pixels.next());
-//				else
-//					v.setBackgroundColor(color2);//pixels.next());
-				v.setBackgroundColor(color);
-				
-			} catch (Exception e){
-				//e.printStackTrace();
-				//Log.d("error", "null at frame's pixel in " + i+ " :(");
-			}
-		}
-		invalidate();
-	}*/
 
 	public int getColCount() {
 		return colCount;
@@ -243,13 +194,21 @@ public class MyGridView extends ViewGroup implements View.OnClickListener {
 				//todo nicer text!
 
 				if(fullInfo) {//print all data in movie info!
+					if (isInEditMode()) {
+						v.setText(i + ":30");
+					} else {
+						Seance s = seances.get(i);
+						String hour = Converter.getHourFromGreCale(s.getDate());
+						String text = hour +"\n" +s.getType();
+
+						v.setText(text);
+					}
 
 				} else {
 					if (isInEditMode()) {
 						v.setText(i + ":30");
 					} else {
 						v.setText(seances.get(i).getDateString());
-						v.setText(i + ":30");
 					}
 				}
 
@@ -276,9 +235,7 @@ public class MyGridView extends ViewGroup implements View.OnClickListener {
 
 	private void removeViewsCustom() {
 		int size = getChildCount();
-		Log.d(tag,"remove custom");
 		for(int i =size-1; i>=0; i--) {
-			Log.d(tag,"remove custom i=" +i);
 			removeView(getChildAt(i));
 		}
 	}
@@ -288,7 +245,7 @@ public class MyGridView extends ViewGroup implements View.OnClickListener {
 		super.onDraw(canvas);
 		Paint mPaint = new Paint();
 		mPaint.setColor(Color.BLUE);
-		canvas.drawRect(0, 0, 50, 50, mPaint);
+		//canvas.drawRect(0, 0, 50, 50, mPaint);
 	}
 
 	@Override

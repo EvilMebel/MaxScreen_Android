@@ -27,15 +27,27 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    <ImageView
-        android:layout_width="@dimen/calendar_image_width"
-        android:layout_height="@dimen/calendar_image_height"
-        android:id="@+id/image"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_margin="@dimen/padding_small"
-        android:src="@drawable/news_image" />
+
+        <FrameLayout
+            android:layout_width="@dimen/calendar_image_width"
+            android:layout_height="@dimen/calendar_image_height"
+            android:id="@+id/frameLayout"
+            android:layout_margin="@dimen/padding_small">
+
+            <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MaterialProgressBar
+                android:id="@+id/loading"
+                android:layout_gravity="center"
+                android:layout_width="@dimen/material_progress_size_medium"
+                android:layout_height="@dimen/material_progress_size_medium" />
+
+            <ImageView
+                android:layout_width="@dimen/calendar_image_width"
+                android:layout_height="@dimen/calendar_image_height"
+                android:id="@+id/image"
+                android:src="@drawable/news_image" />
+
+        </FrameLayout>
+
 
     <LinearLayout
         android:padding="@dimen/padding_small"
@@ -44,9 +56,9 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@+id/image"
+        android:layout_toEndOf="@+id/frameLayout"
         android:orientation="vertical"
-        android:layout_toRightOf="@+id/image">
+        android:layout_toRightOf="@+id/frameLayout">
 
 
         <TextView
@@ -107,13 +119,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="New Text"
-                android:id="@+id/textView9" />
+                android:id="@+id/movie_premiere" />
         </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:id="@+id/my_mark">
 
             <TextView
                 android:layout_width="wrap_content"

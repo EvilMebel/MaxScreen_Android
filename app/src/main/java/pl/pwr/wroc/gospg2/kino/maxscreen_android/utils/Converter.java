@@ -1,5 +1,7 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.utils;
 
+import android.util.Log;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -47,7 +49,12 @@ public class Converter {
 		
 		return h+":" + m + ":" + s;
 	}
-	
+
+	/**
+	 * return y-m-d
+	 * @param c
+	 * @return
+	 */
 	public static String gregToString(GregorianCalendar c) {
 		int y =  c.get(GregorianCalendar.YEAR);
 		int m =  c.get(GregorianCalendar.MONTH)+1;
@@ -94,16 +101,31 @@ public class Converter {
 		return gregToString(c) + ", " + s;
 	}
 	
-	public static GregorianCalendar MySQLformatToGreg(String s) {
+	public static GregorianCalendar DATETIMEformatToGreg(String s) {
+		Log.d("tag","convert:" + s +"|");
+
 		String []ar = s.split("-");
 		int y = Integer.valueOf(ar[0]);
 		int m = Integer.valueOf(ar[1])-1;
-		int d = Integer.valueOf(ar[2]);
+		int d = Integer.valueOf(ar[2].split(" ")[0]);
+
+
 		
 		GregorianCalendar c = new GregorianCalendar();
 		c.set(GregorianCalendar.YEAR, y);
 		c.set(GregorianCalendar.MONTH, m);
 		c.set(GregorianCalendar.DAY_OF_MONTH, d);
+
+		if(s.length()>=15) {
+			String hour = s.substring(11, 13);
+			String minute = s.substring(14, 16);
+			Log.d("tag", "convertTime:" + hour + ":" + minute + "|");
+
+			int h = Integer.valueOf(s.substring(11, 13));
+			int min = Integer.valueOf(s.substring(14, 16));
+			c.set(Calendar.HOUR, h);
+			c.set(Calendar.MINUTE, min);
+		}
 		
 		return c;
 	}
@@ -132,5 +154,16 @@ public class Converter {
 			m = Integer.toString(t.minute);
 
 		return h + ":" + m;
+	}
+
+	public static String getHourFromGreCale(GregorianCalendar date) {
+		int h = date.get(Calendar.HOUR);
+		int m = date.get(Calendar.MINUTE);
+
+		if(m>9) {
+			return h + ":" + m;
+		} else {
+			return h + ":0" + m;
+		}
 	}
 }

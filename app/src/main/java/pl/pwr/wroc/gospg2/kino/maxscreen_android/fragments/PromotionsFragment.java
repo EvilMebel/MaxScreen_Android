@@ -31,6 +31,9 @@ public class PromotionsFragment extends RoboEventFragment {
     @InjectView (R.id.list)
     ListView mList;
 
+    @InjectView (R.id.loading)
+    View mLoading;
+
 
     /**
      * Use this factory method to create a new instance of
@@ -92,6 +95,7 @@ public class PromotionsFragment extends RoboEventFragment {
         }
 
         mList.setAdapter(new PromotionsAdapter(getActivity(),couponsList));
+        mLoading.setVisibility(View.INVISIBLE);
 
     }
 

@@ -1,9 +1,17 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.GregorianCalendar;
 import java.util.List;
 
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
+
 public class Movie {
-	public static final String IDMOVE = "idMove";
+	public static final String IDMOVIE = "idMovie";
 	public static final String TITLE = "Title";
 	public static final String DESCRIPTION = "Description";
 	public static final String DIRECTOR = "Director";
@@ -12,6 +20,8 @@ public class Movie {
 	public static final String CAST = "Cast";
 	public static final String WANTTOSEETHIS = "WantToSeeThis";
 	public static final String IMAGES = "Images";
+	public static final String SCRIPT = "Script";
+	public static final String PREMIERE = "Premiere";
 	
 	private int idMove;
 	private String Title;
@@ -22,6 +32,8 @@ public class Movie {
 	private String Cast;
 	private int WantToSeeThis;
 	private String Images;
+	private String Script;//todo
+	private GregorianCalendar Premiere;
 
 
 
@@ -32,7 +44,7 @@ public class Movie {
 	public int getIdMove() {
 		return idMove;
 	}
-	public void setIdMove(int idMove) {
+	public void setIdMovie(int idMove) {
 		this.idMove = idMove;
 	}
 	public String getTitle() {
@@ -84,11 +96,60 @@ public class Movie {
 		Images = images;
 	}
 
+	public String getScript() {
+		return Script;
+	}
+
+	public void setScript(String script) {
+		Script = script;
+	}
+
+	public GregorianCalendar getPremiere() {
+		return Premiere;
+	}
+
+	public void setPremiere(GregorianCalendar premiere) {
+		Premiere = premiere;
+	}
+
 	public List<Seance> getSeances() {
 		return seances;
 	}
 
 	public void setSeances(List<Seance> seances) {
 		this.seances = seances;
+	}
+
+	/*
+					tools
+	 */
+	public static Movie parseEntity(JSONObject object) {
+		Movie n = new Movie();
+
+		Log.d("Movie", "Parse:" + object.toString());
+
+		try {
+			n.setIdMovie(object.getInt(Movie.IDMOVIE));
+
+			String date = object.getString(Movie.PREMIERE);
+			GregorianCalendar calendar = Converter.DATETIMEformatToGreg(date);
+			n.setPremiere(calendar);
+
+			n.setImages(object.getString(Movie.IMAGES));
+			n.setTitle(object.getString(Movie.TITLE));
+			n.setDescription(object.getString(Movie.DESCRIPTION));
+			n.setDirector(object.getString(Movie.DIRECTOR));
+			n.setKind(object.getString(Movie.KIND));
+			n.setCast(object.getString(Movie.CAST));
+			n.setScript(object.getString(Movie.SCRIPT));
+			n.setMinutes(object.getInt(Movie.MINUTES));
+			n.setWantToSeeThis(object.getInt(Movie.WANTTOSEETHIS));
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+			n = null;
+		}
+
+		return n;
 	}
 }

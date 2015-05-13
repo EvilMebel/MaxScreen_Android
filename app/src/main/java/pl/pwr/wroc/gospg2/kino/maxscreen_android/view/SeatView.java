@@ -201,6 +201,12 @@ public class SeatView extends TextView {
         this.status = status;
 
         setBackgroundByStatus();
-        setText(""+getSeatRow());
+        if(getStatus()==SeatStat.ONLY_VISUALIZATION) {
+            setText("" + getSeatRow());
+        } else if(getStatus()== SeatStat.TAKEN) {
+            setText("");
+        } else  {
+            setText("" + getSeatCol());
+        }
     }
 }

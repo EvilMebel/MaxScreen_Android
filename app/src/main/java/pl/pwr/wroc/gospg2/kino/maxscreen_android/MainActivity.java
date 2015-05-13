@@ -32,8 +32,8 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.ProfilePictureView;
 import com.facebook.share.widget.ShareDialog;
 import com.google.common.eventbus.Subscribe;
-
-import org.apache.http.impl.io.ContentLengthOutputStream;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.enums.PendingAction;
@@ -131,6 +131,8 @@ public class MainActivity extends BaseFragmentActivity {
         setContentView(R.layout.activity_main);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
+        ImageLoader.getInstance().init(ImageLoaderConfiguration.createDefault(this));
+
         callbackManager = CallbackManager.Factory.create();
         profileTracker = new ProfileTracker() {
             @Override
@@ -537,7 +539,7 @@ public class MainActivity extends BaseFragmentActivity {
         //save data in singleton
         if(bus.getIdMovie()!=1) {
             Movie movie = new Movie();
-            movie.setIdMove(bus.getIdMovie());
+            movie.setIdMovie(bus.getIdMovie());
             MSData.getInstance().setCurrentMovie(movie);
         }
         if(bus.getMovie()!=null) {

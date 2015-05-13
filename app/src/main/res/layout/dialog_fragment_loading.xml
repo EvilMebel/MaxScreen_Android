@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/loading_background">
+
+
+    <pl.essentialapps.happen.view.MaterialProgressBar
+        android:layout_width="@dimen/material_progress_size_big"
+        android:layout_height="@dimen/material_progress_size_big"
+        android:text="New Text"
+        android:layout_gravity="center" />
+</FrameLayout>

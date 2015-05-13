@@ -10,4 +10,11 @@
         android:layout_height="match_parent">
     </ListView>
 
+
+    <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MaterialProgressBar
+        android:id="@+id/loading"
+        android:layout_gravity="center"
+        android:layout_width="@dimen/material_progress_size_medium"
+        android:layout_height="@dimen/material_progress_size_medium" />
+
 </FrameLayout>
