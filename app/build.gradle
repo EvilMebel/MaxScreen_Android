@@ -41,7 +41,7 @@ dependencies {
     //compile 'com.android.support:support-v4:21.0.3'
     //compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.google.guava:guava:18.0'
-    compile 'com.facebook.android:facebook-android-sdk:3.21.1'
+    //compile 'com.facebook.android:facebook-android-sdk:3.21.1'
     compile files('libs/Parse-1.8.2.jar')
     compile fileTree(dir: 'libs', include: 'universal-image-loader-1.9.3-with-sources.jar')
     compile fileTree(dir: 'libs', include: 'android-async-http-1.4.4.jar')

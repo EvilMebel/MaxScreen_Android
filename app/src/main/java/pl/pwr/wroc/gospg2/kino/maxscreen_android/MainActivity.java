@@ -18,12 +18,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.appevents.AppEventsLogger;
@@ -32,11 +36,20 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.ProfilePictureView;
 import com.facebook.share.widget.ShareDialog;
 import com.google.common.eventbus.Subscribe;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.LoadingDialogFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.enums.PendingAction;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.AfterLoginEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenMovieInfoEventBus;
@@ -49,6 +62,9 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.ProfileFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.PromotionsFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.RegisterFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.ReservationRoomFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.preferences.ApplicationPreference;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.preferences.ApplicationPreferences;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import roboguice.inject.InjectView;
 
@@ -125,6 +141,7 @@ public class MainActivity extends BaseFragmentActivity {
 
     private PendingAction pendingAction = PendingAction.NONE;
     private static final String tag = "FBactions";
+    private LoadingDialogFragment mLoadingDialogFragment;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,10 +154,14 @@ public class MainActivity extends BaseFragmentActivity {
         profileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                showLoadingDialog();
                 updateUI();
                 // It's possible that we were waiting for Profile to be populated in order to
                 // post a status update.
-                handlePendingAction();
+
+                getProfileData(currentProfile);
+
+                //GraphRequest.newMeRequest(LoginManager.getInstance().)
             }
         };
 
@@ -150,9 +171,13 @@ public class MainActivity extends BaseFragmentActivity {
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
+
+                        MSData.getInstance().setAccessToken(loginResult.getAccessToken());
                         handlePendingAction();
                         updateUI();
                         log("Zalogowany! - onSuccess");
+
+
 
                         //todo hide login fragment
                         commitMainFragment();
@@ -193,6 +218,129 @@ public class MainActivity extends BaseFragmentActivity {
 
         setDrawerLayout();
         commitMainFragment();
+    }
+
+    private void getProfileData(Profile currentProfile) {
+        Profile profile = currentProfile;
+        if(profile!=null) {
+            log("Profile!=null!");
+            //log("email=" + profile.ge);
+            AccessToken accessToken = MSData.getInstance().getAccessToken();
+            if(accessToken!=null) {
+                log("accessToken!=null");
+                GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
+                        log("json="+jsonObject);
+                        log("graphResponse="+graphResponse);
+                        log("graphResponse="+graphResponse.getRawResponse());
+                        try {
+                            String name = jsonObject.getString("first_name");
+                            String surname = jsonObject.getString("last_name");
+                            String fbId = jsonObject.getString("id");
+                            String email = jsonObject.getString("email");//todo
+
+
+                            RequestParams params = new RequestParams();
+                            params.add(Customers.NAME,name);
+                            params.add(Customers.SURNAME,surname);
+                            params.add(Customers.E_MAIL, email);
+                            params.add(Customers.FACEBOOKID, fbId);
+                            log("Try register Facebook!");
+                            tryRegisterFacebook(params);
+
+                        } catch (JSONException e) {
+                            Toast.makeText(getApplicationContext(),getString(R.string.login_error),Toast.LENGTH_SHORT).show();
+                            Log.e("FBactions", "ERROR register!");
+                            LoginManager.getInstance().logOut();
+                            updateUI();
+                            e.printStackTrace();
+                            hideLoadingDialog();
+                        }
+
+                    }
+                }).executeAsync();
+            } else {
+                hideLoadingDialog();
+                log("token is NULL!");
+
+            }
+
+        } else {
+            log("Profile == NULL!");
+            MSData.getInstance().setAccessToken(null);
+            hideLoadingDialog();
+        }
+    }
+
+    private void showLoadingDialog() {
+        mLoadingDialogFragment = new LoadingDialogFragment();
+        mLoadingDialogFragment.show(getSupportFragmentManager(), null);
+    }
+
+    private void hideLoadingDialog() {
+        if(mLoadingDialogFragment!=null)
+            mLoadingDialogFragment.dismiss();
+    }
+
+    private void tryRegisterFacebook(RequestParams params) {
+
+        // Make RESTful webservice call using AsyncHttpClient object
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(Net.dbIp + "/registerfb/fb", params, new AsyncHttpResponseHandler() {
+
+
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // Hide Progress Dialog
+                //todfokjfgnbfkjn
+                Log.d("MainActivity", "response:" + response);
+
+                boolean status = true;
+                String msg = "";
+
+                try {
+                    JSONObject object = new JSONObject(response);
+                    status = object.getBoolean("status");
+
+                    //if(!status) {
+                        msg = object.getString("error_msg");
+                    //}
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                //todo autologin?
+
+                Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+
+                hideLoadingDialog();
+
+                if(!status) {
+                    //Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+                    Log.e("FBactions","ERROR register onSuccess!");
+                    LoginManager.getInstance().logOut();
+                    updateUI();
+                }
+            }
+
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                                  String content) {
+                // Hide Progress Dialog
+                hideLoadingDialog();
+                Toast.makeText(getApplicationContext(),getString(R.string.login_error),Toast.LENGTH_SHORT).show();
+                Log.e("FBactions","ERROR register!");
+                LoginManager.getInstance().logOut();
+                updateUI();
+                Utils.showAsyncError(getApplicationContext(),statusCode,error,content);
+            }
+        });
+
     }
 
     private void log(String s) {
@@ -298,7 +446,12 @@ public class MainActivity extends BaseFragmentActivity {
             case R.id.login_out:
                 if(Utils.isIsLoggedIn()) {
                     //todo logout
-                    LoginManager.getInstance().logOut();
+                    if(Utils.isLoggedInFacebook()) {
+                        LoginManager.getInstance().logOut();
+                    } else {
+                        ApplicationPreferences preference = ApplicationPreferences.getInstance();
+                        preference.setBoolean(ApplicationPreference.LOGGED_IN_CLASSIC,false);
+                    }
                     updateUI();
                 } else {
                     commitLoginFragment();
@@ -537,7 +690,7 @@ public class MainActivity extends BaseFragmentActivity {
     @Subscribe
     public void openMovieInfo(OpenMovieInfoEventBus bus) {
         //save data in singleton
-        if(bus.getIdMovie()!=1) {
+        if(bus.getIdMovie()!=-1) {
             Movie movie = new Movie();
             movie.setIdMovie(bus.getIdMovie());
             MSData.getInstance().setCurrentMovie(movie);
@@ -548,6 +701,14 @@ public class MainActivity extends BaseFragmentActivity {
 
         commitMovieInfoFragment();
     }
+
+    @Subscribe
+    public void afterLogin(AfterLoginEventBus bus) {
+        commitMainFragment();
+        updateUI();
+    }
+
+
 
 
 

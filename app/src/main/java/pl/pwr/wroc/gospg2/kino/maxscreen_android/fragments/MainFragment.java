@@ -24,6 +24,7 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.MainNewsAdapter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.News;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import roboguice.inject.InjectView;
 
 public class MainFragment extends RoboEventFragment {
@@ -165,19 +166,7 @@ public class MainFragment extends RoboEventFragment {
                                   String content) {
                 // Hide Progress Dialog
                 hideLoadingDialog();
-                // When Http response code is '404'
-                if (statusCode == 404) {
-                    Toast.makeText(getActivity().getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
-                }
-                // When Http response code is '500'
-                else if (statusCode == 500) {
-                    Toast.makeText(getActivity().getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
-                }
-                // When Http response code other than 404, 500
-                else {
-                    Log.e(getTag(),"ERROR:" + error.getMessage());
-                    Toast.makeText(getActivity().getApplicationContext(), statusCode + "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
-                }
+                Utils.showAsyncError(getActivity(),statusCode,error,content);
             }
         });
     }

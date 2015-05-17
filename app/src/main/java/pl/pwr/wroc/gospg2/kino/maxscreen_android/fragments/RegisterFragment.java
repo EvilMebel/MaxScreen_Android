@@ -1,10 +1,9 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,27 +14,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.MainNewsAdapter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.LoadingDialogFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.News;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
-import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 
 public class RegisterFragment extends RoboEventFragment {
@@ -135,6 +132,8 @@ public class RegisterFragment extends RoboEventFragment {
                 }
             }
         });
+
+
     }
 
 
@@ -267,12 +266,17 @@ public class RegisterFragment extends RoboEventFragment {
 
                 if(status) {
                     msg = "Rejestracja powiodla sie!";
+
                 }
                 //todo autologin?
 
                 Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
 
                 hideLoadingDialog();
+
+                if(status) {
+                    MaxScreen.getBus().post(new GoToLoginBus());
+                }
             }
 
             // When the response returned by REST has Http response code other than '200'
@@ -281,19 +285,7 @@ public class RegisterFragment extends RoboEventFragment {
                                   String content) {
                 // Hide Progress Dialog
                 hideLoadingDialog();
-                // When Http response code is '404'
-                if (statusCode == 404) {
-                    Toast.makeText(getActivity().getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
-                }
-                // When Http response code is '500'
-                else if (statusCode == 500) {
-                    Toast.makeText(getActivity().getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
-                }
-                // When Http response code other than 404, 500
-                else {
-                    Log.e(getTag(),"ERROR:" + error.getMessage());
-                    Toast.makeText(getActivity().getApplicationContext(), statusCode + "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
-                }
+                Utils.showAsyncError(getActivity(),statusCode,error,content);
             }
         });
     }

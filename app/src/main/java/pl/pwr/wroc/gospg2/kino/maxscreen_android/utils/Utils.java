@@ -8,13 +8,19 @@ import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.service.textservice.SpellCheckerService;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.Profile;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.preferences.ApplicationPreference;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.preferences.ApplicationPreferences;
 
 /**
  * Created by Evil on 2015-05-04.
@@ -32,7 +38,9 @@ public class Utils {
     }
 
     public static boolean isLoggedInDatabase() {
-        return false;//todo login through database
+        ApplicationPreferences preference = ApplicationPreferences.getInstance();
+        return preference.getBoolean(ApplicationPreference.LOGGED_IN_CLASSIC);
+
     }
 
 
@@ -76,4 +84,32 @@ public class Utils {
         return null;
     }
 
+    public static void showAsyncError(Context context, int statusCode, Throwable error,
+                                      String content) {
+
+        // When Http response code is '404'
+        if (statusCode == 404) {
+            Toast.makeText(context, "Requested resource not found", Toast.LENGTH_LONG).show();
+        }
+        // When Http response code is '500'
+        else if (statusCode == 500) {
+            Toast.makeText(context, "Something went wrong at server end", Toast.LENGTH_LONG).show();
+        }
+        // When Http response code other than 404, 500
+        else {
+            Log.e("ShowAsyncError", "ERROR:" + error.getMessage());
+            Toast.makeText(context, statusCode + "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    public static Collection<String> getFbReadPermissions() {
+        List<String> fbPermissions = new ArrayList<String>();
+
+        fbPermissions.add("user_friends");
+        //fbPermissions.add("publish_actions");
+        fbPermissions.add("email");
+
+        return fbPermissions;
+    }
 }

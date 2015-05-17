@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="@dimen/padding_medium">
+
+    <FrameLayout
+        android:background="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/padding_medium">
+
+
+    <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MaterialProgressBar
+        android:id="@+id/loading"
+        android:layout_width="@dimen/material_progress_size_big"
+        android:layout_height="@dimen/material_progress_size_big"
+        android:layout_gravity="center" />
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </ListView>
+
+    </FrameLayout>
+
+</FrameLayout>

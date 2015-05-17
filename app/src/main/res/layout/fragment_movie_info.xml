@@ -69,6 +69,30 @@
             android:id="@+id/title" />
 
         <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/want"
+            android:orientation="vertical"
+            android:background="@color/button_background"
+            android:gravity="center">
+
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_margin="2dp"
+                android:id="@+id/imageView"
+                android:src="@drawable/ic_action_accept" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chcę obejrzeć"
+                android:textColor="@android:color/white"
+                android:layout_margin="3dp"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" >
@@ -76,7 +100,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Gatunek: "/>
+                android:text="Gatunek: "
+                android:visibility="gone"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -108,7 +133,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -150,7 +175,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Reżyseria:"/>
+                android:text="Reżyseria:"
+                android:visibility="gone"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -168,7 +194,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Scenariusz:"
-                android:id="@+id/textView14" />
+                android:id="@+id/textView14"
+                android:visibility="gone"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -186,6 +213,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Obsada:"
+                android:visibility="gone"
                 android:id="@+id/textView2" />
 
             <TextView

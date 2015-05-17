@@ -1,0 +1,25 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_style"
+    tools:context="pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MyReservationFragment">
+
+    <LinearLayout
+        android:id="@+id/no_reservations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+        android:padding="@dimen/padding_medium"
+        android:text="Nie posiadasz aktualnie rezerwacji. Zapraszamy do zapoznania się z repertuarem i dokonania rezerwacji!." />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Repertuar"
+        style="@style/ButtonStyle"
+        android:id="@+id/login" />
+
+    </LinearLayout>
+
+</FrameLayout>

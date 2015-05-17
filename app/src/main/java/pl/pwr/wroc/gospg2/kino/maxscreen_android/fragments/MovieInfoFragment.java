@@ -5,18 +5,27 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.GregorianCalendar;
 
@@ -24,8 +33,13 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.MSData;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Coupon_DB;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.WantToSee;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MyGridView;
 import roboguice.inject.InjectView;
 
@@ -84,6 +98,13 @@ public class MovieInfoFragment extends RoboEventFragment {
     View mMyMark;
 
 
+    @InjectView (R.id.want)
+    View mWant;
+
+
+
+    boolean wantMovie = false;
+
 
 
     private DisplayImageOptions mDisplayImageOptions;
@@ -137,6 +158,7 @@ public class MovieInfoFragment extends RoboEventFragment {
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .build();
 
+        mWant.setVisibility(View.GONE);
         loadData();
         setListeners();
     }
@@ -147,17 +169,22 @@ public class MovieInfoFragment extends RoboEventFragment {
 
     private void loadData() {
 
-        mSeances.setSeances(MSData.getInstance().getCurrentMovie().getSeances(),true);
+        if (MSData.getInstance().getCurrentMovie().getSeances() != null) {
+            mSeances.setSeances(MSData.getInstance().getCurrentMovie().getSeances(), true);
+        } else {
+            //todo load seances
+        }
+
         Movie movie = MSData.getInstance().getCurrentMovie();
-        if(movie!=null) {
+        if (movie != null) {
             mTitle.setText(movie.getTitle());
             mDescription.setText(movie.getDescription());
-            mDirector.setText(movie.getDirector());
+            mDirector.setText(getActivity().getString(R.string.directior) + " " + movie.getDirector());
             mDuration.setText(Integer.toString(movie.getMinutes()) + " min");
-            mKind.setText(movie.getKind());
-            mCast.setText(movie.getCast());
-            setImage(movie,mImage);
-            mScenario.setText(movie.getScript());
+            mKind.setText("Gatunek: " + movie.getKind());
+            mCast.setText("Obsada: " + movie.getCast());
+            setImage(movie, mImage);
+            mScenario.setText("Scenariusz: " + movie.getScript());
             mPremiere.setText(Converter.gregToString(movie.getPremiere()));
 
 
@@ -165,8 +192,135 @@ public class MovieInfoFragment extends RoboEventFragment {
             mMyMark.setVisibility(View.GONE);
 //            private int WantToSeeThis;
 
+            loadWantTo(movie);
+
         }
 
+
+    }
+
+    private void loadWantTo(Movie movie) {
+        RequestParams params = new RequestParams();
+        params.add("movieId", Integer.toString(movie.getIdMove()));
+        String customerId = "8";
+        params.add("customerId", customerId);//todo
+        // Make RESTful webservice call using AsyncHttpClient object
+            AsyncHttpClient client = new AsyncHttpClient();
+            client.get(Net.dbIp + "/want/movie", params, new AsyncHttpResponseHandler() {
+
+
+                // When the response returned by REST has Http response code '200'
+                @Override
+                public void onSuccess(String response) {
+                    // Hide Progress Dialog
+                    //todfokjfgnbfkjn
+                    Log.d(getTag(), "response:" + response);
+
+                    boolean status = true;
+                    String msg = "";
+
+                    try {
+                        JSONObject object = new JSONObject(response);
+                        status = object.getBoolean("status");
+
+                        if(!status) {
+                            msg = object.getString("error_msg");
+                        } else {
+                            wantMovie = object.getBoolean("value");
+                        }
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                    if(status) {
+                        //udalo sie!
+
+                        mWant.setVisibility(View.VISIBLE);
+                        refreshWantUI();
+                    }
+                }
+
+                // When the response returned by REST has Http response code other than '200'
+                @Override
+                public void onFailure(int statusCode, Throwable error,
+                                      String content) {
+                    Utils.showAsyncError(getActivity(),statusCode,error,content);
+                }
+            });
+        }
+
+
+    private void addWantTo(Movie movie) {
+        RequestParams params = new RequestParams();
+        params.add("movieId", Integer.toString(movie.getIdMove()));
+        String customerId = "8";
+        params.add("customerId", customerId);//todo
+        // Make RESTful webservice call using AsyncHttpClient object
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(Net.dbIp + "/want/wantmovie", params, new AsyncHttpResponseHandler() {
+
+
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // Hide Progress Dialog
+                //todfokjfgnbfkjn
+                Log.d(getTag(), "response:" + response);
+
+                boolean status = true;
+                String msg = "";
+
+                try {
+                    JSONObject object = new JSONObject(response);
+                    status = object.getBoolean("status");
+
+                    if(!status) {
+                        msg = object.getString("error_msg");
+                    } else {
+                        //wantMovie = object.getBoolean("value");
+                        wantMovie = true;
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                if(status) {
+                    //udalo sie!
+                    wantMovie = true;
+                    mWant.setVisibility(View.VISIBLE);
+                    refreshWantUI();
+                } else {
+                    Toast.makeText(getActivity(),getActivity().getString(R.string.error),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                                  String content) {
+                Utils.showAsyncError(getActivity(),statusCode,error,content);
+            }
+        });
+    }
+
+    private void refreshWantUI() {
+        if(wantMovie) {
+            mWant.setBackgroundResource(R.color.com_facebook_blue);
+        } else {
+            mWant.setBackgroundResource(R.color.button_background);
+            mWant.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    addWantTo(MSData.getInstance().getCurrentMovie());
+                }
+            });
+        }
     }
 
     private void setImage(Movie movie, ImageView view) {

@@ -2,6 +2,8 @@ package pl.pwr.wroc.gospg2.kino.maxscreen_android;
 
 import android.graphics.Bitmap;
 
+import com.facebook.AccessToken;
+
 import java.util.List;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Coupons;
@@ -20,6 +22,7 @@ public class MSData {
     private Coupons coupon;
     private Halls room;
     private Seance seance;
+    private AccessToken accessToken;
 
     private MSData() { }
 
@@ -72,4 +75,11 @@ public class MSData {
         this.seance = seance;
     }
 
+    public void setAccessToken(AccessToken accessToken) {
+        this.accessToken = accessToken;
+    }
+
+    public AccessToken getAccessToken() {
+        return accessToken;
+    }
 }
