@@ -122,14 +122,13 @@ public class MainFragment extends RoboEventFragment {
         mLoading.setVisibility(View.VISIBLE);
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(Net.dbIp + "/news/get", params, new AsyncHttpResponseHandler() {
+        client.get(Net.dbIp + "/newses", params, new AsyncHttpResponseHandler() {
 
 
             // When the response returned by REST has Http response code '200'
             @Override
             public void onSuccess(String response) {
                 // Hide Progress Dialog
-
                 ArrayList<News> items = null;
 
 

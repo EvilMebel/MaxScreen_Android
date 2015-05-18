@@ -11,10 +11,10 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 
 public class News {
 	public static final String IDNEWS = "idNews";
-	public static final String TEXT = "Text";
-	public static final String IMAGE = "Image";
-	public static final String DATE = "Date";
-	public static final String TOPIC = "Topic";
+	public static final String TEXT = "text";
+	public static final String IMAGE = "image";
+	public static final String DATE = "date";
+	public static final String TOPIC = "topic";
 	
 	
 	private int idNews;

@@ -104,10 +104,15 @@ public class Converter {
 	public static GregorianCalendar DATETIMEformatToGreg(String s) {
 		Log.d("tag","convert:" + s +"|");
 
-		String []ar = s.split("-");
-		int y = Integer.valueOf(ar[0]);
-		int m = Integer.valueOf(ar[1])-1;
-		int d = Integer.valueOf(ar[2].split(" ")[0]);
+		//2015-05-22T00:00:00+02:00
+		String year = s.substring(0,4);
+		String month = s.substring(5,7);
+		String day = s.substring(8, 10);
+
+		//String []ar = s.split("-");
+		int y = Integer.valueOf(year);
+		int m = Integer.valueOf(month);
+		int d = Integer.valueOf(day);
 
 
 		
@@ -117,12 +122,13 @@ public class Converter {
 		c.set(GregorianCalendar.DAY_OF_MONTH, d);
 
 		if(s.length()>=15) {
+			//2015-05-22T00:00:00+02:00
 			String hour = s.substring(11, 13);
 			String minute = s.substring(14, 16);
 			Log.d("tag", "convertTime:" + hour + ":" + minute + "|");
 
-			int h = Integer.valueOf(s.substring(11, 13));
-			int min = Integer.valueOf(s.substring(14, 16));
+			int h = Integer.valueOf(hour);
+			int min = Integer.valueOf(minute);
 			c.set(Calendar.HOUR, h);
 			c.set(Calendar.MINUTE, min);
 		}

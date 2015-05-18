@@ -45,6 +45,9 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.LoadingDialogFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
@@ -65,6 +68,7 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.ReservationRoomFragme
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.preferences.ApplicationPreference;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.preferences.ApplicationPreferences;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.FragmentFrame;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import roboguice.inject.InjectView;
 
@@ -132,6 +136,8 @@ public class MainActivity extends BaseFragmentActivity {
     private String FRAGMENT_TAG_LOGIN = "FRAGMENT_TAG_LOGIN";
     private String FRAGMENT_TAG_REGISTER = "FRAGMENT_TAG_REGISTER";
 
+    List<FragmentFrame> fragmentsStack;
+
     @InjectView (R.id.profilePicture)
     private ProfilePictureView profilePictureView;
 
@@ -146,6 +152,8 @@ public class MainActivity extends BaseFragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        fragmentsStack = new ArrayList<FragmentFrame>();
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         ImageLoader.getInstance().init(ImageLoaderConfiguration.createDefault(this));
@@ -575,10 +583,14 @@ public class MainActivity extends BaseFragmentActivity {
 
     private void commitMainFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        mFragment = new MainFragment();
+
         //ft.setCustomAnimations(android.R.anim.fade_out, android.R.anim.fade_in);
 
         if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_MAIN_NEWS) == null) {
+
+            Fragment mFragment = new MainFragment();
+            //fragmentsStack.add(new FragmentFrame(mFragment,FRAGMENT_TAG_MAIN_NEWS));
+            //ft.add()
             ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_MAIN_NEWS).commit();
         }//.setCustomAnimations(android.R.anim.fade_out,android.R.anim.fade_in) //TODO
         mTitle.setText(R.string.news);
