@@ -174,7 +174,7 @@ public class CalendarFragment extends RoboEventFragment {
         mLoading.setVisibility(View.VISIBLE);
         // Make RESTful webservice call using AsyncHttpClient object
         task = new AsyncHttpClient();
-        task.get(Net.dbIp + "/calendar/get", params, new AsyncHttpResponseHandler() {
+        task.get(Net.oldDbIp + "/calendar/get", params, new AsyncHttpResponseHandler() {
 
 
             // When the response returned by REST has Http response code '200'

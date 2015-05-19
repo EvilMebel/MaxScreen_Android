@@ -201,7 +201,7 @@ public class LoginFragment extends RoboEventFragment {
         showLoadingDialog();
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(Net.dbIp + "/login/dologin", params, new AsyncHttpResponseHandler() {
+        client.get(Net.oldDbIp + "/login/dologin", params, new AsyncHttpResponseHandler() {
 
 
             // When the response returned by REST has Http response code '200'

@@ -24,9 +24,11 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.GregorianCalendar;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MSData;
@@ -108,6 +110,7 @@ public class MovieInfoFragment extends RoboEventFragment {
 
 
     private DisplayImageOptions mDisplayImageOptions;
+    private int wantIndex;
 
     /**
      * Use this factory method to create a new instance of
@@ -192,7 +195,8 @@ public class MovieInfoFragment extends RoboEventFragment {
             mMyMark.setVisibility(View.GONE);
 //            private int WantToSeeThis;
 
-            loadWantTo(movie);
+            if(Utils.isIsLoggedIn())
+                loadWantTo(movie);
 
         }
 
@@ -202,11 +206,13 @@ public class MovieInfoFragment extends RoboEventFragment {
     private void loadWantTo(Movie movie) {
         RequestParams params = new RequestParams();
         params.add("movieId", Integer.toString(movie.getIdMove()));
-        String customerId = "8";
+        String customerId = "8";//todo ? :D
+        int movieId = movie.getIdMove();
         params.add("customerId", customerId);//todo
         // Make RESTful webservice call using AsyncHttpClient object
             AsyncHttpClient client = new AsyncHttpClient();
-            client.get(Net.dbIp + "/want/movie", params, new AsyncHttpResponseHandler() {
+        String link = Net.dbIp + "/wanttosee/want/"+customerId + "/" + movieId + "?";
+            client.get(link, params, new AsyncHttpResponseHandler() {
 
 
                 // When the response returned by REST has Http response code '200'
@@ -216,31 +222,25 @@ public class MovieInfoFragment extends RoboEventFragment {
                     //todfokjfgnbfkjn
                     Log.d(getTag(), "response:" + response);
 
-                    boolean status = true;
+                    int index = -1;
                     String msg = "";
 
                     try {
                         JSONObject object = new JSONObject(response);
-                        status = object.getBoolean("status");
-
-                        if(!status) {
-                            msg = object.getString("error_msg");
-                        } else {
-                            wantMovie = object.getBoolean("value");
-                        }
-
+                        index = object.getInt("wantId");
 
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        index = -1;
                     }
 
+                    //-1 is not found!
+                    wantMovie = index!=-1;
+                    wantIndex = index;
 
-                    if(status) {
-                        //udalo sie!
+                    mWant.setVisibility(View.VISIBLE);
+                    refreshWantUI();
 
-                        mWant.setVisibility(View.VISIBLE);
-                        refreshWantUI();
-                    }
                 }
 
                 // When the response returned by REST has Http response code other than '200'
@@ -255,58 +255,85 @@ public class MovieInfoFragment extends RoboEventFragment {
 
     private void addWantTo(Movie movie) {
         RequestParams params = new RequestParams();
-        params.add("movieId", Integer.toString(movie.getIdMove()));
-        String customerId = "8";
-        params.add("customerId", customerId);//todo
+        /*params.add("movieId", Integer.toString(movie.getIdMove()));
+        params.add("customerId", customerId);//todo*/
+
+
+        String customerId = "8";//todo ? :D
+        int movieId = movie.getIdMove();
+        String link = Net.dbIp + "/wanttosee";
+
+
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(Net.dbIp + "/want/wantmovie", params, new AsyncHttpResponseHandler() {
 
 
-            // When the response returned by REST has Http response code '200'
-            @Override
-            public void onSuccess(String response) {
-                // Hide Progress Dialog
-                //todfokjfgnbfkjn
-                Log.d(getTag(), "response:" + response);
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put(WantToSee.CUSTOMERS_IDCUSTOMER, customerId);
+            jsonParams.put(WantToSee.MOVIE_IDMOVE,movieId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        StringEntity entity = null;
+        try {
+            entity = new StringEntity(jsonParams.toString());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        log("POST!" + jsonParams.toString());
+        client.post(getActivity(), link, entity, "application/json",
+                new AsyncHttpResponseHandler() {
 
-                boolean status = true;
-                String msg = "";
 
-                try {
-                    JSONObject object = new JSONObject(response);
-                    status = object.getBoolean("status");
+                    // When the response returned by REST has Http response code '200'
+                    @Override
+                    public void onSuccess(String response) {
+                        // Hide Progress Dialog
+                        //todfokjfgnbfkjn
+                        Log.d(getTag(), "response:" + response);
 
-                    if(!status) {
-                        msg = object.getString("error_msg");
-                    } else {
-                        //wantMovie = object.getBoolean("value");
-                        wantMovie = true;
+                        boolean status = true;
+                        String msg = "";
+
+                        try {
+                            JSONObject object = new JSONObject(response);
+                            status = object.getBoolean("status");
+
+                            if (!status) {
+                                msg = object.getString("error_msg");
+                            } else {
+                                //wantMovie = object.getBoolean("value");
+                                wantMovie = true;
+                            }
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        if (status) {
+                            //udalo sie!
+                            wantMovie = true;
+                            mWant.setVisibility(View.VISIBLE);
+                            refreshWantUI();
+                        } else {
+                            Toast.makeText(getActivity(), getActivity().getString(R.string.error), Toast.LENGTH_SHORT).show();
+                        }
                     }
 
+                    // When the response returned by REST has Http response code other than '200'
+                    @Override
+                    public void onFailure(int statusCode, Throwable error,
+                                          String content) {
+                        Utils.showAsyncError(getActivity(), statusCode, error, content);
+                    }
+                });
+    }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
-                if(status) {
-                    //udalo sie!
-                    wantMovie = true;
-                    mWant.setVisibility(View.VISIBLE);
-                    refreshWantUI();
-                } else {
-                    Toast.makeText(getActivity(),getActivity().getString(R.string.error),Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            // When the response returned by REST has Http response code other than '200'
-            @Override
-            public void onFailure(int statusCode, Throwable error,
-                                  String content) {
-                Utils.showAsyncError(getActivity(),statusCode,error,content);
-            }
-        });
+    private void log(String s) {
+        Log.d(getTag(),s);
     }
 
     private void refreshWantUI() {

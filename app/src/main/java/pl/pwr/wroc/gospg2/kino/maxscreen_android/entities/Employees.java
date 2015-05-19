@@ -2,10 +2,10 @@ package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
 public class Employees {
 	public static final String IDEMPLOYEES = "idEmployees";
-	public static final String NAME = "Name";
-	public static final String SURNAME = "Surname";
-	public static final String E_MAIL = "E-mail";
-	public static final String PASSWORD = "Password";
+	public static final String NAME = "name";
+	public static final String SURNAME = "surname";
+	public static final String E_MAIL = "email";
+	public static final String PASSWORD = "password";
 	//keys
 	public static final String POSITION_IDPOSITION = "Position_idPosition";
 	public static final String TOKEN = "Token";

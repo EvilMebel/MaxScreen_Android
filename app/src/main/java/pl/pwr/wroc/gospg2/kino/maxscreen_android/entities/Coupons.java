@@ -2,7 +2,7 @@ package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
 public class Coupons {
 	public static final String IDCOUPONS = "idCoupons";
-	public static final String APPROVED = "Approved"; //todo czemu tinyint?!
+	public static final String APPROVED = "approved"; //todo czemu tinyint?!
 	//keys
 	public static final String COUPON_DB_IDCOUPON_DB = "Coupon_DB_idCoupon_DB";
 	public static final String RESERVATION_IDRESERVATION = "Reservation_idReservation";

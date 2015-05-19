@@ -11,9 +11,9 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 
 public class Halls {
 	public static final String IDHALL = "idHall";
-	public static final String NAME_HALL = "Name_Hall";
-	public static final String ROWS = "Rows";
-	public static final String STRUCTUREFILE = "StructureFile";
+	public static final String NAME_HALL = "nameHall";
+	public static final String ROWS = "rows";
+	public static final String STRUCTUREFILE = "structureFile";
 	
 	private int idHall;
 	private String Name_Hall;

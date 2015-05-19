@@ -180,7 +180,9 @@ public class ReservationRoomFragment extends RoboEventFragment {
         mLoading.setVisibility(View.VISIBLE);
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient task = new AsyncHttpClient();
-        task.get(Net.dbIp + "/hall/get", params, new AsyncHttpResponseHandler() {
+        String link = Net.dbIp + "/hall/" + seance.getHalls_idHall() +"?";
+        Log.d("RoomReserv","link:"+link);
+        task.get(link, params, new AsyncHttpResponseHandler() {
 
 
             // When the response returned by REST has Http response code '200'
@@ -245,7 +247,9 @@ public class ReservationRoomFragment extends RoboEventFragment {
         mLoading.setVisibility(View.VISIBLE);
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient task = new AsyncHttpClient();
-        task.get(Net.dbIp + "/hall/get", params, new AsyncHttpResponseHandler() {
+        String link = Net.dbIp + "/hall/" + seance.getHalls_idHall() +"?";//todo
+        Log.d("RoomReserv","link:"+link);
+        task.get(link, params, new AsyncHttpResponseHandler() {
 
 
             // When the response returned by REST has Http response code '200'
@@ -286,19 +290,7 @@ public class ReservationRoomFragment extends RoboEventFragment {
                                   String content) {
                 // Hide Progress Dialog
                 mLoading.setVisibility(View.INVISIBLE);
-                // When Http response code is '404'
-                if (statusCode == 404) {
-                    Toast.makeText(getActivity().getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
-                }
-                // When Http response code is '500'
-                else if (statusCode == 500) {
-                    Toast.makeText(getActivity().getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
-                }
-                // When Http response code other than 404, 500
-                else {
-                    Log.e(getTag(),"ERROR:" + error.getMessage());
-                    Toast.makeText(getActivity().getApplicationContext(), statusCode + "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
-                }
+                Utils.showAsyncError(getActivity(),statusCode,error,content);
             }
         });
     }

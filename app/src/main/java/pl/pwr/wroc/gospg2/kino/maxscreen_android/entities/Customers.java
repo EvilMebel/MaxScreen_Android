@@ -2,15 +2,15 @@ package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
 public class Customers {
 	public static final String IDCUSTOMER = "idCustomer";
-	public static final String NAME = "Name";
-	public static final String SURNAME = "Surname";
-	public static final String E_MAIL = "Email";
-	public static final String TELEFON = "Telefon";
-	public static final String NICK = "Nick";
-	public static final String PASSMD5 = "PassMD5";
-	public static final String FACEBOOKID = "FacebookId";
-	public static final String TOKEN = "Token";
-	public static final String AVATAR = "Avatar";
+	public static final String NAME = "name";
+	public static final String SURNAME = "surname";
+	public static final String E_MAIL = "email";
+	public static final String TELEFON = "telefon";
+	public static final String NICK = "nick";
+	public static final String PASSMD5 = "passMD5";
+	public static final String FACEBOOKID = "facebookId";
+	public static final String TOKEN = "token";
+	public static final String AVATAR = "avatar";
 	
 	
 	private int idCustomer;

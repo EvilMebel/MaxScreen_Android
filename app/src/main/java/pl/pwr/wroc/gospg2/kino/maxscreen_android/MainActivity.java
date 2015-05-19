@@ -260,6 +260,7 @@ public class MainActivity extends BaseFragmentActivity {
                         } catch (JSONException e) {
                             Toast.makeText(getApplicationContext(),getString(R.string.login_error),Toast.LENGTH_SHORT).show();
                             Log.e("FBactions", "ERROR register!");
+                            e.printStackTrace();
                             LoginManager.getInstance().logOut();
                             updateUI();
                             e.printStackTrace();
@@ -295,7 +296,7 @@ public class MainActivity extends BaseFragmentActivity {
 
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(Net.dbIp + "/registerfb/fb", params, new AsyncHttpResponseHandler() {
+        client.get(Net.oldDbIp + "/registerfb/fb", params, new AsyncHttpResponseHandler() {
 
 
             // When the response returned by REST has Http response code '200'
@@ -590,7 +591,8 @@ public class MainActivity extends BaseFragmentActivity {
 
             Fragment mFragment = new MainFragment();
             //fragmentsStack.add(new FragmentFrame(mFragment,FRAGMENT_TAG_MAIN_NEWS));
-            //ft.add()
+
+            //ft.add(mFragment,FRAGMENT_TAG_MAIN_NEWS).addToBackStack(null);
             ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_MAIN_NEWS).commit();
         }//.setCustomAnimations(android.R.anim.fade_out,android.R.anim.fade_in) //TODO
         mTitle.setText(R.string.news);

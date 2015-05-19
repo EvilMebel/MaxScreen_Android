@@ -87,6 +87,12 @@ public class Utils {
     public static void showAsyncError(Context context, int statusCode, Throwable error,
                                       String content) {
 
+        Log.e("Utils","ERROR asyncError");
+        if(error!=null) {
+            Log.e("Utils", "ERROR:"+error.getMessage());
+
+        }
+
         // When Http response code is '404'
         if (statusCode == 404) {
             Toast.makeText(context, "Requested resource not found", Toast.LENGTH_LONG).show();

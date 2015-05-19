@@ -5,11 +5,11 @@ import java.util.GregorianCalendar;
 
 public class Coupon_DB {
 	public static final String IDCOUPON_DB = "idCoupon_DB";
-	public static final String ID_COUPON = "ID_Coupon";
-	public static final String DATE = "Date";
-	public static final String DESCRIPTION = "Description";
-	public static final String DISCOUNT = "Discount";
-	public static final String VERSION = "Version";
+	public static final String ID_COUPON = "iD_Coupon";
+	public static final String DATE = "date";
+	public static final String DESCRIPTION = "description";
+	public static final String DISCOUNT = "discount";
+	public static final String VERSION = "version";
 	
 	
 	private int idCoupon_DB;
