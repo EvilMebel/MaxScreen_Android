@@ -204,6 +204,7 @@ public class MovieInfoFragment extends RoboEventFragment {
     }
 
     private void loadWantTo(Movie movie) {
+        mWant.setOnClickListener(null);
         RequestParams params = new RequestParams();
         params.add("movieId", Integer.toString(movie.getIdMove()));
         String customerId = "8";//todo ? :D
@@ -212,6 +213,7 @@ public class MovieInfoFragment extends RoboEventFragment {
         // Make RESTful webservice call using AsyncHttpClient object
             AsyncHttpClient client = new AsyncHttpClient();
         String link = Net.dbIp + "/wanttosee/want/"+customerId + "/" + movieId + "?";
+        Log.d(getTag(), "GET!" + link);
             client.get(link, params, new AsyncHttpResponseHandler() {
 
 
@@ -254,14 +256,15 @@ public class MovieInfoFragment extends RoboEventFragment {
 
 
     private void addWantTo(Movie movie) {
+        mWant.setOnClickListener(null);
         RequestParams params = new RequestParams();
-        /*params.add("movieId", Integer.toString(movie.getIdMove()));
-        params.add("customerId", customerId);//todo*/
-
 
         String customerId = "8";//todo ? :D
         int movieId = movie.getIdMove();
-        String link = Net.dbIp + "/wanttosee";
+/*
+        params.add("movieId", Integer.toString(movie.getIdMove()));
+        params.add("customerId", customerId);//todo*/
+        /*String link = Net.dbIp + "/wanttosee";
 
 
         // Make RESTful webservice call using AsyncHttpClient object
@@ -282,7 +285,15 @@ public class MovieInfoFragment extends RoboEventFragment {
             e.printStackTrace();
         }
         log("POST!" + jsonParams.toString());
-        client.post(getActivity(), link, entity, "application/json",
+        client.post(getActivity(), link, entity, "application/json",*/
+
+        String link = Net.dbIp + "/wanttosee/post/"+customerId+"/"+movieId;
+
+        log("POST!" + link);
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(link, params,
+
+
                 new AsyncHttpResponseHandler() {
 
 
@@ -293,34 +304,68 @@ public class MovieInfoFragment extends RoboEventFragment {
                         //todfokjfgnbfkjn
                         Log.d(getTag(), "response:" + response);
 
-                        boolean status = true;
-                        String msg = "";
-
                         try {
-                            JSONObject object = new JSONObject(response);
-                            status = object.getBoolean("status");
-
-                            if (!status) {
-                                msg = object.getString("error_msg");
-                            } else {
-                                //wantMovie = object.getBoolean("value");
-                                wantMovie = true;
-                            }
+                            wantIndex = Integer.parseInt(response);
 
 
-                        } catch (JSONException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
+                            wantIndex = -1;
                         }
 
 
-                        if (status) {
+                        if (wantIndex!=-1) {
                             //udalo sie!
                             wantMovie = true;
                             mWant.setVisibility(View.VISIBLE);
                             refreshWantUI();
                         } else {
                             Toast.makeText(getActivity(), getActivity().getString(R.string.error), Toast.LENGTH_SHORT).show();
+                            mWant.setVisibility(View.INVISIBLE);
                         }
+                    }
+
+                    // When the response returned by REST has Http response code other than '200'
+                    @Override
+                    public void onFailure(int statusCode, Throwable error,
+                                          String content) {
+                        Utils.showAsyncError(getActivity(), statusCode, error, content);
+                    }
+                });
+    }
+
+    private void removeWantTo() {
+        mWant.setOnClickListener(null);
+
+        RequestParams params = new RequestParams();
+        String link = Net.dbIp + "/wanttosee/"+wantIndex;
+
+        log("DELETE!" + link);
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.delete(link,
+                new AsyncHttpResponseHandler() {
+                    // When the response returned by REST has Http response code '200'
+                    @Override
+                    public void onSuccess(String response) {
+                        // Hide Progress Dialog
+                        //todfokjfgnbfkjn
+                        Log.d(getTag(), "response:" + response);
+/*
+
+                        try {
+                            wantIndex = Integer.getInteger(response);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            wantIndex = -1;
+                        }
+*/
+
+                        //udalo sie!
+                        wantMovie = false;
+                        mWant.setVisibility(View.VISIBLE);
+                        refreshWantUI();
+
+                        Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
                     }
 
                     // When the response returned by REST has Http response code other than '200'
@@ -339,6 +384,12 @@ public class MovieInfoFragment extends RoboEventFragment {
     private void refreshWantUI() {
         if(wantMovie) {
             mWant.setBackgroundResource(R.color.com_facebook_blue);
+            mWant.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    removeWantTo();
+                }
+            });
         } else {
             mWant.setBackgroundResource(R.color.button_background);
             mWant.setOnClickListener(new View.OnClickListener() {

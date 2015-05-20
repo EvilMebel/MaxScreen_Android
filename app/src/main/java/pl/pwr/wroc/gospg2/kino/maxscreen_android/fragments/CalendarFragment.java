@@ -174,7 +174,9 @@ public class CalendarFragment extends RoboEventFragment {
         mLoading.setVisibility(View.VISIBLE);
         // Make RESTful webservice call using AsyncHttpClient object
         task = new AsyncHttpClient();
-        task.get(Net.oldDbIp + "/calendar/get", params, new AsyncHttpResponseHandler() {
+        String link = Net.oldDbIp + "/calendar/get";
+        Log.d(getTag(), "GET!" + link);
+        task.get(link, params, new AsyncHttpResponseHandler() {
 
 
             // When the response returned by REST has Http response code '200'
@@ -196,7 +198,7 @@ public class CalendarFragment extends RoboEventFragment {
                         JSONObject item = obj.getJSONObject(i);
                         Log.d(getTag(),"Item:" + item.toString());
 
-                        Movie movie = Movie.parseEntity(item.getJSONObject("movie"));
+                        Movie movie = Movie.parseEntityOld(item.getJSONObject("movie"));
                         List<Seance> seances = new ArrayList<Seance>();
                         JSONArray seancesJSON = item.getJSONArray("seances");
 

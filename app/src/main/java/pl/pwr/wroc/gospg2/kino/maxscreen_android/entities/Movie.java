@@ -12,16 +12,28 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 
 public class Movie {
 	public static final String IDMOVIE = "idMovie";
-	public static final String TITLE = "Title";
-	public static final String DESCRIPTION = "Description";
-	public static final String DIRECTOR = "Director";
-	public static final String MINUTES = "Minutes";
-	public static final String KIND = "Kind";
-	public static final String CAST = "Cast";
-	public static final String WANTTOSEETHIS = "WantToSeeThis";
-	public static final String IMAGES = "Images";
-	public static final String SCRIPT = "Script";
-	public static final String PREMIERE = "Premiere";
+	public static final String TITLE = "title";
+	public static final String DESCRIPTION = "description";
+	public static final String DIRECTOR = "director";
+	public static final String MINUTES = "minutes";
+	public static final String KIND = "kind";
+	public static final String CAST = "cast";
+	public static final String WANTTOSEETHIS = "wantToSeeThis";
+	public static final String IMAGES = "images";
+	public static final String SCRIPT = "script";
+	public static final String PREMIERE = "premiere";
+
+	public static final String OIDMOVIE = "idMovie";
+	public static final String OTITLE = "Title";
+	public static final String ODESCRIPTION = "Description";
+	public static final String ODIRECTOR = "Director";
+	public static final String OMINUTES = "Minutes";
+	public static final String OKIND = "Kind";
+	public static final String OCAST = "Cast";
+	public static final String OWANTTOSEETHIS = "WantToSeeThis";
+	public static final String OIMAGES = "Images";
+	public static final String OSCRIPT = "Script";
+	public static final String OPREMIERE = "Premiere";
 	
 	private int idMove;
 	private String Title;
@@ -144,6 +156,36 @@ public class Movie {
 			n.setScript(object.getString(Movie.SCRIPT));
 			n.setMinutes(object.getInt(Movie.MINUTES));
 			n.setWantToSeeThis(object.getInt(Movie.WANTTOSEETHIS));
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+			n = null;
+		}
+
+		return n;
+	}
+
+	public static Movie parseEntityOld(JSONObject object) {
+		Movie n = new Movie();
+
+		Log.d("Movie", "Parse:" + object.toString());
+
+		try {
+			n.setIdMovie(object.getInt(Movie.OIDMOVIE));
+
+			String date = object.getString(Movie.OPREMIERE);
+			GregorianCalendar calendar = Converter.DATETIMEformatToGreg(date);
+			n.setPremiere(calendar);
+
+			n.setImages(object.getString(Movie.OIMAGES));
+			n.setTitle(object.getString(Movie.OTITLE));
+			n.setDescription(object.getString(Movie.ODESCRIPTION));
+			n.setDirector(object.getString(Movie.ODIRECTOR));
+			n.setKind(object.getString(Movie.OKIND));
+			n.setCast(object.getString(Movie.OCAST));
+			n.setScript(object.getString(Movie.OSCRIPT));
+			n.setMinutes(object.getInt(Movie.OMINUTES));
+			n.setWantToSeeThis(object.getInt(Movie.OWANTTOSEETHIS));
 
 		} catch (JSONException e) {
 			e.printStackTrace();

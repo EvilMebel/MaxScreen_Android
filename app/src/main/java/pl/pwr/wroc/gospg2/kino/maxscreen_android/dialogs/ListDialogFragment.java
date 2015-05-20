@@ -46,7 +46,8 @@ public class ListDialogFragment extends RoboDialogFragment {
     private ArrayList<Movie> movieItems;
 
     public enum AdapterType {
-        MOVIES
+        MOVIES,
+        TICKETS
     }
 
     public interface onDialogListener {
@@ -97,7 +98,8 @@ public class ListDialogFragment extends RoboDialogFragment {
                 case MOVIES:
 
                     downloadMyWants();
-
+                    getDialog().setCanceledOnTouchOutside(true);
+                    setCancelable(true);
 
                     break;
             }
@@ -150,13 +152,16 @@ public class ListDialogFragment extends RoboDialogFragment {
         // Show Progress Dialog
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(Net.dbIp + "/want/mywants", params, new AsyncHttpResponseHandler() {
+        String link = Net.dbIp + "/movie/want/"+customerId+"?";
+        Log.d(getTag(),"GET!"+link);
+        client.get(link, params, new AsyncHttpResponseHandler() {
 
 
             // When the response returned by REST has Http response code '200'
             @Override
             public void onSuccess(String response) {
                 // Hide Progress Dialog
+                Log.d(getTag(),"response:"+response);
 
                 ArrayList<Movie> items = null;
 
