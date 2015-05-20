@@ -131,8 +131,8 @@ public class Seance {
 			n.setType(object.getString(Seance.TYPE));
 			n.setPrice(object.getInt(Seance.PRICE));
 			if(inception) {
-				//n.setHalls_idHall(object.getInt(Seance.HALLS_IDHALL));
-				//n.setMovie_idMove(object.getInt(Seance.MOVIE_IDMOVE));
+				n.setHallsEntity(Halls.parseEntity(object.getJSONObject(Seance.HALLS_IDHALL)));
+				n.setMovieEntity(Movie.parseEntity(object.getJSONObject(Seance.MOVIE_IDMOVE)));
 			} else {
 				n.setHalls_idHall(object.getJSONObject(Seance.HALLS_IDHALL).getInt(Halls.IDHALL));
 				n.setMovie_idMove(object.getJSONObject(Seance.MOVIE_IDMOVE).getInt(Movie.IDMOVIE));

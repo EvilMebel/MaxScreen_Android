@@ -53,11 +53,13 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.enums.PendingAction;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.AfterLoginEventBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.FinishReservationEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenMovieInfoEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenRoomEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.CalendarFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.FinishReservationFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.LoginFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MainFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MovieInfoFragment;
@@ -314,7 +316,7 @@ public class MainActivity extends BaseFragmentActivity {
                     status = object.getBoolean("status");
 
                     //if(!status) {
-                        msg = object.getString("error_msg");
+                    msg = object.getString("error_msg");
                     //}
 
 
@@ -324,13 +326,13 @@ public class MainActivity extends BaseFragmentActivity {
 
                 //todo autologin?
 
-                Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
 
                 hideLoadingDialog();
 
-                if(!status) {
+                if (!status) {
                     //Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
-                    Log.e("FBactions","ERROR register onSuccess!");
+                    Log.e("FBactions", "ERROR register onSuccess!");
                     LoginManager.getInstance().logOut();
                     updateUI();
                 }
@@ -342,11 +344,11 @@ public class MainActivity extends BaseFragmentActivity {
                                   String content) {
                 // Hide Progress Dialog
                 hideLoadingDialog();
-                Toast.makeText(getApplicationContext(),getString(R.string.login_error),Toast.LENGTH_SHORT).show();
-                Log.e("FBactions","ERROR register!");
+                Toast.makeText(getApplicationContext(), getString(R.string.login_error), Toast.LENGTH_SHORT).show();
+                Log.e("FBactions", "ERROR register!");
                 LoginManager.getInstance().logOut();
                 updateUI();
-                Utils.showAsyncError(getApplicationContext(),statusCode,error,content);
+                Utils.showAsyncError(getApplicationContext(), statusCode, error, content);
             }
         });
 
@@ -683,6 +685,20 @@ public class MainActivity extends BaseFragmentActivity {
         enableBackButton();
     }
 
+    private void commitFinishReservation(int reservationId, String tickets) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        mFragment = FinishReservationFragment.newInstance(reservationId,tickets);
+
+        //TODO ADD PARAMS
+        //ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_FINISH_RESERVATION) == null) {
+            ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_FINISH_RESERVATION).commit();
+        }
+
+        mTitle.setText("Podsumowanie rezerwacji");
+        enableBackButton();
+    }
+
     /*
                         EVENT BUS
      */
@@ -722,9 +738,10 @@ public class MainActivity extends BaseFragmentActivity {
         updateUI();
     }
 
-
-
-
+    @Subscribe
+    public void finishReservation(FinishReservationEventBus bus) {
+        commitFinishReservation(bus.getReservationId(), bus.getTickets());
+    }
 
 
 

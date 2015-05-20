@@ -56,6 +56,9 @@
     <color name="room_screen_bg">#c8bfe7</color>
 
 
+    <!-- FINISH RESERVATION -->
+    <dimen name="finres_left_width">100dp</dimen>
+
     <!--MATERIAL DESIGN PROGRESS-->
     <dimen name="material_progress_line_width">3dp</dimen>
     <dimen name="material_progress_line_width_big">4dp</dimen>

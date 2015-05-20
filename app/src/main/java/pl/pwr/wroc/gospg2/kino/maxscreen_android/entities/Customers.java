@@ -1,11 +1,16 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Customers {
 	public static final String IDCUSTOMER = "idCustomer";
 	public static final String NAME = "name";
 	public static final String SURNAME = "surname";
-	public static final String E_MAIL = "email";
-	public static final String TELEFON = "telefon";
+	public static final String E_MAIL = "EMail";
+	public static final String TELEFON = "phone";
 	public static final String NICK = "nick";
 	public static final String PASSMD5 = "passMD5";
 	public static final String FACEBOOKID = "facebookId";
@@ -85,7 +90,48 @@ public class Customers {
 	public void setAvatar(String avatar) {
 		Avatar = avatar;
 	}
-	
-	
 
+
+	public static Customers parseEntity(JSONObject object, boolean b) {
+		Customers h = new Customers();
+
+		try {
+			h.setIdCustomer(object.getInt(Customers.IDCUSTOMER));
+
+			if(object.has(Customers.NAME))
+				h.setName(object.getString(Customers.NAME));
+
+			if(object.has(Customers.SURNAME))
+				h.setSurname(object.getString(Customers.SURNAME));
+
+			if(object.has(Customers.E_MAIL))
+				h.setE_Mail(object.getString(Customers.E_MAIL));
+
+			if(object.has(Customers.TELEFON))
+				h.setTelefon(object.getString(Customers.TELEFON));
+
+			if(object.has(Customers.NICK))
+				h.setNick(object.getString(Customers.NICK));
+
+			if(object.has(Customers.PASSMD5))
+				h.setPassMD5(object.getString(Customers.PASSMD5));
+
+			if(object.has(Customers.TOKEN))
+			h.setToken(object.getString(Customers.TOKEN));
+
+			if(object.has(Customers.AVATAR))
+			h.setAvatar(object.getString(Customers.AVATAR));
+
+			//can be null
+			if(object.has(Customers.FACEBOOKID))
+				h.setFacebookId(object.getString(Customers.FACEBOOKID));
+			Log.e("parse", "end? ");
+		} catch (JSONException e) {
+			Log.e("parse", "error ");
+			e.printStackTrace();
+			h = null;
+		}
+
+		return h;
+	}
 }

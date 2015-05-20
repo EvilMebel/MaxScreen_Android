@@ -10,8 +10,8 @@ public class Tickets {
 	public static final String ROW = "row";
 	public static final String LINE = "line";
 	//keys
-	public static final String RESERVATION_IDRESERVATION = "Reservation_idReservation";
-	public static final String RELIEF_IDRELIEF = "Relief_idRelief";
+	public static final String RESERVATION_IDRESERVATION = "reservationidReservation";
+	public static final String RELIEF_IDRELIEF = "reliefidRelief";
 	
 	
 	private int idTicket;
@@ -73,6 +73,25 @@ public class Tickets {
 		try {
 			h.setLine(object.getInt(Tickets.LINE));
 			h.setRow(object.getInt(Tickets.ROW));
+
+		} catch (JSONException e) {
+			Log.e("parse", "error ");
+			e.printStackTrace();
+			h = null;
+		}
+
+		return h;
+	}
+
+	public static Tickets parseEntityWRelief(JSONObject object) {
+		Tickets h = new Tickets();
+
+		try {
+			h.setIdTicket(object.getInt(Tickets.IDTICKET));
+			h.setLine(object.getInt(Tickets.LINE));
+			h.setRow(object.getInt(Tickets.ROW));
+
+			h.setReliefEntity(Relief.parseEntity(object.getJSONObject(Tickets.RELIEF_IDRELIEF)));
 
 		} catch (JSONException e) {
 			Log.e("parse", "error ");

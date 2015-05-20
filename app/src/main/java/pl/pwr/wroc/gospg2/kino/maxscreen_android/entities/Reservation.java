@@ -1,17 +1,22 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 
 public class Reservation {
 	public static final String IDRESERVATION = "idReservation";
-	public static final String BOUGHT = "Bought";
+	public static final String BOUGHT = "bought";
 	//keys
-	public static final String CUSTOMERS_IDCUSTOMER = "Customers_idCustomer";
-	public static final String SEANCE_IDSEANCE = "Seance_idSeance";
+	public static final String CUSTOMERS_IDCUSTOMER = "customeridCustomer";
+	public static final String SEANCE_IDSEANCE = "seanceidSeance";
 	
 	
 	private int idReservation;
-	private Date Bought;
+	private boolean Bought;
 	
 	private int Customers_idCustomer;
 	private int Seance_idSeance;
@@ -25,10 +30,10 @@ public class Reservation {
 	public void setIdReservation(int idReservation) {
 		this.idReservation = idReservation;
 	}
-	public Date getBought() {
+	public boolean getBought() {
 		return Bought;
 	}
-	public void setBought(Date bought) {
+	public void setBought(boolean bought) {
 		Bought = bought;
 	}
 	public int getCustomers_idCustomer() {
@@ -55,7 +60,30 @@ public class Reservation {
 	public void setSeanceEntity(Seance seanceEntity) {
 		SeanceEntity = seanceEntity;
 	}
-	
-	
 
+
+	public static Reservation parseEntity(JSONObject object, boolean inception) {
+		Reservation h = new Reservation();
+
+		try {
+			h.setIdReservation(object.getInt(Reservation.IDRESERVATION));
+			h.setBought(object.getBoolean(Reservation.BOUGHT));
+
+
+			if(inception) {
+				h.setCustomersEntity(Customers.parseEntity(object.getJSONObject(Reservation.CUSTOMERS_IDCUSTOMER),inception));
+				h.setSeanceEntity(Seance.parseEntity(object.getJSONObject(Reservation.SEANCE_IDSEANCE),inception));
+			} else {
+				//todo
+			}
+
+			Log.e("parse", "end? ");
+		} catch (JSONException e) {
+			Log.e("parse", "error ");
+			e.printStackTrace();
+			h = null;
+		}
+
+		return h;
+	}
 }

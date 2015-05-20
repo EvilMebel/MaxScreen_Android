@@ -1,0 +1,165 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/background_style"
+    tools:context="pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.FinishReservationFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="Podsumowanie rezerwacji"
+        android:textSize="16dp"
+        android:padding="@dimen/padding_small"/>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/films_divider"
+        android:background="@color/movie_description_divider"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Informacje o seansie:"
+        android:id="@+id/textView4"
+        android:padding="@dimen/padding_medium"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="@dimen/padding_small">
+
+        <TextView
+            android:layout_width="@dimen/finres_left_width"
+            android:layout_height="wrap_content"
+            android:text="Seans"
+            android:textSize="14dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Disco polo (2d pl)"
+            android:textSize="14dp"
+            android:id="@+id/title" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="@dimen/padding_small">
+
+        <TextView
+            android:layout_width="@dimen/finres_left_width"
+            android:layout_height="wrap_content"
+            android:text="Data"
+            android:textSize="14dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="21-03-2015"
+            android:textSize="14dp"
+            android:id="@+id/date" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="@dimen/padding_small">
+
+        <TextView
+            android:layout_width="@dimen/finres_left_width"
+            android:layout_height="wrap_content"
+            android:text="Godzina"
+            android:textSize="14dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="20:15"
+            android:textSize="14dp"
+            android:id="@+id/hour" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="@dimen/padding_small">
+
+        <TextView
+            android:layout_width="@dimen/finres_left_width"
+            android:layout_height="wrap_content"
+            android:text="Sala"
+            android:textSize="14dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="A"
+            android:textSize="14dp"
+            android:id="@+id/hall" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lista wybranych miejsc"
+        android:padding="@dimen/padding_medium"/>
+
+    <LinearLayout
+        android:id="@+id/tickets_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="bilety..."
+            android:textSize="14dp"
+            android:id="@+id/tickets_text_test"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:padding="@dimen/padding_small">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Identyfikator rezerwacji: "
+            android:paddingRight="@dimen/padding_medium"
+            android:textSize="14dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5465"
+            android:textSize="14dp"
+            android:id="@+id/reservation_number" />
+
+
+    </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_tiny"
+            android:text="Zarezerwowane bilety należy odebrać minimum 15 minut przed seansem.\nPo tym czasie rezerwacja zostanie anulowana" />
+
+    </LinearLayout>
+
+</ScrollView>

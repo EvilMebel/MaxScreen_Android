@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MSData;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.ListDialogFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Halls;
@@ -29,6 +30,7 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Relief;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Tickets;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.ChoosedReliefEventBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.FinishReservationEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.SeatClickEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
@@ -387,6 +389,7 @@ public class ReservationRoomFragment extends RoboEventFragment {
         AsyncHttpClient task = new AsyncHttpClient();
         String link = Net.dbIp + "//reservation/insert/"+ticketsStr+"/"+customerId+"/"+ seanceId+"?";
         Log.d("RoomReserv","link:"+link);
+        final String finalTicketsStr = ticketsStr;
         task.get(link, params, new AsyncHttpResponseHandler() {
 
 
@@ -400,6 +403,7 @@ public class ReservationRoomFragment extends RoboEventFragment {
 
                 if (success != -1) {
                     Toast.makeText(getActivity(),"Dokonano Rezerwacji! : D id:"+success,Toast.LENGTH_SHORT).show();
+                    MaxScreen.getBus().post(new FinishReservationEventBus(success, finalTicketsStr));
                 } else {
                     //todo exit!! D:
                     Toast.makeText(getActivity(),getActivity().getString(R.string.cant_book_reservation_so_refresh),Toast.LENGTH_SHORT).show();

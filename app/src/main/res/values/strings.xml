@@ -28,4 +28,6 @@
     <string name="ticket_has_been_deleted">Bilet został usunięty z listy</string>
     <string name="no_tickets_chosen">Nie wybrano żadnych biletów!</string>
     <string name="cant_book_reservation_so_refresh">Nie udało się zarezerwować miejsc. Odświerzam sale...</string>
+    <string name="row">" Rząd "</string>
+    <string name="relief">" - Zniżka"</string>
 </resources>
