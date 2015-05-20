@@ -23,44 +23,6 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.SeatView;
 public class RoomFileReader {
 
 
-    private static final String hall1 = "00111111111111111111111111\n" +
-            "00111111111111111111111111111\n" +
-            "00111111111111111111111111111\n" +
-            "00111111111111111111111111111\n" +
-            "00111111111111111111111111111\n" +
-            "00111111111111111111111111111\n" +
-            "0011111111111111111111111111100011111\n" +
-            "0011111111111111111111111111100011111\n" +
-            "0011111111111111111111111111100011111\n" +
-            "0011111111111111111111111111100011111\n" +
-            "111111111111111111111111111111111111";
-    private static final String hall2 = "11111111111111111111111111111111111\n" +
-            "001111111111111111111111111111111\n" +
-            "00011111111111111111111111111111\n" +
-            "00011111111111111111111111111111\n" +
-            "00011111111111100000111111111111\n" +
-            "0\n" +
-            "00011111111111111111111111111111\n" +
-            "00011111111111111111111111111111\n" +
-            "00011111111111111111111111111111\n" +
-            "00011111111111111111111111111111\n" +
-            "00011111111111111111111111111111\n" +
-            "00011111111111111111111111111111\n" +
-            "0000111111111111111111111111111";
-    private static final String hall3 = "111111001111111111111111100111111\n" +
-            "0011110011111111111111111001111\n" +
-            "0011110011111111111111111001111\n" +
-            "0011110011111111111111111001111\n" +
-            "0011110011111111111111111001111\n" +
-            "0011110011111111111111111001111\n" +
-            "0011110011111111111111111001111\n" +
-            "0011110011111111111111111001111\n" +
-            "0011110011111100001111111001111\n" +
-            "0\n" +
-            "000111111111111111111111111111\n" +
-            "000111111111100000011111111111\n" +
-            "00001111111110000001111111111\n" +
-            "000000111111100000011111111";
 
     static public void openFile(RoomView roomView, String input){//}, String is ) {
 
@@ -87,7 +49,7 @@ public class RoomFileReader {
             char c;
 
             for(int i = 0; (test = br.readLine()) != null; i++) {
-                Log.d("reader", "reading: " + test);
+                //Log.d("reader", "reading: " + test);
                 //numbers from left to right
                 col = 1;
                 x=1;
@@ -98,7 +60,7 @@ public class RoomFileReader {
                     c = test.charAt(j);
                     if(c == '1') {
                         //add seat
-                        Log.d("read","row="+row + " col=" + col);
+                        //Log.d("read","row="+row + " col=" + col);
                         roomView.addView(new SeatView(context,x,y,row,col));
                         //if first add ui
                         if(first) {
@@ -176,7 +138,7 @@ public class RoomFileReader {
             int rowsCount = rows.length;
             for(int i = 0; i < rowsCount; i++) {
                 currentRow = rows[i];
-                Log.d("reader", "reading: " + currentRow);
+                //Log.d("reader", "reading: " + currentRow);
                 //numbers from left to right
                 col = 1;
                 x=1;
@@ -187,7 +149,7 @@ public class RoomFileReader {
                     c = currentRow.charAt(j);
                     if(c == '1') {
                         //add seat
-                        Log.d("read","row="+row + " col=" + col);
+                        //Log.d("read","row="+row + " col=" + col);
                         roomView.addView(new SeatView(context,x,y,row,col));
                         //if first add ui
                         if(first) {

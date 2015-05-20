@@ -25,11 +25,14 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import org.apache.http.entity.StringEntity;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MSData;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
@@ -37,6 +40,7 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Coupon_DB;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.WantToSee;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
@@ -176,7 +180,9 @@ public class MovieInfoFragment extends RoboEventFragment {
             mSeances.setSeances(MSData.getInstance().getCurrentMovie().getSeances(), true);
         } else {
             //todo load seances
+            //loadSeances(movie);
         }
+
 
         Movie movie = MSData.getInstance().getCurrentMovie();
         if (movie != null) {
@@ -197,6 +203,11 @@ public class MovieInfoFragment extends RoboEventFragment {
 
             if(Utils.isIsLoggedIn())
                 loadWantTo(movie);
+
+            if(movie.getSeances()==null || movie.getSeances().isEmpty()) {
+                loadSeances(movie);
+            }
+
 
         }
 
@@ -253,6 +264,64 @@ public class MovieInfoFragment extends RoboEventFragment {
                 }
             });
         }
+
+    private void loadSeances(Movie movie) {
+        mWant.setOnClickListener(null);
+        RequestParams params = new RequestParams();
+        params.add("movieId", Integer.toString(movie.getIdMove()));
+
+
+        String customerId = "8";//todo ? :D
+        int movieId = movie.getIdMove();
+        params.add("customerId", customerId);//todo
+        // Make RESTful webservice call using AsyncHttpClient object
+        AsyncHttpClient client = new AsyncHttpClient();
+        String link = Net.dbIp + "/seance/seances/"+movie.getIdMove() + "?";
+        Log.d(getTag(), "GET!" + link);
+        client.get(link, params, new AsyncHttpResponseHandler() {
+
+
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // Hide Progress Dialog
+                //todfokjfgnbfkjn
+                Log.d(getTag(), "response:" + response);
+                List<Seance> seanceList = new ArrayList<Seance>();
+
+                try {
+                    JSONArray array = new JSONArray(response);
+                    for(int i = 0; i<array.length(); i++) {
+                        JSONObject obj = (JSONObject) array.get(i);
+                        Seance s = Seance.parseEntity(obj,false);
+
+                        seanceList.add(s);
+                    }
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    seanceList = null;
+                }
+
+
+                if(seanceList!=null) {
+                    mSeances.setSeances(seanceList,true);
+                } else {
+                    Toast.makeText(getActivity(), "Blad pobierania seansow dla filmu!", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                                  String content) {
+                Utils.showAsyncError(getActivity(),statusCode,error,content);
+            }
+        });
+    }
 
 
     private void addWantTo(Movie movie) {
@@ -350,22 +419,12 @@ public class MovieInfoFragment extends RoboEventFragment {
                         // Hide Progress Dialog
                         //todfokjfgnbfkjn
                         Log.d(getTag(), "response:" + response);
-/*
-
-                        try {
-                            wantIndex = Integer.getInteger(response);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            wantIndex = -1;
-                        }
-*/
 
                         //udalo sie!
                         wantMovie = false;
                         mWant.setVisibility(View.VISIBLE);
                         refreshWantUI();
 
-                        Toast.makeText(getActivity(), "", Toast.LENGTH_SHORT).show();
                     }
 
                     // When the response returned by REST has Http response code other than '200'

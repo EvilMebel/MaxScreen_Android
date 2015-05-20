@@ -199,7 +199,8 @@ public class MyGridView extends ViewGroup implements View.OnClickListener {
 					} else {
 						Seance s = seances.get(i);
 						String hour = Converter.getHourFromGreCale(s.getDate());
-						String text = hour +"\n" +s.getType();
+						String day = Converter.gregToString(s.getDate());
+						String text = hour +"\n" + day +"\n" +s.getType();
 
 						v.setText(text);
 					}

@@ -1,9 +1,14 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class Tickets {
 	public static final String IDTICKET = "idTicket";
-	public static final String ROW = "Row";
-	public static final String LINE = "Line";
+	public static final String ROW = "row";
+	public static final String LINE = "line";
 	//keys
 	public static final String RESERVATION_IDRESERVATION = "Reservation_idReservation";
 	public static final String RELIEF_IDRELIEF = "Relief_idRelief";
@@ -61,5 +66,20 @@ public class Tickets {
 	public void setReliefEntity(Relief reliefEntity) {
 		ReliefEntity = reliefEntity;
 	}
-	
+
+	public static Tickets parseEntitySimple(JSONObject object) {
+		Tickets h = new Tickets();
+
+		try {
+			h.setLine(object.getInt(Tickets.LINE));
+			h.setRow(object.getInt(Tickets.ROW));
+
+		} catch (JSONException e) {
+			Log.e("parse", "error ");
+			e.printStackTrace();
+			h = null;
+		}
+
+		return h;
+	}
 }

@@ -1,12 +1,7 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments;
 
 import android.app.Activity;
-import android.app.DownloadManager;
-import android.content.Context;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,17 +23,17 @@ import java.util.List;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MSData;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.CalendarListAdapter;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.ListDialogFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Halls;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Relief;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Tickets;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.ChoosedReliefEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.SeatClickEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
-import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.RoomView;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.SeatView;
-import roboguice.fragment.RoboFragment;
 import roboguice.inject.InjectView;
 
 public class ReservationRoomFragment extends RoboEventFragment {
@@ -66,6 +61,8 @@ public class ReservationRoomFragment extends RoboEventFragment {
 
     Halls hall;
     private Seance seance;
+
+    private List<Tickets> tickets;
 
     /**
      * Use this factory method to create a new instance of
@@ -109,6 +106,7 @@ public class ReservationRoomFragment extends RoboEventFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        tickets = new ArrayList<Tickets>();
         fixViews();
         loadData();
         setListeners();
@@ -131,6 +129,17 @@ public class ReservationRoomFragment extends RoboEventFragment {
             @Override
             public void onClick(View v) {
                 mRoom.zoomOut();
+            }
+        });
+
+        mNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (tickets.size() > 0) {
+                    tryMakeReservation();
+                } else {
+                    Toast.makeText(getActivity(), getActivity().getString(R.string.no_tickets_chosen), Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -165,12 +174,56 @@ public class ReservationRoomFragment extends RoboEventFragment {
 
     @Subscribe
     public void seatClicked(SeatClickEventBus bus) {
-        SeatView seatView = bus.getSeatView();
+        final SeatView seatView = bus.getSeatView();
         String s = " Wybrano miejsce. Rzad " + seatView.getSeatRow() + " miejsce " + seatView.getSeatCol();
-        mRoom.clickSeat(seatView);
 
-        Toast.makeText(getActivity(),s,Toast.LENGTH_SHORT).show();
+
+        if(seatView.getStatus()== SeatView.SeatStat.FREE) {
+
+            //Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
+            ListDialogFragment dialogFragment = new ListDialogFragment();
+            dialogFragment.setMsgText(s + "\nWybierz rodzaj ulgi.");
+            dialogFragment.setAdapterType(ListDialogFragment.AdapterType.TICKETS_RELIEF);
+            dialogFragment.setOnObjectReady(new ListDialogFragment.OnObjectReady() {
+                @Override
+                public void returnObject(Object object) {
+                    if (object != null && object instanceof Relief) {
+                        Tickets t = new Tickets();
+                        t.setRow(seatView.getSeatRow());
+                        t.setLine(seatView.getSeatCol());
+                        t.setReliefEntity((Relief) object);
+
+                        tickets.add(t);
+                        Toast.makeText(getActivity(), "sizeTickets=" + tickets.size(), Toast.LENGTH_SHORT).show();
+                        mRoom.clickSeat(seatView);
+                    }
+                }
+            });
+            dialogFragment.show(getFragmentManager(), null);
+        } else {
+            //remove from list ;(
+
+            for(int i = tickets.size()-1; i>=0; i--) {
+                Tickets t = tickets.get(i);
+                if(t.getRow()==seatView.getSeatRow() && t.getLine()==seatView.getSeatCol()) {
+                    tickets.remove(t);
+                    Toast.makeText(getActivity(), getActivity().getString(R.string.ticket_has_been_deleted), Toast.LENGTH_SHORT).show();
+                    mRoom.clickSeat(seatView);
+                }
+            }
+
+        }
+
+
     }
+
+    @Subscribe
+    public void choosedRelief(ChoosedReliefEventBus bus) {
+        //ldfng
+    }
+
+
+
 
 
     public void downloadHall(){
@@ -209,6 +262,7 @@ public class ReservationRoomFragment extends RoboEventFragment {
                     mRoom.loadRoom(hall);
                     fixViews();
                     mRoom.setVisibility(View.VISIBLE);
+                    downloadTakenSeats();
                 } else {
                     //todo exit!! D:
                     Log.e(getTag(), "NULL D:");
@@ -242,13 +296,13 @@ public class ReservationRoomFragment extends RoboEventFragment {
 
     public void downloadTakenSeats(){
         RequestParams params = new RequestParams();
-        params.add("id", String.valueOf(seance.getHalls_idHall()));
+
         // Show Progress Dialog
         mLoading.setVisibility(View.VISIBLE);
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient task = new AsyncHttpClient();
-        String link = Net.dbIp + "/hall/" + seance.getHalls_idHall() +"?";//todo
-        Log.d("RoomReserv","link:"+link);
+        String link = Net.dbIp + "/ticket/taken/" + seance.getIdSeance() +"?";//todo
+        Log.d("RoomReserv","GET!"+link);
         task.get(link, params, new AsyncHttpResponseHandler() {
 
 
@@ -257,25 +311,39 @@ public class ReservationRoomFragment extends RoboEventFragment {
             public void onSuccess(String response) {
                 // Hide Progress Dialog
 
-                Halls h = null;
+                List<Tickets> seats = new ArrayList<Tickets>();
 
                 try {
                     // JSON Object
-                    Log.e(getTag(),"response:" + response);
-                    JSONObject obj = new JSONObject(response);
-                    h = Halls.parseEntity(obj);
+                    Log.d(getTag(), "response:" + response);
+                    JSONArray array = new JSONArray(response);
 
-                    Log.e(getTag(),"hall :" + h);
+                    Log.d(getTag(),"seats.Count:" + array.length());
+
+                    for(int i = 0; i<array.length(); i++){
+                        JSONObject obj = array.getJSONObject(i);
+                        Tickets t = Tickets.parseEntitySimple(obj);
+
+
+                        seats.add(t);
+                    }
+
+
+                    Log.d(getTag(), "seats :" + seats);
 
                 } catch (JSONException e) {
                     Toast.makeText(getActivity().getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
                     e.printStackTrace();
+                    seats = null;
+
                 }
-                if(h!=null) {
-                    hall = h;
+                if(seats!=null) {
+                    mRoom.setTakenSeats(seats);
+                    mRoom.setVisibility(View.VISIBLE);
+                    /*hall = h;
                     mRoom.loadRoom(hall);
                     fixViews();
-                    mRoom.setVisibility(View.VISIBLE);
+                    mRoom.setVisibility(View.VISIBLE);*/
                 } else {
                     //todo exit!! D:
                     Log.e(getTag(),"NULL D:");
@@ -291,6 +359,80 @@ public class ReservationRoomFragment extends RoboEventFragment {
                 // Hide Progress Dialog
                 mLoading.setVisibility(View.INVISIBLE);
                 Utils.showAsyncError(getActivity(),statusCode,error,content);
+            }
+        });
+    }
+
+    public void tryMakeReservation(){
+        RequestParams params = new RequestParams();
+
+        int customerId = 8;//todo
+        int seanceId = seance.getIdSeance();
+        String ticketsStr = "";
+        for(int i = 0; i<this.tickets.size(); i++) {
+            Tickets t = this.tickets.get(i);
+            ticketsStr+= t.getRow() + "," + t.getLine() + "," + t.getReliefEntity().getIdRelief();
+
+            if(i<this.tickets.size()-1) {
+                ticketsStr+="X";
+            }
+        }
+        Log.d("RoomReserv","data:"+ticketsStr);
+
+
+
+        // Show Progress Dialog
+        mLoading.setVisibility(View.VISIBLE);
+        // Make RESTful webservice call using AsyncHttpClient object
+        AsyncHttpClient task = new AsyncHttpClient();
+        String link = Net.dbIp + "//reservation/insert/"+ticketsStr+"/"+customerId+"/"+ seanceId+"?";
+        Log.d("RoomReserv","link:"+link);
+        task.get(link, params, new AsyncHttpResponseHandler() {
+
+
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // Hide Progress Dialog
+
+                int success = Integer.parseInt(response);
+
+
+                if (success != -1) {
+                    Toast.makeText(getActivity(),"Dokonano Rezerwacji! : D id:"+success,Toast.LENGTH_SHORT).show();
+                } else {
+                    //todo exit!! D:
+                    Toast.makeText(getActivity(),getActivity().getString(R.string.cant_book_reservation_so_refresh),Toast.LENGTH_SHORT).show();
+                    mRoom.refreshRoom();
+                    mLoading.setVisibility(View.VISIBLE);
+                    mRoom.setVisibility(View.INVISIBLE);
+                    tickets.clear();
+                    downloadTakenSeats();
+                    //todo refresh data on hall
+                }
+
+                mLoading.setVisibility(View.INVISIBLE);
+            }
+
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                                  String content) {
+                // Hide Progress Dialog
+                mLoading.setVisibility(View.INVISIBLE);
+                // When Http response code is '404'
+                if (statusCode == 404) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Requested resource not found", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code is '500'
+                else if (statusCode == 500) {
+                    Toast.makeText(getActivity().getApplicationContext(), "Something went wrong at server end", Toast.LENGTH_LONG).show();
+                }
+                // When Http response code other than 404, 500
+                else {
+                    Log.e(getTag(), "ERROR:" + error.getMessage());
+                    Toast.makeText(getActivity().getApplicationContext(), statusCode + "Unexpected Error occcured! [Most common Error: Device might not be connected to Internet or remote server is not up and running]", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

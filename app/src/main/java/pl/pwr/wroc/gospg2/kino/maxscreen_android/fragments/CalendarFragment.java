@@ -203,7 +203,7 @@ public class CalendarFragment extends RoboEventFragment {
                         JSONArray seancesJSON = item.getJSONArray("seances");
 
                         for(int j = 0; j<seancesJSON.length(); j++) {
-                            Seance s = Seance.parseEntity(seancesJSON.getJSONObject(j));
+                            Seance s = Seance.parseEntityOld(seancesJSON.getJSONObject(j));
                             seances.add(s);
                         }
                         if(movie!=null && seances!=null) {

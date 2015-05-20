@@ -1,9 +1,18 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.GregorianCalendar;
+
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
+
 public class Relief {
 	public static final String IDRELIEF= "idRelief";
-	public static final String NAME= "Name";
-	public static final String PERCENTDISCOUNT= "PercentDiscount";
+	public static final String NAME= "name";
+	public static final String PERCENTDISCOUNT= "percentDiscount";
 	
 	
 	private int idRelief;
@@ -30,4 +39,21 @@ public class Relief {
 		PercentDiscount = percentDiscount;
 	}
 
+	public static Relief parseEntity(JSONObject object) {
+		Relief n = new Relief();
+
+		Log.d("Movie", "Parse:" + object.toString());
+
+		try {
+			n.setIdRelief(object.getInt(Relief.IDRELIEF));
+			n.setName(object.getString(Relief.NAME));
+			n.setPercentDiscount(object.getInt(Relief.PERCENTDISCOUNT));
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+			n = null;
+		}
+
+		return n;
+	}
 }

@@ -62,7 +62,7 @@ public class SeatView extends TextView {
 
         setText("" + seatCol);
 
-        Log.d("read", "add SEAT row=" + seatRow + " col=" + seatCol);
+        //Log.d("read", "add SEAT row=" + seatRow + " col=" + seatCol);
 
         //setOwnClickListener();
     }

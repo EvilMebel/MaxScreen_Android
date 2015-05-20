@@ -19,6 +19,7 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.RoomFileReader;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Halls;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Tickets;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.SeatClickEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 
@@ -242,7 +243,7 @@ public class RoomView extends ViewGroup implements View.OnTouchListener {
                 top = view.getTop();
                 right = view.getRight();
                 bottom = view.getBottom();
-                Log.d(tag, "Seat:l=" + left + " t=" + top + " r=" + right + " b=" + bottom);
+                //Log.d(tag, "Seat:l=" + left + " t=" + top + " r=" + right + " b=" + bottom);
 
                 if (y > top && y < bottom && x > left && x < right) {
                     Log.d(tag, "clicked view with index =" + i);
@@ -278,6 +279,35 @@ public class RoomView extends ViewGroup implements View.OnTouchListener {
         }
     }
 
+    public void setTakenSeats(List<Tickets> seats) {
+
+        for(int i = 0; i<seats.size(); i++) {
+            Tickets t = seats.get(i);
+
+            int count = getChildCount();
+            for(int j = 0; j<count; j++) {
+                SeatView s = (SeatView) getChildAt(j);
+
+                if(s.getSeatRow()== t.getRow() && s.getSeatCol()==t.getLine()) {
+                    s.setStatus(SeatView.SeatStat.TAKEN);
+                    Log.d("Room","Taken seat at " + t.getRow() + " line:" + t.getLine());
+                    //found!
+                    j = count;
+                }
+            }
+
+        }
+    }
+
+    public void refreshRoom() {
+        int count = getChildCount();
+        for(int i =0; i<count; i++) {
+            SeatView seatView = (SeatView) getChildAt(i);
+            if(seatView.getStatus()!= SeatView.SeatStat.ONLY_VISUALIZATION)
+                seatView.setStatus(SeatView.SeatStat.FREE);
+        }
+    }
+
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
@@ -310,7 +340,7 @@ public class RoomView extends ViewGroup implements View.OnTouchListener {
 
             SeatView seatView = getSeatClicked(e);
 
-            if(seatView!=null) {
+            if(seatView!=null && seatView.getStatus()!= SeatView.SeatStat.TAKEN) {
                 Log.d(tag,"view clicked " + seatView);
                 MaxScreen.getBus().post(new SeatClickEventBus(seatView));
             } else {

@@ -166,6 +166,12 @@ public class Converter {
 		int h = date.get(Calendar.HOUR);
 		int m = date.get(Calendar.MINUTE);
 
+		Log.d("Converter","PM:"+date.get(Calendar.AM_PM));
+		if(date.get(Calendar.AM_PM)==0) {
+			h+=12;
+		}
+		//Log.d("Converter", "PM:" + date.get(Calendar.AM_PM));
+
 		if(m>9) {
 			return h + ":" + m;
 		} else {
