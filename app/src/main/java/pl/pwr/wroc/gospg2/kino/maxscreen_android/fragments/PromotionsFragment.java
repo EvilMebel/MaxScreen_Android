@@ -4,10 +4,20 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,9 +25,13 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.MainNewsAdapter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.PromotionsAdapter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Coupon_DB;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Coupons;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.News;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import roboguice.inject.InjectView;
 
 public class PromotionsFragment extends RoboEventFragment {
@@ -80,22 +94,11 @@ public class PromotionsFragment extends RoboEventFragment {
     }
 
     private void loadData() {
-        //todo load seriously...
-        ArrayList<Coupon_DB> couponsList = new ArrayList<Coupon_DB>();
 
-        for(int i = 0; i<5; i++) {
-            Coupon_DB c = new Coupon_DB();
-            c.setDate(new GregorianCalendar(2015, 5, 15));
-            c.setDescription("Ale promocja!!!");
-            c.setID_Coupon("ABC4546FBF");
-            c.setDiscount(20);
-            c.setVersion("znizka procentowa");
+        downloadCoupons();
 
-            couponsList.add(c);
-        }
 
-        mList.setAdapter(new PromotionsAdapter(getActivity(),couponsList));
-        mLoading.setVisibility(View.INVISIBLE);
+
 
     }
 
@@ -109,5 +112,58 @@ public class PromotionsFragment extends RoboEventFragment {
         super.onDetach();
     }
 
+    public void downloadCoupons(){
+        RequestParams params = new RequestParams();
+        // Show Progress Dialog
+        mLoading.setVisibility(View.VISIBLE);
+        // Make RESTful webservice call using AsyncHttpClient object
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(Net.dbIp + "/coupondb", params, new AsyncHttpResponseHandler() {
+
+
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // Hide Progress Dialog
+                ArrayList<Coupon_DB> items = null;
+
+
+                try {
+                    // JSON Object
+                    Log.d(getTag(), "response:" + response);
+                    JSONArray obj = new JSONArray(response);
+
+                    items = new ArrayList<Coupon_DB>();
+
+                    int size = obj.length();
+                    for (int i = 0; i < size; i++) {
+                        JSONObject item = obj.getJSONObject(i);
+
+                        Coupon_DB n = Coupon_DB.parseEntity(item);
+                        items.add(n);
+                    }
+
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    Toast.makeText(getActivity().getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                if (items != null) {
+                    mList.setAdapter(new PromotionsAdapter(getActivity(), items));
+                }
+
+                mLoading.setVisibility(View.INVISIBLE);
+            }
+
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                                  String content) {
+                // Hide Progress Dialog
+                mLoading.setVisibility(View.INVISIBLE);
+                Utils.showAsyncError(getActivity(), statusCode, error, content);
+            }
+        });
+    }
 
 }

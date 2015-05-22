@@ -120,9 +120,10 @@ public class Seance {
 		return n;
 	}
 
-	public static Seance parseEntity(JSONObject object,boolean inception) {
+	public static Seance parseEntity(JSONObject object,boolean inception, boolean inceptionobj) {
 		Seance n = new Seance();
 
+		Log.d("Seance","parseMode = "+ inception + " iO="+inceptionobj);
 		try {
 			n.setIdSeance(object.getInt(Seance.IDSEANCE));
 			String date = object.getString(Seance.DATE);
@@ -134,12 +135,18 @@ public class Seance {
 				n.setHallsEntity(Halls.parseEntity(object.getJSONObject(Seance.HALLS_IDHALL)));
 				n.setMovieEntity(Movie.parseEntity(object.getJSONObject(Seance.MOVIE_IDMOVE)));
 			} else {
-				n.setHalls_idHall(object.getJSONObject(Seance.HALLS_IDHALL).getInt(Halls.IDHALL));
-				n.setMovie_idMove(object.getJSONObject(Seance.MOVIE_IDMOVE).getInt(Movie.IDMOVIE));
+				if(inceptionobj) {
+					n.setHalls_idHall(object.getJSONObject(Seance.HALLS_IDHALL).getInt(Halls.IDHALL));
+					n.setMovie_idMove(object.getJSONObject(Seance.MOVIE_IDMOVE).getInt(Movie.IDMOVIE));
+				} else {
+					n.setHalls_idHall(object.getInt(Seance.HALLS_IDHALL));
+					n.setMovie_idMove(object.getInt(Seance.MOVIE_IDMOVE));
+				}
+
 			}
 
 		} catch (JSONException e) {
-			Log.e("parse","error parse");
+			Log.e("Seance","error parse");
 			e.printStackTrace();
 			n = null;
 		}

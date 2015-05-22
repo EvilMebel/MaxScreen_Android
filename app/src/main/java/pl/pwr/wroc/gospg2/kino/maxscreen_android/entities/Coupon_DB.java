@@ -1,11 +1,18 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
+
 public class Coupon_DB {
-	public static final String IDCOUPON_DB = "idCoupon_DB";
-	public static final String ID_COUPON = "iD_Coupon";
+	public static final String IDCOUPON_DB = "idCouponDB";
+	public static final String ID_COUPON = "IDCoupon";
 	public static final String DATE = "date";
 	public static final String DESCRIPTION = "description";
 	public static final String DISCOUNT = "discount";
@@ -57,7 +64,25 @@ public class Coupon_DB {
 		Version = version;
 	}
 
-	
-	
 
+	public static Coupon_DB parseEntity(JSONObject object) {
+		Coupon_DB n = new Coupon_DB();
+		Log.d("Coupon_DB", "Parse:" + object.toString());
+
+		try {
+			n.setIdCoupon_DB(object.getInt(Coupon_DB.IDCOUPON_DB));
+			String date = object.getString(Coupon_DB.DATE);
+			GregorianCalendar calendar = Converter.DATETIMEformatToGreg(date);
+			n.setDate(calendar);
+			n.setID_Coupon(object.getString(Coupon_DB.ID_COUPON));
+			n.setDescription(object.getString(Coupon_DB.DESCRIPTION));
+			n.setDiscount(object.getInt(Coupon_DB.DISCOUNT));
+			n.setVersion(object.getString(Coupon_DB.VERSION));
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return n;
+	}
 }

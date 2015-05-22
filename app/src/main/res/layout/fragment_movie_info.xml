@@ -1,5 +1,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:facebook="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:background="@drawable/background_style"
     tools:context="pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MovieInfoFragment"
@@ -67,6 +68,11 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="Body/Ciało"
             android:id="@+id/title" />
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.LevelBar
+            android:id="@+id/movie_mark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -164,7 +170,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="New Text"
-                android:id="@+id/movie_mark" />
+                android:id="@+id/movie_mark2" />
         </LinearLayout>
 
         <LinearLayout
@@ -276,6 +282,45 @@
         android:text="Komentarze"
         android:layout_margin="@dimen/padding_small"/>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/my_mark_frame"
+            android:orientation="vertical">
+
+            <com.facebook.login.widget.ProfilePictureView
+                android:id="@+id/profilePicture"
+                android:layout_width="@dimen/avatar_size"
+                android:layout_height="@dimen/avatar_size"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="@dimen/padding_tiny"
+                facebook:com_facebook_preset_size="normal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jan Kowalski"
+                android:id="@+id/name"
+                android:layout_gravity="center_horizontal" />
+
+            <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.LevelBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:id="@+id/my_mark_stars"/>
+
+            <TextView
+                android:id="@+id/my_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#cecece"
+                android:text="Mój komentarz"
+                android:padding="@dimen/padding_medium"
+                android:layout_margin="@dimen/padding_small"
+                />
+
+        </LinearLayout>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

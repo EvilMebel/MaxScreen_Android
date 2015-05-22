@@ -30,4 +30,8 @@
     <string name="cant_book_reservation_so_refresh">Nie udało się zarezerwować miejsc. Odświerzam sale...</string>
     <string name="row">" Rząd "</string>
     <string name="relief">" - Zniżka"</string>
+    <string name="coupon_date_exp">Kupon można zrealizować w kinie MaxScreen,\nData ważności:</string>
+    <string name="coupon_num">Nr kuponu:</string>
+    <string name="no_comments">Nie oceniano jeszcze tego filmu. Bądź pierwszy!</string>
+    <string name="edit_rate">Edytuj ocenę</string>
 </resources>

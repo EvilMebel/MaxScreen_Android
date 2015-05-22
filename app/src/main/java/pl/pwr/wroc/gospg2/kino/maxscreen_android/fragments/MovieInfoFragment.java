@@ -16,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.Profile;
+import com.facebook.login.widget.ProfilePictureView;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -37,15 +39,18 @@ import java.util.List;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MSData;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.CommentDialogFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Coupon_DB;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Rate;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.WantToSee;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.LevelBar;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MyGridView;
 import roboguice.inject.InjectView;
 
@@ -108,6 +113,23 @@ public class MovieInfoFragment extends RoboEventFragment {
     View mWant;
 
 
+    @InjectView (R.id.movie_mark)
+    LevelBar mMovieMark;
+
+
+    //my comment
+    @InjectView (R.id.my_mark_frame)
+    View mCommentModule;
+    @InjectView (R.id.profilePicture)
+    ProfilePictureView mAvatar;
+    @InjectView (R.id.name)
+    TextView mName;
+    @InjectView (R.id.my_mark_stars)
+    LevelBar mMarkStars;
+    @InjectView (R.id.my_comment)
+    TextView mMyComment;
+
+
 
     boolean wantMovie = false;
 
@@ -115,6 +137,7 @@ public class MovieInfoFragment extends RoboEventFragment {
 
     private DisplayImageOptions mDisplayImageOptions;
     private int wantIndex;
+    private Rate mMyRate;
 
     /**
      * Use this factory method to create a new instance of
@@ -195,6 +218,7 @@ public class MovieInfoFragment extends RoboEventFragment {
             setImage(movie, mImage);
             mScenario.setText("Scenariusz: " + movie.getScript());
             mPremiere.setText(Converter.gregToString(movie.getPremiere()));
+            mMovieMark.setCurrentLevel(movie.getWantToSeeThis());
 
 
             //todo want to see this
@@ -204,9 +228,19 @@ public class MovieInfoFragment extends RoboEventFragment {
             if(Utils.isIsLoggedIn())
                 loadWantTo(movie);
 
+            //todo load from local database
+                Customers customers = new Customers();
+            customers.setIdCustomer(8);
+            customers.setName("Jan");
+            customers.setSurname("Lolek");
+
+                loadMyComment(movie, customers);
+
             if(movie.getSeances()==null || movie.getSeances().isEmpty()) {
                 loadSeances(movie);
             }
+
+            loadComments(movie);
 
 
         }
@@ -232,7 +266,6 @@ public class MovieInfoFragment extends RoboEventFragment {
                 @Override
                 public void onSuccess(String response) {
                     // Hide Progress Dialog
-                    //todfokjfgnbfkjn
                     Log.d(getTag(), "response:" + response);
 
                     int index = -1;
@@ -293,8 +326,7 @@ public class MovieInfoFragment extends RoboEventFragment {
                     JSONArray array = new JSONArray(response);
                     for(int i = 0; i<array.length(); i++) {
                         JSONObject obj = (JSONObject) array.get(i);
-                        Seance s = Seance.parseEntity(obj,false);
-
+                        Seance s = Seance.parseEntity(obj,false,true);
                         seanceList.add(s);
                     }
 
@@ -307,7 +339,7 @@ public class MovieInfoFragment extends RoboEventFragment {
 
 
                 if(seanceList!=null) {
-                    mSeances.setSeances(seanceList,true);
+                    mSeances.setSeances(seanceList, true);
                 } else {
                     Toast.makeText(getActivity(), "Blad pobierania seansow dla filmu!", Toast.LENGTH_SHORT).show();
                 }
@@ -321,6 +353,206 @@ public class MovieInfoFragment extends RoboEventFragment {
                 Utils.showAsyncError(getActivity(),statusCode,error,content);
             }
         });
+    }
+
+    private void loadComments(Movie movie) {
+        RequestParams params = new RequestParams();
+        //params.add("movieId", Integer.toString(movie.getIdMove()));
+
+
+        String customerId = "8";//todo ? :D
+        int movieId = movie.getIdMove();
+
+        // Make RESTful webservice call using AsyncHttpClient object
+        AsyncHttpClient client = new AsyncHttpClient();
+        String link = Net.dbIp + "/rate/movie/"+movieId + "?";
+        Log.d(getTag(), "GET!" + link);
+        client.get(link, params, new AsyncHttpResponseHandler() {
+
+
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // Hide Progress Dialog
+                //todfokjfgnbfkjn
+                Log.d(getTag(), "response:" + response);
+                List<Rate> commentsList = new ArrayList<Rate>();
+
+                try {
+                    JSONArray array = new JSONArray(response);
+                    for(int i = 0; i<array.length(); i++) {
+                        JSONObject obj = (JSONObject) array.get(i);
+                        Rate s = Rate.parseEntity(obj,true);
+                        commentsList.add(s);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    commentsList = null;
+                }
+
+                if(commentsList!=null) {
+
+                    showComments(commentsList);
+
+                    if (commentsList.size()==0) {
+                        TextView empty = new TextView(getActivity());
+                        empty.setText(getActivity().getString(R.string.no_comments));
+                        mComments.addView(empty);
+
+                    }
+                } else {
+                    //users have never comment this movie
+                }
+
+            }
+
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                                  String content) {
+                Utils.showAsyncError(getActivity(),statusCode,error,content);
+            }
+        });
+    }
+
+    private void editComment(Rate rate) {
+        //todo
+    }
+
+    private void showComments(List<Rate> commentsList) {
+        for(int i = 0; i<commentsList.size(); i++) {
+            Rate r = commentsList.get(i);
+
+            View currentView = getActivity().getLayoutInflater().inflate(R.layout.comment_item, null);
+            TextView name = (TextView)currentView.findViewById(R.id.comment_name);
+            if(name!=null)
+                name.setText(r.getCustomersEntity().getName());
+            TextView comment = (TextView)currentView.findViewById(R.id.comment_text);
+
+            if(comment!=null)
+                comment.setText(r.getComment());
+
+            mComments.addView(currentView);
+
+        }
+    }
+
+    private void loadMyComment(final Movie movie, final Customers customer) {
+        mAddComment.setVisibility(View.GONE);
+        mCommentModule.setVisibility(View.GONE);
+        RequestParams params = new RequestParams();
+        //params.add("movieId", Integer.toString(movie.getIdMove()));
+
+
+        int customerId = customer.getIdCustomer();
+        int movieId = movie.getIdMove();
+
+        // Make RESTful webservice call using AsyncHttpClient object
+        AsyncHttpClient client = new AsyncHttpClient();
+        String link = Net.dbIp + "/rate/movie/"+movieId+"/"+customerId+ "?";
+        Log.d(getTag(), "GET!" + link);
+        client.get(link, params, new AsyncHttpResponseHandler() {
+
+
+            // When the response returned by REST has Http response code '200'
+            @Override
+            public void onSuccess(String response) {
+                // Hide Progress Dialog
+                Log.d(getTag(), "response:" + response);
+                try {
+                    JSONObject object = new JSONObject(response);
+                    int id = object.getInt(Rate.IDRATE);
+                    if (id == -1) {
+                        mMyRate = null;
+                    } else {
+                        mMyRate = Rate.parseEntity(object, false);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    mMyRate = null;
+                }
+
+                if (mMyRate != null) {
+
+                    showMyComment(mMyRate, customer);
+
+                    mAddComment.setVisibility(View.VISIBLE);
+                    mAddComment.setText(getActivity().getString(R.string.edit_rate));
+                    mAddComment.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            openCommentDialog(CommentDialogFragment.CommentMethod.UPDATE_PUT, customer, movie);
+                        }
+                    });
+                } else {
+                    mAddComment.setVisibility(View.VISIBLE);
+                    mAddComment.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            openCommentDialog(CommentDialogFragment.CommentMethod.CREATE_POST, customer, movie);
+                        }
+                    });
+                    //Toast.makeText(getActivity(), "Nigdy nie oceni³eœ tego filmu! Dawaj ocene! :D", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            // When the response returned by REST has Http response code other than '200'
+            @Override
+            public void onFailure(int statusCode, Throwable error,
+                                  String content) {
+                Utils.showAsyncError(getActivity(), statusCode, error, content);
+            }
+        });
+    }
+
+    private void openCommentDialog(CommentDialogFragment.CommentMethod commentMethod, final Customers customer, Movie movie) {
+        Rate rate;
+        if(mMyRate == null) {
+            rate = new Rate();
+            rate.setMovie_idMove(movie.getIdMove());
+            rate.setCustomers_idCustomer(customer.getIdCustomer());
+            rate.setRate(10);
+            rate.setComment("");
+        } else {
+            rate = mMyRate;
+        }
+
+        CommentDialogFragment dialog = new CommentDialogFragment();
+        dialog.setCommentMethod(commentMethod);
+        dialog.setmMyRate(rate);
+        dialog.setOnRateReady(new CommentDialogFragment.OnRateReady() {
+            @Override
+            public void returnRate(Rate rate, CommentDialogFragment.CommentMethod commentMethod) {
+                if(rate != null) {
+                    mMyRate = rate;
+                }
+
+                showMyComment(mMyRate,customer);
+            }
+        });
+        dialog.show(getFragmentManager(),null);
+    }
+
+    private void showMyComment(Rate rate, Customers customer) {
+        if(rate!=null) {
+            mCommentModule.setVisibility(View.VISIBLE);
+
+            Profile profile = Profile.getCurrentProfile();
+            if (Utils.isLoggedInFacebook()) {
+                mAvatar.setProfileId(profile.getId());
+            } else {
+                //diff avatar?
+            }
+
+            mName.setText(customer.getName() + " " + customer.getSurname());
+            mMarkStars.setCurrentLevel(rate.getRate());
+            mMyComment.setText(rate.getComment());
+        } else {
+            mCommentModule.setVisibility(View.GONE);
+        }
     }
 
 

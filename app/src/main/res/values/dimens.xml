@@ -68,6 +68,9 @@
     <color name="loading_background">#CCffffff</color>
 
 
+    <!-- Movie info -->
+    <dimen name="stars_height">20dp</dimen>
+    <dimen name="avatar_size">60dp</dimen>
 
 
 </resources>

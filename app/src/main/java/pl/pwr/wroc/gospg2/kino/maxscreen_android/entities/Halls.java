@@ -57,7 +57,7 @@ public class Halls {
 			h.setRows(object.getInt(Halls.ROWS));
 			Log.e("parse", "end? ");
 		} catch (JSONException e) {
-			Log.e("parse", "error ");
+			Log.e("Halls", "error ");
 			e.printStackTrace();
 			h = null;
 		}

@@ -169,12 +169,12 @@ public class CalendarFragment extends RoboEventFragment {
 
     public void downloadCalendar(){
         RequestParams params = new RequestParams();
-        params.add("date", Converter.gregToMySQLformat(calendar));//YYYY-MM-DD
+        //params.add("date", Converter.gregToMySQLformat(calendar));//YYYY-MM-DD
         // Show Progress Dialog
         mLoading.setVisibility(View.VISIBLE);
         // Make RESTful webservice call using AsyncHttpClient object
         task = new AsyncHttpClient();
-        String link = Net.oldDbIp + "/calendar/get";
+        String link = Net.dbIp + "/seance/calendar/" + Converter.gregToMySQLformat(calendar);
         Log.d(getTag(), "GET!" + link);
         task.get(link, params, new AsyncHttpResponseHandler() {
 
@@ -198,12 +198,12 @@ public class CalendarFragment extends RoboEventFragment {
                         JSONObject item = obj.getJSONObject(i);
                         Log.d(getTag(),"Item:" + item.toString());
 
-                        Movie movie = Movie.parseEntityOld(item.getJSONObject("movie"));
+                        Movie movie = Movie.parseEntity(item.getJSONObject("movie"));
                         List<Seance> seances = new ArrayList<Seance>();
                         JSONArray seancesJSON = item.getJSONArray("seances");
 
                         for(int j = 0; j<seancesJSON.length(); j++) {
-                            Seance s = Seance.parseEntityOld(seancesJSON.getJSONObject(j));
+                            Seance s = Seance.parseEntity(seancesJSON.getJSONObject(j),false,false);
                             seances.add(s);
                         }
                         if(movie!=null && seances!=null) {

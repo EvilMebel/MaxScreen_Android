@@ -1,35 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content">
-    <ImageView
-        android:id="@+id/thumbnail_view"
-        android:src="@drawable/ic_calendar"
-        android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_medium">
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/padding_small"/>
+        android:orientation="vertical"
+        android:background="@drawable/coupon_bg">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/padding_small">
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Max Screen"/>
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/coupon_num"
+            android:id="@+id/coupon_nr"
+            android:background="@drawable/coupon_code_bg"
+            android:padding="@dimen/padding_tiny"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_small"
+        android:background="@drawable/coupon_line">
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Max Screen |"
+            android:gravity="right"
+            android:textStyle="bold"
+            android:id="@+id/textView7" />
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="kupon promocyjny"
+            android:paddingLeft="@dimen/padding_small"
+            android:id="@+id/textView8" />
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/message_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/thumbnail_view"
-        android:padding="@dimen/padding_small"
-        android:textSize="12sp"
-        android:text="Tresc promocji"
-        android:layout_below="@+id/title" />
+        android:text="Opis promocji!"
+        android:id="@+id/coupon_disc"
+        android:padding="@dimen/padding_medium"
+        android:layout_gravity="center_horizontal" />
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tytul promocji"
-        android:padding="@dimen/padding_small"
-        android:textSize="14dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/thumbnail_view"
-        android:layout_toEndOf="@+id/thumbnail_view" />
-</RelativeLayout>
+        android:layout_gravity="center_horizontal"
+        android:padding="@dimen/padding_medium">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/coupon_date_exp"
+            android:id="@+id/coupon_date"
+            android:textSize="8dp"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="www.MaxScreen.com"
+            android:id="@+id/textView11"
+            android:gravity="center_vertical|right"
+            android:paddingLeft="@dimen/padding_small"
+            android:textSize="8dp"/>
+    </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

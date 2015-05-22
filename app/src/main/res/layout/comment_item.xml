@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:paddingTop="@dimen/padding_small"
+    android:paddingLeft="@dimen/padding_small"
+    android:orientation="vertical"
+    android:id="@+id/root">
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zenon 15.01.2015"
+        android:padding="@dimen/padding_tiny"
+        android:textStyle="italic"
+        android:id="@+id/comment_name" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:padding="@dimen/padding_small"
+        android:layout_margin="@dimen/padding_tiny"
+        android:background="#cecece"
+        android:id="@+id/comment_text"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+</LinearLayout>
+

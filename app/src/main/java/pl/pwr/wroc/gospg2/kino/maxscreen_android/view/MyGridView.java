@@ -175,7 +175,7 @@ public class MyGridView extends ViewGroup implements View.OnClickListener {
 	}
 
 	public void setSeances(List<Seance> seances, boolean fullInfo) {
-		this.seances.clear();
+		this.seances = new ArrayList<Seance>();
 		//clear all childrens
 		removeAllViews();
 		removeAllViewsInLayout();

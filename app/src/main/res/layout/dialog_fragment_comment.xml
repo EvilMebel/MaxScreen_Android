@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:padding="@dimen/padding_medium"
+    android:orientation="vertical"
+    android:layout_gravity="center">
+
+
+
+    <LinearLayout
+        android:layout_gravity="center"
+        android:background="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_tiny"
+        android:orientation="vertical">
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MaterialProgressBar
+            android:id="@+id/loading"
+            android:layout_gravity="center"
+            android:layout_width="@dimen/material_progress_size_medium"
+            android:layout_height="@dimen/material_progress_size_medium"
+            android:visibility="gone"/>
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.LevelBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/my_mark_stars"/>
+
+        <EditText
+            android:id="@+id/my_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#cecece"
+            android:hint="Mój komentarz"
+            android:padding="@dimen/padding_medium"
+            android:layout_margin="@dimen/padding_small"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dodaj komentarz"
+            style="@style/ButtonStyle"
+            android:id="@+id/add_comment" />
+
+    </LinearLayout>
+
+</FrameLayout>

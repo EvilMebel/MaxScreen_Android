@@ -77,9 +77,9 @@ public class PromotionsAdapter extends BaseAdapter {
             itemViewHolder = new ItemViewHolder();
             currentView = View.inflate(mContext, R.layout.promotion_item, null);
 
-            itemViewHolder.image = (ImageView) currentView.findViewById(R.id.thumbnail_view);
-            itemViewHolder.title = (TextView) currentView.findViewById(R.id.title);
-            itemViewHolder.msg = (TextView) currentView.findViewById(R.id.message_view);
+            itemViewHolder.coupon_disc = (TextView) currentView.findViewById(R.id.coupon_disc);
+            itemViewHolder.coupon_nr = (TextView) currentView.findViewById(R.id.coupon_nr);
+            itemViewHolder.coupon_date = (TextView) currentView.findViewById(R.id.coupon_date);
 
             currentView.setTag(itemViewHolder);
         } else {
@@ -94,12 +94,12 @@ public class PromotionsAdapter extends BaseAdapter {
         //todo string buffer?
         String titleText = coupon_db.getID_Coupon() + " \n" + coupon_db.getVersion() + "\nDo " + Converter.gregToString(coupon_db.getDate());
 
-            /*Display display = ((MainActivity) mContext).getWindowManager().getDefaultDisplay();
-            FlowTextHelper.tryFlowText(text, thumbnailView, messageView, display);*/
-        itemViewHolder.msg.setText(text);
-        itemViewHolder.title.setText(titleText);
+        itemViewHolder.coupon_disc.setText(text);
+        itemViewHolder.coupon_date.setText(mContext.getString(R.string.coupon_date_exp) + Converter.gregToString(coupon_db.getDate()));
+        itemViewHolder.coupon_nr.setText(mContext.getString(R.string.coupon_num) + coupon_db.getID_Coupon());
 
-        setImage(coupon_db,itemViewHolder);
+        //no image!
+        //setImage(coupon_db,itemViewHolder);
 
         return currentView;
     }
@@ -138,9 +138,9 @@ public class PromotionsAdapter extends BaseAdapter {
     }
 
     private class ItemViewHolder {
-        public ImageView image;
-        public TextView title;
-        public TextView msg;
+        public TextView coupon_date;
+        public TextView coupon_disc;
+        public TextView coupon_nr;
     }
 
 }

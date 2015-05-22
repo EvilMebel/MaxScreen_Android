@@ -72,7 +72,7 @@ public class Reservation {
 
 			if(inception) {
 				h.setCustomersEntity(Customers.parseEntity(object.getJSONObject(Reservation.CUSTOMERS_IDCUSTOMER),inception));
-				h.setSeanceEntity(Seance.parseEntity(object.getJSONObject(Reservation.SEANCE_IDSEANCE),inception));
+				h.setSeanceEntity(Seance.parseEntity(object.getJSONObject(Reservation.SEANCE_IDSEANCE),inception,true));
 			} else {
 				//todo
 			}

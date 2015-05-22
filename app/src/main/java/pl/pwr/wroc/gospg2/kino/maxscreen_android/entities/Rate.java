@@ -1,16 +1,25 @@
 package pl.pwr.wroc.gospg2.kino.maxscreen_android.entities;
 
+import android.util.Log;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.GregorianCalendar;
+
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
+
 public class Rate {
 	public static final String IDRATE = "idRate";
-	public static final String RATE = "Rate";
-	public static final String COMMENT = "Comment";
+	public static final String RATE = "rate";
+	public static final String COMMENT = "comment";
 	//keys
-	public static final String MOVIE_IDMOVE = "Movie_idMove";
-	public static final String CUSTOMERS_IDCUSTOMER = "Customers_idCustomer";
+	public static final String MOVIE_IDMOVE = "movieidMove";
+	public static final String CUSTOMERS_IDCUSTOMER = "customeridCustomer";
 	
 	
 	private int idRate;
-	private int Rate;
+	private int Rating;
 	private String Comment;
 	//keys
 	private int Movie_idMove;
@@ -26,10 +35,10 @@ public class Rate {
 		this.idRate = idRate;
 	}
 	public int getRate() {
-		return Rate;
+		return Rating;
 	}
 	public void setRate(int rate) {
-		Rate = rate;
+		Rating = rate;
 	}
 	public String getComment() {
 		return Comment;
@@ -61,5 +70,36 @@ public class Rate {
 	public void setCustomersEntity(Customers customersEntity) {
 		CustomersEntity = customersEntity;
 	}
-	
+
+	public static Rate parseEntity(JSONObject object, boolean inception) {
+		Rate n = new Rate();
+
+		Log.d("Rate", "Parse:" + object.toString());
+
+		try {
+			n.setIdRate(object.getInt(Rate.IDRATE));
+
+			/*//ou...
+			String date = object.getString(Rate.OPREMIERE);
+			GregorianCalendar calendar = Converter.DATETIMEformatToGreg(date);
+			n.setPremiere(calendar);*/
+
+			n.setRate(object.getInt(Rate.RATE));
+			n.setComment(object.getString(Rate.COMMENT));
+
+			if(inception) {
+				n.setCustomersEntity(Customers.parseEntity(object.getJSONObject(Rate.CUSTOMERS_IDCUSTOMER),false));
+				n.setMovieEntity(Movie.parseEntity(object.getJSONObject(Rate.MOVIE_IDMOVE)));
+			} else {
+				n.setCustomers_idCustomer(object.getJSONObject(Rate.CUSTOMERS_IDCUSTOMER).getInt(Customers.IDCUSTOMER));
+				n.setMovie_idMove(object.getJSONObject(Rate.MOVIE_IDMOVE).getInt(Movie.IDMOVIE));
+			}
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+			n = null;
+		}
+
+		return n;
+	}
 }

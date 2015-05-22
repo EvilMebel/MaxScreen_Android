@@ -387,7 +387,7 @@ public class ReservationRoomFragment extends RoboEventFragment {
         mLoading.setVisibility(View.VISIBLE);
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient task = new AsyncHttpClient();
-        String link = Net.dbIp + "//reservation/insert/"+ticketsStr+"/"+customerId+"/"+ seanceId+"?";
+        String link = Net.dbIp + "/reservation/insert/"+ticketsStr+"/"+customerId+"/"+ seanceId+"?";
         Log.d("RoomReserv","link:"+link);
         final String finalTicketsStr = ticketsStr;
         task.get(link, params, new AsyncHttpResponseHandler() {
