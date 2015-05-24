@@ -92,7 +92,7 @@ public class Customers {
 	}
 
 
-	public static Customers parseEntity(JSONObject object, boolean b) {
+	public static Customers parseEntity(JSONObject object) {
 		Customers h = new Customers();
 
 		try {

@@ -34,4 +34,12 @@
     <string name="coupon_num">Nr kuponu:</string>
     <string name="no_comments">Nie oceniano jeszcze tego filmu. Bądź pierwszy!</string>
     <string name="edit_rate">Edytuj ocenę</string>
+    <string name="no_wanted_movies">Nie wybrałeś/aś jeszcze żadnych filmów które chcesz zobaczyć</string>
+    <string name="no_seances_for_this_day">W ten dzień nie ma żadnych seansów</string>
+    <string name="error_downloading">Wystąpił błąd. \nPrzepraszamy :(</string>
+    <string name="have_never_add_comment">Nie oceniłeś/aś żadnego filmu</string>
+    <string name="error_parsing_users">Blad pobierania użytkownika</string>
+    <string name="no_facebook_friends_forever_alone">Żaden ze znajomych nie połączył konta z Facebook</string>
+    <string name="error_downloading_friends">Błąd pobierania listy znajomych</string>
+    <string name="log_in_for_reservation">Aby zarezerwować miejsce musisz być zalogowany!</string>
 </resources>

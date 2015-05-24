@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -62,11 +63,17 @@ public class LoginFragment extends RoboEventFragment {
     @InjectView (R.id.login)
     Button mLogin;
 
+    //not used - login needs extra permissions
     @InjectView (R.id.fbLogin)
     Button mFbLogin;
 
     @InjectView (R.id.register)
     Button mRegister;
+
+    //custom fb login
+    @InjectView (R.id.login_fb)
+    Button mLoginFbCustom;
+
 
 
     private LoadingDialogFragment mLoadingDialogFragment;
@@ -132,6 +139,16 @@ public class LoginFragment extends RoboEventFragment {
                 }
             }
         });
+
+        final LoginFragment frag = this;
+        mLoginFbCustom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //LoginManager.getInstance().logInWithReadPermissions(getActivity(),Utils.getFbReadPermissions());
+                LoginManager.getInstance().logInWithReadPermissions(getActivity(),Utils.getFbReadPermissions());
+                Toast.makeText(getActivity(),"No LOGUJ!!",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -195,13 +212,20 @@ public class LoginFragment extends RoboEventFragment {
 
     public void tryLogin(){
         RequestParams params = new RequestParams();
-        params.add(Customers.E_MAIL, mEmailInput.getText().toString());
-        params.add(Customers.PASSMD5, Utils.MD5(mPasswordInput.getText().toString()));
+        String email = mEmailInput.getText().toString();
+        String pass = mPasswordInput.getText().toString();
+        /*
+        params.add(Customers.E_MAIL, email);
+        params.add(Customers.PASSMD5, Utils.MD5());
+        */
+
         // Show Progress Dialog
         showLoadingDialog();
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(Net.oldDbIp + "/login/dologin", params, new AsyncHttpResponseHandler() {
+        String link = Net.dbIp + "/customer/email/"+email+ "/"+pass;
+        Log.d(getTag(),"REGISTERN!" + link);
+        client.get(link, params, new AsyncHttpResponseHandler() {
 
 
             // When the response returned by REST has Http response code '200'

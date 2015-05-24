@@ -32,6 +32,7 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.LoadingDialogFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.preferences.ApplicationPreferences;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import roboguice.inject.InjectView;
 
@@ -66,8 +67,8 @@ public class RegisterFragment extends RoboEventFragment {
     @InjectView (R.id.login)
     Button mLogin;
 
-    @InjectView (R.id.fbLogin)
-    Button mFbRegister;
+    @InjectView (R.id.login_fb)
+    Button mLoginFbCustom;
 
 
     private LoadingDialogFragment mLoadingDialogFragment;
@@ -130,6 +131,15 @@ public class RegisterFragment extends RoboEventFragment {
                 if (validateInputs()) {
                     tryRegister();
                 }
+            }
+        });
+
+        mLoginFbCustom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //LoginManager.getInstance().logInWithReadPermissions(getActivity(),Utils.getFbReadPermissions());
+                LoginManager.getInstance().logInWithReadPermissions(getActivity(),Utils.getFbReadPermissions());
+                Toast.makeText(getActivity(),"No LOGUJ!!",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -229,15 +239,22 @@ public class RegisterFragment extends RoboEventFragment {
 
     public void tryRegister(){
         RequestParams params = new RequestParams();
-        params.add(Customers.NAME,mName.getText().toString());
-        params.add(Customers.SURNAME,mSurname.getText().toString());
-        params.add(Customers.E_MAIL, mEmailInput.getText().toString());
-        params.add(Customers.PASSMD5, Utils.MD5(mPasswordInput.getText().toString()));
+        String name = mName.getText().toString();
+        String surname = mSurname.getText().toString();
+        String email = mEmailInput.getText().toString();
+        String pass = mPasswordInput.getText().toString();
+        /*
+        params.add(Customers.NAME,name);
+        params.add(Customers.SURNAME,surname);
+        params.add(Customers.E_MAIL,email );
+        params.add(Customers.PASSMD5, pass);*/
         // Show Progress Dialog
         showLoadingDialog();
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(Net.oldDbIp + "/register", params, new AsyncHttpResponseHandler() {
+        String link = Net.dbIp + "/customer/registernormal/"+email+ "/"+ name+"/" + surname+"/"+pass;
+        Log.d(getTag(),"REGISTERN!" + link);
+        client.get(link, params, new AsyncHttpResponseHandler() {
 
 
             // When the response returned by REST has Http response code '200'
@@ -247,36 +264,44 @@ public class RegisterFragment extends RoboEventFragment {
                 //todfokjfgnbfkjn
                 Log.d(getTag(), "response:" + response);
 
-                boolean status = true;
+                int status = -1;
                 String msg = "";
+                Customers c = null;
 
                 try {
                     JSONObject object = new JSONObject(response);
-                    status = object.getBoolean("status");
+                    status = object.getInt(Customers.IDCUSTOMER);
 
-                    if(!status) {
-                        msg = object.getString("error_msg");
+                    //error msg is in name
+                    if(status==-1) {
+                        msg = object.getString(Customers.NAME);
+                    } else {
+                        c = Customers.parseEntity(object);
                     }
 
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    c = null;
                 }
 
 
-                if(status) {
-                    msg = "Rejestracja powiodla sie!";
+                if(c!=null) {
+                    Toast.makeText(getActivity(), "Witamy " + c.getName() + "\n"+c.getSurname() , Toast.LENGTH_SHORT).show();
+                    ApplicationPreferences.getInstance().setCurrentCustomer(c);
+
+                } else {
 
                 }
-                //todo autologin?
+
 
                 Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
 
                 hideLoadingDialog();
 
-                if(status) {
+                /*if(status) {
                     MaxScreen.getBus().post(new GoToLoginBus());
-                }
+                }*/
             }
 
             // When the response returned by REST has Http response code other than '200'

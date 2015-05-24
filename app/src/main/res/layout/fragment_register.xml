@@ -103,15 +103,14 @@
             android:layout_marginTop="@dimen/padding_big"
             android:layout_gravity="center_horizontal"/>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="  Zaloguj przez Facebook"
-                style="@style/ButtonStyle"
-                android:layout_gravity="center_horizontal"
-                android:drawableLeft="@drawable/ic_login"
-                android:background="@android:color/holo_blue_dark"
-                android:id="@+id/fbLogin" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zaloguj się przez facebook"
+            style="@style/ButtonStyle"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/com_facebook_blue"
+            android:id="@+id/login_fb" />
 
 
         <TextView

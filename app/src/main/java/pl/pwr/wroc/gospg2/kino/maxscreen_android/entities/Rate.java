@@ -88,7 +88,7 @@ public class Rate {
 			n.setComment(object.getString(Rate.COMMENT));
 
 			if(inception) {
-				n.setCustomersEntity(Customers.parseEntity(object.getJSONObject(Rate.CUSTOMERS_IDCUSTOMER),false));
+				n.setCustomersEntity(Customers.parseEntity(object.getJSONObject(Rate.CUSTOMERS_IDCUSTOMER)));
 				n.setMovieEntity(Movie.parseEntity(object.getJSONObject(Rate.MOVIE_IDMOVE)));
 			} else {
 				n.setCustomers_idCustomer(object.getJSONObject(Rate.CUSTOMERS_IDCUSTOMER).getInt(Customers.IDCUSTOMER));

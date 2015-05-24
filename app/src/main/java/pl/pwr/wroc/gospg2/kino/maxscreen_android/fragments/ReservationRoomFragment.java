@@ -25,14 +25,17 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.MSData;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.ListDialogFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Halls;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Relief;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Tickets;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.ChoosedReliefEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.FinishReservationEventBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.SeatClickEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.preferences.ApplicationPreferences;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.RoomView;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.SeatView;
@@ -138,7 +141,13 @@ public class ReservationRoomFragment extends RoboEventFragment {
             @Override
             public void onClick(View v) {
                 if (tickets.size() > 0) {
-                    tryMakeReservation();
+                    Customers c = ApplicationPreferences.getInstance().getCurrentCustomer();
+                    if(c!=null) {
+                        tryMakeReservation();
+                    } else {
+                        Toast.makeText(getActivity(),getActivity().getString(R.string.log_in_for_reservation),Toast.LENGTH_LONG).show();
+                        MaxScreen.getBus().post(new GoToLoginBus());
+                    }
                 } else {
                     Toast.makeText(getActivity(), getActivity().getString(R.string.no_tickets_chosen), Toast.LENGTH_SHORT).show();
                 }

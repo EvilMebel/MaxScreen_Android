@@ -43,6 +43,7 @@
         android:layout_height="wrap_content"
         android:text="Znajomi"
         style="@style/ButtonStyle"
-        android:id="@+id/prof_friends" />
+        android:id="@+id/prof_friends"
+        android:visibility="gone"/>
 
 </LinearLayout>

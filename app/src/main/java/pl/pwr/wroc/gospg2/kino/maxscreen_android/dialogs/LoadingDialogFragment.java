@@ -49,7 +49,7 @@ public class LoadingDialogFragment extends RoboDialogFragment {
         getDialog().getWindow().setDimAmount(0);
 
         getDialog().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //getDialog().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         getDialog().setCanceledOnTouchOutside(false);
         setCancelable(false);

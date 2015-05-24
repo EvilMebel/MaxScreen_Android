@@ -106,18 +106,22 @@ public class ApplicationPreferences {
     }
 
     public void setCurrentCustomer(Customers c) {
-        setInt(ApplicationPreference.USER_IDCUSTOMER, c.getIdCustomer());
-        setString(ApplicationPreference.USER_AVATAR,c.getAvatar());
-        setString(ApplicationPreference.USER_FACEBOOKID, c.getFacebookId());
-        setString(ApplicationPreference.USER_E_MAIL,c.getE_Mail());
-        setString(ApplicationPreference.USER_NAME, c.getName());
-        setString(ApplicationPreference.USER_NICK, c.getNick());
-        setString(ApplicationPreference.USER_SURNAME, c.getSurname());
-        setString(ApplicationPreference.USER_TELEFON, c.getTelefon());
-        setString(ApplicationPreference.USER_TOKEN, c.getToken());
+        if(c!=null) {
+            setInt(ApplicationPreference.USER_IDCUSTOMER, c.getIdCustomer());
+            setString(ApplicationPreference.USER_AVATAR, c.getAvatar());
+            setString(ApplicationPreference.USER_FACEBOOKID, c.getFacebookId());
+            setString(ApplicationPreference.USER_E_MAIL, c.getE_Mail());
+            setString(ApplicationPreference.USER_NAME, c.getName());
+            setString(ApplicationPreference.USER_NICK, c.getNick());
+            setString(ApplicationPreference.USER_SURNAME, c.getSurname());
+            setString(ApplicationPreference.USER_TELEFON, c.getTelefon());
+            setString(ApplicationPreference.USER_TOKEN, c.getToken());
+        } else {
+            resetCurrentCustomer();
+        }
     }
 
-    public void resetCurrentCustomer(Customers c) {
+    public void resetCurrentCustomer() {
         setInt(ApplicationPreference.USER_IDCUSTOMER, -1);
         setString(ApplicationPreference.USER_AVATAR, null);
         setString(ApplicationPreference.USER_FACEBOOKID, null);
@@ -135,6 +139,7 @@ public class ApplicationPreferences {
 
         if(index!=-1) {
             c = new Customers();
+            c.setIdCustomer(index);
             c.setAvatar(getString(ApplicationPreference.USER_AVATAR));
             c.setFacebookId(getString(ApplicationPreference.USER_FACEBOOKID));
             c.setE_Mail(getString(ApplicationPreference.USER_E_MAIL));

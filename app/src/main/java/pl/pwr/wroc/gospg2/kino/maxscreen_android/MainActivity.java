@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -46,7 +47,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.LoadingDialogFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
@@ -57,6 +61,8 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.FinishReservationEventBu
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenMovieInfoEventBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenNewsEventBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenProfileEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenRoomEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.CalendarFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.FinishReservationFragment;
@@ -238,6 +244,36 @@ public class MainActivity extends BaseFragmentActivity {
             AccessToken accessToken = MSData.getInstance().getAccessToken();
             if(accessToken!=null) {
                 log("accessToken!=null");
+                //LoginManager.getInstance().logInWithReadPermissions(this,Utils.getFbReadPermissions());
+                GraphRequest request = createRequestForProfileData();
+                request.setCallback(new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse graphResponse) {
+                        log("graphResponse="+graphResponse);
+                        log("graphResponse="+graphResponse.getRawResponse());
+                        JSONObject jsonObject = graphResponse.getJSONObject();
+                        try {
+                            String name = jsonObject.getString("first_name");
+                            String surname = jsonObject.getString("last_name");
+                            String fbId = jsonObject.getString("id");
+                            String email = jsonObject.getString("email");//todo
+
+
+
+                            log("Try register Facebook!");
+                            tryRegisterFacebook(name,surname,fbId,email);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Log.e("FBactions", "ERROR register!");
+                            failedFacebookLogin();
+                        }
+
+                    }
+                });
+                request.executeAsync();
+
+                /*   //todo old version - email error!
                 GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
                     @Override
                     public void onCompleted(JSONObject jsonObject, GraphResponse graphResponse) {
@@ -251,26 +287,19 @@ public class MainActivity extends BaseFragmentActivity {
                             String email = jsonObject.getString("email");//todo
 
 
-                            RequestParams params = new RequestParams();
-                            params.add(Customers.NAME,name);
-                            params.add(Customers.SURNAME,surname);
-                            params.add(Customers.E_MAIL, email);
-                            params.add(Customers.FACEBOOKID, fbId);
+
                             log("Try register Facebook!");
-                            tryRegisterFacebook(params);
+                            tryRegisterFacebook(name,surname,fbId,email);
 
                         } catch (JSONException e) {
-                            Toast.makeText(getApplicationContext(),getString(R.string.login_error),Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
                             Log.e("FBactions", "ERROR register!");
-                            e.printStackTrace();
-                            LoginManager.getInstance().logOut();
-                            updateUI();
-                            e.printStackTrace();
-                            hideLoadingDialog();
+                            failedFacebookLogin();
                         }
 
                     }
-                }).executeAsync();
+                }).executeAsync();*/
+
             } else {
                 hideLoadingDialog();
                 log("token is NULL!");
@@ -284,6 +313,31 @@ public class MainActivity extends BaseFragmentActivity {
         }
     }
 
+    private GraphRequest createRequestForProfileData() {
+        HashSet<String> extraFields = new HashSet<String>();
+        extraFields.add("email");
+        extraFields.add("first_name");
+        extraFields.add("last_name");
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        GraphRequest request = GraphRequest.newGraphPathRequest(
+                accessToken, "/v2.3/me", null);
+
+        Set<String> fields = new HashSet<String>(extraFields);
+        String[] requiredFields = new String[]{
+                "id",
+                "name"
+        };
+        fields.addAll(Arrays.asList(requiredFields));
+
+        Bundle parameters = request.getParameters();
+        parameters.putString("fields", TextUtils.join(",", fields));
+        request.setParameters(parameters);
+
+        return request;
+    }
+
+
+
     private void showLoadingDialog() {
         mLoadingDialogFragment = new LoadingDialogFragment();
         mLoadingDialogFragment.show(getSupportFragmentManager(), null);
@@ -294,11 +348,14 @@ public class MainActivity extends BaseFragmentActivity {
             mLoadingDialogFragment.dismiss();
     }
 
-    private void tryRegisterFacebook(RequestParams params) {
+    private void tryRegisterFacebook(String name, String surname, String fbId, String email) {
+        RequestParams params = new RequestParams();
 
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(Net.oldDbIp + "/registerfb/fb", params, new AsyncHttpResponseHandler() {
+        String link = Net.dbIp + "/customer/registerfb/"+email+ "/"+ name+"/" + surname+"/"+fbId;
+        Log.d(tag, "REGISTERF!" + link);
+        client.get(link, params, new AsyncHttpResponseHandler() {
 
 
             // When the response returned by REST has Http response code '200'
@@ -308,34 +365,39 @@ public class MainActivity extends BaseFragmentActivity {
                 //todfokjfgnbfkjn
                 Log.d("MainActivity", "response:" + response);
 
-                boolean status = true;
+                int status = -1;
                 String msg = "";
+                Customers c = null;
 
                 try {
                     JSONObject object = new JSONObject(response);
-                    status = object.getBoolean("status");
+                    status = object.getInt(Customers.IDCUSTOMER);
 
-                    //if(!status) {
-                    msg = object.getString("error_msg");
-                    //}
+                    //error msg is in name
+                    if (status == -1) {
+                        msg = object.getString(Customers.NAME);
+                    } else {
+                        c = Customers.parseEntity(object);
+                    }
 
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    c = null;
                 }
 
-                //todo autologin?
 
-                Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                if (c != null) {
+                    Toast.makeText(getApplicationContext(), "Witamy " + c.getName() + "\n" + c.getSurname(), Toast.LENGTH_SHORT).show();
+                    ApplicationPreferences.getInstance().setCurrentCustomer(c);
+
+                } else {
+                    failedFacebookLogin();
+                    Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
+                }
+
 
                 hideLoadingDialog();
-
-                if (!status) {
-                    //Toast.makeText(getApplicationContext(),msg,Toast.LENGTH_SHORT).show();
-                    Log.e("FBactions", "ERROR register onSuccess!");
-                    LoginManager.getInstance().logOut();
-                    updateUI();
-                }
             }
 
             // When the response returned by REST has Http response code other than '200'
@@ -343,15 +405,18 @@ public class MainActivity extends BaseFragmentActivity {
             public void onFailure(int statusCode, Throwable error,
                                   String content) {
                 // Hide Progress Dialog
-                hideLoadingDialog();
-                Toast.makeText(getApplicationContext(), getString(R.string.login_error), Toast.LENGTH_SHORT).show();
-                Log.e("FBactions", "ERROR register!");
-                LoginManager.getInstance().logOut();
-                updateUI();
+                failedFacebookLogin();
                 Utils.showAsyncError(getApplicationContext(), statusCode, error, content);
             }
         });
 
+    }
+
+    private void failedFacebookLogin() {
+        Toast.makeText(getApplicationContext(),getString(R.string.login_error),Toast.LENGTH_SHORT).show();
+        LoginManager.getInstance().logOut();
+        updateUI();
+        hideLoadingDialog();
     }
 
     private void log(String s) {
@@ -463,6 +528,7 @@ public class MainActivity extends BaseFragmentActivity {
                         ApplicationPreferences preference = ApplicationPreferences.getInstance();
                         preference.setBoolean(ApplicationPreference.LOGGED_IN_CLASSIC,false);
                     }
+                    ApplicationPreferences.getInstance().setCurrentCustomer(null);
                     updateUI();
                 } else {
                     commitLoginFragment();
@@ -661,10 +727,30 @@ public class MainActivity extends BaseFragmentActivity {
 
     private void commitProfileMyFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        mFragment = ProfileFragment.newInstance(true,"");
+        mFragment = ProfileFragment.newInstance(true,-1);
         //ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
         if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_MY_PROFILE) == null) {
             ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_MY_PROFILE).commit();
+        }
+
+        mTitle.setText("Moj profil");
+        enableBackButton();
+    }
+
+    private void commitProfileFragment(OpenProfileEventBus bus) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+        String endTag;
+        if(bus.getCustomerId()!=-1) {
+            mFragment = ProfileFragment.newInstance(false, bus.getCustomerId());
+            endTag = "id"+bus.getCustomerId();
+        } else {
+            mFragment = ProfileFragment.newInstance(bus.getFacebookId());
+            endTag = "fb"+bus.getFacebookId();
+        }
+        //ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_MY_PROFILE+endTag) == null) {
+            ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_MY_PROFILE+endTag).commit();
         }
 
         mTitle.setText("Moj profil");
@@ -718,6 +804,13 @@ public class MainActivity extends BaseFragmentActivity {
     }
 
     @Subscribe
+    public void openNews(OpenNewsEventBus bus) {
+        commitMainFragment();
+    }
+
+
+
+    @Subscribe
     public void openMovieInfo(OpenMovieInfoEventBus bus) {
         //save data in singleton
         if(bus.getIdMovie()!=-1) {
@@ -742,6 +835,12 @@ public class MainActivity extends BaseFragmentActivity {
     public void finishReservation(FinishReservationEventBus bus) {
         commitFinishReservation(bus.getReservationId(), bus.getTickets());
     }
+
+    @Subscribe
+    public void openProfile(OpenProfileEventBus bus) {
+        commitProfileFragment(bus);
+    }
+
 
 
 

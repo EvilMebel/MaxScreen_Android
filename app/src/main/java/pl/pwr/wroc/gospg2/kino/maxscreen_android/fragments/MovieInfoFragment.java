@@ -47,7 +47,10 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Rate;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.WantToSee;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenProfileEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.preferences.ApplicationPreference;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.preferences.ApplicationPreferences;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.LevelBar;
@@ -201,9 +204,6 @@ public class MovieInfoFragment extends RoboEventFragment {
 
         if (MSData.getInstance().getCurrentMovie().getSeances() != null) {
             mSeances.setSeances(MSData.getInstance().getCurrentMovie().getSeances(), true);
-        } else {
-            //todo load seances
-            //loadSeances(movie);
         }
 
 
@@ -225,36 +225,34 @@ public class MovieInfoFragment extends RoboEventFragment {
             mMyMark.setVisibility(View.GONE);
 //            private int WantToSeeThis;
 
-            if(Utils.isIsLoggedIn())
-                loadWantTo(movie);
+            if(Utils.isIsLoggedIn()) {
 
-            //todo load from local database
-                Customers customers = new Customers();
-            customers.setIdCustomer(8);
-            customers.setName("Jan");
-            customers.setSurname("Lolek");
+                Customers customer = ApplicationPreferences.getInstance().getCurrentCustomer();
 
-                loadMyComment(movie, customers);
+                if(customer!=null) {
+                    loadMyComment(movie, customer);
+
+                    loadWantTo(movie,customer);
+                }
+
+            }
 
             if(movie.getSeances()==null || movie.getSeances().isEmpty()) {
                 loadSeances(movie);
             }
 
             loadComments(movie);
-
-
         }
 
 
     }
 
-    private void loadWantTo(Movie movie) {
+    private void loadWantTo(Movie movie, Customers customer) {
         mWant.setOnClickListener(null);
         RequestParams params = new RequestParams();
-        params.add("movieId", Integer.toString(movie.getIdMove()));
-        String customerId = "8";//todo ? :D
+
+        int customerId = customer.getIdCustomer();
         int movieId = movie.getIdMove();
-        params.add("customerId", customerId);//todo
         // Make RESTful webservice call using AsyncHttpClient object
             AsyncHttpClient client = new AsyncHttpClient();
         String link = Net.dbIp + "/wanttosee/want/"+customerId + "/" + movieId + "?";
@@ -301,15 +299,12 @@ public class MovieInfoFragment extends RoboEventFragment {
     private void loadSeances(Movie movie) {
         mWant.setOnClickListener(null);
         RequestParams params = new RequestParams();
-        params.add("movieId", Integer.toString(movie.getIdMove()));
 
-
-        String customerId = "8";//todo ? :D
         int movieId = movie.getIdMove();
-        params.add("customerId", customerId);//todo
+
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient client = new AsyncHttpClient();
-        String link = Net.dbIp + "/seance/seances/"+movie.getIdMove() + "?";
+        String link = Net.dbIp + "/seance/seances/"+movieId + "?";
         Log.d(getTag(), "GET!" + link);
         client.get(link, params, new AsyncHttpResponseHandler() {
 
@@ -416,13 +411,9 @@ public class MovieInfoFragment extends RoboEventFragment {
         });
     }
 
-    private void editComment(Rate rate) {
-        //todo
-    }
-
     private void showComments(List<Rate> commentsList) {
         for(int i = 0; i<commentsList.size(); i++) {
-            Rate r = commentsList.get(i);
+            final Rate r = commentsList.get(i);
 
             View currentView = getActivity().getLayoutInflater().inflate(R.layout.comment_item, null);
             TextView name = (TextView)currentView.findViewById(R.id.comment_name);
@@ -432,6 +423,13 @@ public class MovieInfoFragment extends RoboEventFragment {
 
             if(comment!=null)
                 comment.setText(r.getComment());
+
+            currentView.findViewById(R.id.root).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MaxScreen.getBus().post(new OpenProfileEventBus(r.getCustomersEntity().getIdCustomer()));
+                }
+            });
 
             mComments.addView(currentView);
 
@@ -494,7 +492,6 @@ public class MovieInfoFragment extends RoboEventFragment {
                             openCommentDialog(CommentDialogFragment.CommentMethod.CREATE_POST, customer, movie);
                         }
                     });
-                    //Toast.makeText(getActivity(), "Nigdy nie oceni³eœ tego filmu! Dawaj ocene! :D", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -556,38 +553,12 @@ public class MovieInfoFragment extends RoboEventFragment {
     }
 
 
-    private void addWantTo(Movie movie) {
+    private void addWantTo(Movie movie, Customers c) {
         mWant.setOnClickListener(null);
         RequestParams params = new RequestParams();
 
-        String customerId = "8";//todo ? :D
+        int customerId = c.getIdCustomer();//todo ? :D
         int movieId = movie.getIdMove();
-/*
-        params.add("movieId", Integer.toString(movie.getIdMove()));
-        params.add("customerId", customerId);//todo*/
-        /*String link = Net.dbIp + "/wanttosee";
-
-
-        // Make RESTful webservice call using AsyncHttpClient object
-        AsyncHttpClient client = new AsyncHttpClient();
-
-
-        JSONObject jsonParams = new JSONObject();
-        try {
-            jsonParams.put(WantToSee.CUSTOMERS_IDCUSTOMER, customerId);
-            jsonParams.put(WantToSee.MOVIE_IDMOVE,movieId);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        StringEntity entity = null;
-        try {
-            entity = new StringEntity(jsonParams.toString());
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        log("POST!" + jsonParams.toString());
-        client.post(getActivity(), link, entity, "application/json",*/
-
         String link = Net.dbIp + "/wanttosee/post/"+customerId+"/"+movieId;
 
         log("POST!" + link);
@@ -635,7 +606,7 @@ public class MovieInfoFragment extends RoboEventFragment {
                 });
     }
 
-    private void removeWantTo() {
+    private void removeWantTo(Customers c) {
         mWant.setOnClickListener(null);
 
         RequestParams params = new RequestParams();
@@ -678,7 +649,9 @@ public class MovieInfoFragment extends RoboEventFragment {
             mWant.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    removeWantTo();
+                    Customers c = ApplicationPreferences.getInstance().getCurrentCustomer();
+                    if(c!=null)
+                        removeWantTo(c);
                 }
             });
         } else {
@@ -686,15 +659,15 @@ public class MovieInfoFragment extends RoboEventFragment {
             mWant.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    addWantTo(MSData.getInstance().getCurrentMovie());
+                    Customers c = ApplicationPreferences.getInstance().getCurrentCustomer();
+                    if(c!=null)
+                        addWantTo(MSData.getInstance().getCurrentMovie(),c);
                 }
             });
         }
     }
 
     private void setImage(Movie movie, ImageView view) {
-        //todo image field for coupon
-
         if(movie!=null && movie.getImages()!=null) {
             String url = movie.getImages();
             view.setImageBitmap(null);

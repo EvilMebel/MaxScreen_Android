@@ -129,33 +129,21 @@ public class LevelBar extends View implements View.OnTouchListener {
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		Log.d("LevelTouch","x="+event.getX() + " state=" + event.getAction());
-		Log.d("LevelTouch","mHeight="+mHeight);
-
-		int mark = (int) ((event.getX()- padding)/mHeight);
-		Log.d("LevelTouch","mark="+mark);
-		//event.getAction()==MotionEvent.ACTION_UP
-
-		currentLevel = mark+1;
+		if (onStarSelected != null && isEnabled()) {
+			int mark = (int) ((event.getX() - padding) / mHeight);
+			currentLevel = mark + 1;
 
 
-		if(currentLevel<1)
-			currentLevel = 1;
+			if (currentLevel < 1)
+				currentLevel = 1;
 
-		if(currentLevel>10)
-			currentLevel = 10;
+			if (currentLevel > 10)
+				currentLevel = 10;
 
-		setCurrentLevel(currentLevel);
-
-
-
-		if (true) {
-			if (onStarSelected!=null && isEnabled()) {
-				onStarSelected.onStarSelected((int) currentLevel);
-
-
-			}
+			setCurrentLevel(currentLevel);
+			onStarSelected.onStarSelected((int) currentLevel);
 		}
+
 
 		return false;
 	}
