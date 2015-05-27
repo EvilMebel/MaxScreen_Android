@@ -8,10 +8,11 @@ import java.util.GregorianCalendar;
 
 public class Converter {
 
+	//todo ogarnij daty...
 	
 	public static String gregToMySQLformat(GregorianCalendar c) {
 		int y =  c.get(GregorianCalendar.YEAR);
-		int ma =  c.get(GregorianCalendar.MONTH)+1;
+		int ma =  c.get(GregorianCalendar.MONTH);
 		int da =  c.get(GregorianCalendar.DAY_OF_MONTH);
 		String m = "";
 		String d = "";
@@ -94,8 +95,6 @@ public class Converter {
 			case GregorianCalendar.SUNDAY:
 				s = "niedziela";
 				break;
-
-
 		}
 
 		return gregToString(c) + ", " + s;
@@ -129,7 +128,7 @@ public class Converter {
 
 			int h = Integer.valueOf(hour);
 			int min = Integer.valueOf(minute);
-			c.set(Calendar.HOUR, h);
+			c.set(Calendar.HOUR_OF_DAY, h);
 			c.set(Calendar.MINUTE, min);
 		}
 		
@@ -163,13 +162,13 @@ public class Converter {
 	}
 
 	public static String getHourFromGreCale(GregorianCalendar date) {
-		int h = date.get(Calendar.HOUR);
+		int h = date.get(Calendar.HOUR_OF_DAY);
 		int m = date.get(Calendar.MINUTE);
-
+/*
 		Log.d("Converter","PM:"+date.get(Calendar.AM_PM));
-		if(date.get(Calendar.AM_PM)==0) {
+		if(date.get(Calendar.AM_PM)==1) {
 			h+=12;
-		}
+		}*/
 		//Log.d("Converter", "PM:" + date.get(Calendar.AM_PM));
 
 		if(m>9) {

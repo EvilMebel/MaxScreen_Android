@@ -57,18 +57,22 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Movie;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.enums.PendingAction;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.AfterLoginEventBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.EditAccountEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.FinishReservationEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToRegistrationBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenCalendarEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenMovieInfoEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenNewsEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenProfileEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenRoomEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.CalendarFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.EditAccountFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.FinishReservationFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.LoginFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MainFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MovieInfoFragment;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MyReservationFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.ProfileFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.PromotionsFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.RegisterFragment;
@@ -133,6 +137,7 @@ public class MainActivity extends BaseFragmentActivity {
     private Fragment mFragment;
     private Fragment mSecondFragment;
     private String FRAGMENT_TAG_MAIN_NEWS = "FRAGMENT_TAG_MAIN_NEWS";
+    private String FRAGMENT_TAG_EDIT_ACC = "FRAGMENT_TAG_EDIT_ACC";
     private String FRAGMENT_TAG_MY_RESERVATION = "FRAGMENT_TAG_MY_RESERVATION";
     private String FRAGMENT_TAG_MY_PROFILE = "FRAGMENT_TAG_MY_PROFILE";
     private String FRAGMENT_TAG_MY_PROMOTIONS = "FRAGMENT_TAG_MY_PROMOTIONS";
@@ -514,6 +519,8 @@ public class MainActivity extends BaseFragmentActivity {
 
                 break;
             case R.id.my_reservations:
+                commitMyReservationsFragment();
+                closeDrawer();
 
                 break;
             case R.id.contact:
@@ -761,10 +768,22 @@ public class MainActivity extends BaseFragmentActivity {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         mFragment = new MovieInfoFragment();
 
-        //TODO ADD PARAMS
         //ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
         if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_MOVIE_INFO) == null) {
             ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_MOVIE_INFO).commit();
+        }
+
+        mTitle.setText("Info filmu");
+        enableBackButton();
+    }
+
+    private void commitMyReservationsFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        mFragment = new MyReservationFragment();
+
+        //ft.setCustomAnimations(android.R.anim.fade_in,android.R.anim.fade_out);
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_MY_RESERVATION) == null) {
+            ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_MY_RESERVATION).commit();
         }
 
         mTitle.setText("Info filmu");
@@ -783,6 +802,23 @@ public class MainActivity extends BaseFragmentActivity {
 
         mTitle.setText("Podsumowanie rezerwacji");
         enableBackButton();
+    }
+
+    private void commitEditAccount() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+        //ft.setCustomAnimations(android.R.anim.fade_out, android.R.anim.fade_in);
+
+        if (getSupportFragmentManager().findFragmentByTag(FRAGMENT_TAG_EDIT_ACC) == null) {
+
+            Fragment mFragment = new EditAccountFragment();
+            //fragmentsStack.add(new FragmentFrame(mFragment,FRAGMENT_TAG_MAIN_NEWS));
+
+            //ft.add(mFragment,FRAGMENT_TAG_MAIN_NEWS).addToBackStack(null);
+            ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_EDIT_ACC).commit();
+        }//.setCustomAnimations(android.R.anim.fade_out,android.R.anim.fade_in) //TODO
+        mTitle.setText(R.string.news);
+        enableMenuButton();
     }
 
     /*
@@ -807,6 +843,18 @@ public class MainActivity extends BaseFragmentActivity {
     public void openNews(OpenNewsEventBus bus) {
         commitMainFragment();
     }
+
+    @Subscribe
+    public void editAccount(EditAccountEventBus bus) {
+        commitEditAccount();
+    }
+
+    @Subscribe
+    public void openCalendar(OpenCalendarEventBus bus) {
+        commitCalendarFragment();
+    }
+
+
 
 
 
@@ -838,6 +886,7 @@ public class MainActivity extends BaseFragmentActivity {
 
     @Subscribe
     public void openProfile(OpenProfileEventBus bus) {
+        updateUI();
         commitProfileFragment(bus);
     }
 

@@ -84,16 +84,6 @@
             android:background="@color/com_facebook_blue"
             android:id="@+id/login_fb" />
 
-        <com.facebook.login.widget.LoginButton
-            android:id="@+id/fbLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_gravity="center_horizontal"
-            facebook:com_facebook_confirm_logout="false"
-            facebook:com_facebook_tooltip_mode="never_display"
-            android:visibility="gone"
-            />
     </LinearLayout>
 
 

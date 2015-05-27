@@ -131,6 +131,9 @@ public class MovieInfoFragment extends RoboEventFragment {
     LevelBar mMarkStars;
     @InjectView (R.id.my_comment)
     TextView mMyComment;
+    @InjectView (R.id.no_seances)
+    TextView mNoSeances;
+
 
 
 
@@ -202,9 +205,10 @@ public class MovieInfoFragment extends RoboEventFragment {
 
     private void loadData() {
 
-        if (MSData.getInstance().getCurrentMovie().getSeances() != null) {
+        //always download fresh seances! - need list of future seances too!
+        /*if (MSData.getInstance().getCurrentMovie().getSeances() != null) {
             mSeances.setSeances(MSData.getInstance().getCurrentMovie().getSeances(), true);
-        }
+        }*/
 
 
         Movie movie = MSData.getInstance().getCurrentMovie();
@@ -237,9 +241,9 @@ public class MovieInfoFragment extends RoboEventFragment {
 
             }
 
-            if(movie.getSeances()==null || movie.getSeances().isEmpty()) {
+            //if(movie.getSeances()==null || movie.getSeances().isEmpty()) {
                 loadSeances(movie);
-            }
+            //}
 
             loadComments(movie);
         }
@@ -304,7 +308,7 @@ public class MovieInfoFragment extends RoboEventFragment {
 
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient client = new AsyncHttpClient();
-        String link = Net.dbIp + "/seance/seances/"+movieId + "?";
+        String link = Net.dbIp + "/seance/seances/future/"+movieId + "?";
         Log.d(getTag(), "GET!" + link);
         client.get(link, params, new AsyncHttpResponseHandler() {
 
@@ -335,6 +339,10 @@ public class MovieInfoFragment extends RoboEventFragment {
 
                 if(seanceList!=null) {
                     mSeances.setSeances(seanceList, true);
+
+                    if(seanceList.isEmpty()) {
+                        mNoSeances.setVisibility(View.VISIBLE);
+                    }
                 } else {
                     Toast.makeText(getActivity(), "Blad pobierania seansow dla filmu!", Toast.LENGTH_SHORT).show();
                 }
@@ -418,7 +426,7 @@ public class MovieInfoFragment extends RoboEventFragment {
             View currentView = getActivity().getLayoutInflater().inflate(R.layout.comment_item, null);
             TextView name = (TextView)currentView.findViewById(R.id.comment_name);
             if(name!=null)
-                name.setText(r.getCustomersEntity().getName());
+                name.setText(r.getCustomersEntity().getShowedName());
             TextView comment = (TextView)currentView.findViewById(R.id.comment_text);
 
             if(comment!=null)
@@ -544,7 +552,7 @@ public class MovieInfoFragment extends RoboEventFragment {
                 //diff avatar?
             }
 
-            mName.setText(customer.getName() + " " + customer.getSurname());
+            mName.setText(customer.getShowedName());
             mMarkStars.setCurrentLevel(rate.getRate());
             mMyComment.setText(rate.getComment());
         } else {

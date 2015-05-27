@@ -4,6 +4,7 @@
     android:background="@drawable/background_style"
     tools:context="pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.MyReservationFragment">
 
+
     <LinearLayout
         android:id="@+id/no_reservations"
         android:layout_width="match_parent"
@@ -18,8 +19,29 @@
         android:layout_height="wrap_content"
         android:text="Repertuar"
         style="@style/ButtonStyle"
-        android:id="@+id/login" />
+        android:id="@+id/goto_calendar" />
 
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/reservation_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </ListView>
+
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MaterialProgressBar
+            android:id="@+id/loading"
+            android:layout_gravity="center"
+            android:layout_width="@dimen/material_progress_size_medium"
+            android:layout_height="@dimen/material_progress_size_medium" />
+
+    </FrameLayout>
 
 </FrameLayout>

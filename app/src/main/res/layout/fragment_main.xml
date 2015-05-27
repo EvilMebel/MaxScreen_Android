@@ -17,4 +17,15 @@
         android:layout_width="@dimen/material_progress_size_medium"
         android:layout_height="@dimen/material_progress_size_medium" />
 
+
+    <TextView
+        android:id="@+id/empty_response"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gdy wynik jest \npusty!"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="@dimen/padding_big"
+        android:textSize="20dp"/>
+
 </FrameLayout>

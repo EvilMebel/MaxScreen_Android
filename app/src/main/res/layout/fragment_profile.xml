@@ -1,4 +1,4 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:facebook="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -7,6 +7,13 @@
     android:gravity="center_horizontal"
     android:background="@drawable/background_style"
     tools:context="pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.ProfileFragment">
+
+    <LinearLayout
+        android:id="@+id/ready_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
     <com.facebook.login.widget.ProfilePictureView
         android:id="@+id/profilePicture"
@@ -21,6 +28,14 @@
         android:layout_height="wrap_content"
         android:text="Imie Nazwisko"
         android:id="@+id/username" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edytuj profil"
+            style="@style/ButtonStyle"
+            android:id="@+id/prof_edit_user"
+            android:visibility="gone"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -46,4 +61,12 @@
         android:id="@+id/prof_friends"
         android:visibility="gone"/>
 
-</LinearLayout>
+    </LinearLayout>
+
+    <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MaterialProgressBar
+        android:id="@+id/loading"
+        android:layout_gravity="center"
+        android:layout_width="@dimen/material_progress_size_medium"
+        android:layout_height="@dimen/material_progress_size_medium" />
+
+</FrameLayout>

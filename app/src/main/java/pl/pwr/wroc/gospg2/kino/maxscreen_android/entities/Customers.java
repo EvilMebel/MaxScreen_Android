@@ -92,6 +92,22 @@ public class Customers {
 	}
 
 
+	public String getShowedName() {
+		if(getNick()==null) {
+			String name = getName();
+			String surname = getSurname();
+
+			String res = "";
+			if(name!=null)
+				res+=name+" ";
+			if(surname!=null)
+				res+=surname;
+			return res;
+		} else {
+			return getNick();
+		}
+	}
+
 	public static Customers parseEntity(JSONObject object) {
 		Customers h = new Customers();
 
@@ -133,5 +149,45 @@ public class Customers {
 		}
 
 		return h;
+	}
+
+	public JSONObject getJSON() {
+		JSONObject object = new JSONObject();
+
+			try {
+				object.put(Customers.IDCUSTOMER,getIdCustomer());
+
+				if(getName()!= null)
+					object.put(Customers.NAME,getName());
+
+				if(getSurname()!=null)
+					object.put(Customers.SURNAME,getSurname());
+
+				if(getFacebookId()!= null)
+					object.put(Customers.FACEBOOKID,getFacebookId());
+
+				if(getTelefon()!=null)
+					object.put(Customers.TELEFON,getTelefon());
+
+				if(getNick() !=null)
+					object.put(Customers.NICK,getNick());
+
+				if(getAvatar()!= null)
+					object.put(Customers.AVATAR,getAvatar());
+
+				if(getPassMD5() !=null)
+					object.put(Customers.PASSMD5,getPassMD5());
+
+				if(getToken() !=null)
+					object.put(Customers.TOKEN,getToken());
+
+				if(getE_Mail()!=null)
+					object.put(Customers.E_MAIL,getE_Mail());
+
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
+		return object;
 	}
 }

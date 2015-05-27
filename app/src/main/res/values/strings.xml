@@ -42,4 +42,10 @@
     <string name="no_facebook_friends_forever_alone">Żaden ze znajomych nie połączył konta z Facebook</string>
     <string name="error_downloading_friends">Błąd pobierania listy znajomych</string>
     <string name="log_in_for_reservation">Aby zarezerwować miejsce musisz być zalogowany!</string>
+    <string name="news_error_downloading">Wystąpił błąd podczas pobierania newsów. Sprawdź połączenie z internetem!</string>
+    <string name="no_news_on_site">Nie ma jeszcze żadnych newsów na stronie</string>
+    <string name="cant_save_user_changes">Nie udało się zapisać zmian</string>
+    <string name="error_downloading_hall">Nie udało się pobrać schematu sali</string>
+    <string name="error_downloading_taken_seants">Nie udało się pobrać zajętych miejsc!</string>
+    <string name="cant_buy_ticket_for_old_seance">Seans się już odbył. Niemożliwe jest kupno biletu</string>
 </resources>

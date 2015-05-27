@@ -87,7 +87,7 @@ public class MyGridView extends ViewGroup implements View.OnClickListener {
 				
 			}
 
-			mHeight = MeasureSpec.makeMeasureSpec((frameW/2) * colCount,MeasureSpec.EXACTLY);
+			mHeight = MeasureSpec.makeMeasureSpec((frameW/2) * (getChildCount()+colCount-1)/colCount,MeasureSpec.EXACTLY);
 		}
 
 		// = MeasureSpec.makeMeasureSpec()

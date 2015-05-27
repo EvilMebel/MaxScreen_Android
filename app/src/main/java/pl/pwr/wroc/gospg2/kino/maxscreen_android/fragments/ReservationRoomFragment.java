@@ -19,6 +19,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.MSData;
@@ -33,9 +35,11 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Tickets;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.ChoosedReliefEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.FinishReservationEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenCalendarEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.SeatClickEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.preferences.ApplicationPreferences;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.RoomView;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.view.SeatView;
@@ -142,10 +146,10 @@ public class ReservationRoomFragment extends RoboEventFragment {
             public void onClick(View v) {
                 if (tickets.size() > 0) {
                     Customers c = ApplicationPreferences.getInstance().getCurrentCustomer();
-                    if(c!=null) {
-                        tryMakeReservation();
+                    if (c != null) {
+                        tryMakeReservation(c);
                     } else {
-                        Toast.makeText(getActivity(),getActivity().getString(R.string.log_in_for_reservation),Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), getActivity().getString(R.string.log_in_for_reservation), Toast.LENGTH_LONG).show();
                         MaxScreen.getBus().post(new GoToLoginBus());
                     }
                 } else {
@@ -156,15 +160,14 @@ public class ReservationRoomFragment extends RoboEventFragment {
     }
 
     private void loadData() {
-
-        //todo REST!
         Seance seance = MSData.getInstance().getSeance();
 
         if(seance!=null) {
             this.seance = seance;
             downloadHall();
         } else {
-            //todo exit!! D:
+            //error - exit from hall
+            MaxScreen.getBus().post(new OpenCalendarEventBus());
         }
 
         mLoading.setVisibility(View.INVISIBLE);
@@ -189,42 +192,53 @@ public class ReservationRoomFragment extends RoboEventFragment {
         String s = " Wybrano miejsce. Rzad " + seatView.getSeatRow() + " miejsce " + seatView.getSeatCol();
 
 
-        if(seatView.getStatus()== SeatView.SeatStat.FREE) {
 
-            //Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
-            ListDialogFragment dialogFragment = new ListDialogFragment();
-            dialogFragment.setMsgText(s + "\nWybierz rodzaj ulgi.");
-            dialogFragment.setAdapterType(ListDialogFragment.AdapterType.TICKETS_RELIEF);
-            dialogFragment.setOnObjectReady(new ListDialogFragment.OnObjectReady() {
-                @Override
-                public void returnObject(Object object) {
-                    if (object != null && object instanceof Relief) {
-                        Tickets t = new Tickets();
-                        t.setRow(seatView.getSeatRow());
-                        t.setLine(seatView.getSeatCol());
-                        t.setReliefEntity((Relief) object);
+        Date now = new Date(System.currentTimeMillis());
+        GregorianCalendar n = new GregorianCalendar();
+        n.setTime(now);
+        Log.d("Now!", "now=" + Converter.gregToMySQLformat(n) + " h:" + Converter.getHourFromGreCale(n));
+        Log.d("Now!","seance="+ Converter.gregToMySQLformat(seance.getDate()) + " h:" + Converter.getHourFromGreCale(seance.getDate()));
 
-                        tickets.add(t);
-                        Toast.makeText(getActivity(), "sizeTickets=" + tickets.size(), Toast.LENGTH_SHORT).show();
+        if(!seance.getDate().before(n)) {
+            Toast.makeText(getActivity(),getActivity().getString(R.string.cant_buy_ticket_for_old_seance), Toast.LENGTH_SHORT).show();
+        } else {
+
+            if (seatView.getStatus() == SeatView.SeatStat.FREE) {
+
+                //Toast.makeText(getActivity(), s, Toast.LENGTH_SHORT).show();
+                ListDialogFragment dialogFragment = new ListDialogFragment();
+                dialogFragment.setMsgText(s + "\nWybierz rodzaj ulgi.");
+                dialogFragment.setAdapterType(ListDialogFragment.AdapterType.TICKETS_RELIEF);
+                dialogFragment.setOnObjectReady(new ListDialogFragment.OnObjectReady() {
+                    @Override
+                    public void returnObject(Object object) {
+                        if (object != null && object instanceof Relief) {
+                            Tickets t = new Tickets();
+                            t.setRow(seatView.getSeatRow());
+                            t.setLine(seatView.getSeatCol());
+                            t.setReliefEntity((Relief) object);
+
+                            tickets.add(t);
+                            Toast.makeText(getActivity(), "sizeTickets=" + tickets.size(), Toast.LENGTH_SHORT).show();
+                            mRoom.clickSeat(seatView);
+                        }
+                    }
+                });
+                dialogFragment.show(getFragmentManager(), null);
+            } else {
+                //remove from list ;(
+
+                for (int i = tickets.size() - 1; i >= 0; i--) {
+                    Tickets t = tickets.get(i);
+                    if (t.getRow() == seatView.getSeatRow() && t.getLine() == seatView.getSeatCol()) {
+                        tickets.remove(t);
+                        Toast.makeText(getActivity(), getActivity().getString(R.string.ticket_has_been_deleted), Toast.LENGTH_SHORT).show();
                         mRoom.clickSeat(seatView);
                     }
                 }
-            });
-            dialogFragment.show(getFragmentManager(), null);
-        } else {
-            //remove from list ;(
 
-            for(int i = tickets.size()-1; i>=0; i--) {
-                Tickets t = tickets.get(i);
-                if(t.getRow()==seatView.getSeatRow() && t.getLine()==seatView.getSeatCol()) {
-                    tickets.remove(t);
-                    Toast.makeText(getActivity(), getActivity().getString(R.string.ticket_has_been_deleted), Toast.LENGTH_SHORT).show();
-                    mRoom.clickSeat(seatView);
-                }
             }
-
         }
-
 
     }
 
@@ -275,8 +289,8 @@ public class ReservationRoomFragment extends RoboEventFragment {
                     mRoom.setVisibility(View.VISIBLE);
                     downloadTakenSeats();
                 } else {
-                    //todo exit!! D:
-                    Log.e(getTag(), "NULL D:");
+                    Toast.makeText(getActivity(),getActivity().getString(R.string.error_downloading_hall),Toast.LENGTH_SHORT).show();
+                    MaxScreen.getBus().post(new OpenCalendarEventBus());
                 }
 
                 mLoading.setVisibility(View.INVISIBLE);
@@ -312,7 +326,7 @@ public class ReservationRoomFragment extends RoboEventFragment {
         mLoading.setVisibility(View.VISIBLE);
         // Make RESTful webservice call using AsyncHttpClient object
         AsyncHttpClient task = new AsyncHttpClient();
-        String link = Net.dbIp + "/ticket/taken/" + seance.getIdSeance() +"?";//todo
+        String link = Net.dbIp + "/ticket/taken/" + seance.getIdSeance() +"?";
         Log.d("RoomReserv","GET!"+link);
         task.get(link, params, new AsyncHttpResponseHandler() {
 
@@ -356,8 +370,8 @@ public class ReservationRoomFragment extends RoboEventFragment {
                     fixViews();
                     mRoom.setVisibility(View.VISIBLE);*/
                 } else {
-                    //todo exit!! D:
-                    Log.e(getTag(),"NULL D:");
+                    Toast.makeText(getActivity(),getActivity().getString(R.string.error_downloading_taken_seants),Toast.LENGTH_SHORT).show();
+                    MaxScreen.getBus().post(new OpenCalendarEventBus());
                 }
 
                 mLoading.setVisibility(View.INVISIBLE);
@@ -369,15 +383,16 @@ public class ReservationRoomFragment extends RoboEventFragment {
                                   String content) {
                 // Hide Progress Dialog
                 mLoading.setVisibility(View.INVISIBLE);
+                Toast.makeText(getActivity(),getActivity().getString(R.string.error_downloading_taken_seants),Toast.LENGTH_SHORT).show();
                 Utils.showAsyncError(getActivity(),statusCode,error,content);
             }
         });
     }
 
-    public void tryMakeReservation(){
+    public void tryMakeReservation(Customers c){
         RequestParams params = new RequestParams();
 
-        int customerId = 8;//todo
+        int customerId = c.getIdCustomer();
         int seanceId = seance.getIdSeance();
         String ticketsStr = "";
         for(int i = 0; i<this.tickets.size(); i++) {
@@ -414,14 +429,12 @@ public class ReservationRoomFragment extends RoboEventFragment {
                     Toast.makeText(getActivity(),"Dokonano Rezerwacji! : D id:"+success,Toast.LENGTH_SHORT).show();
                     MaxScreen.getBus().post(new FinishReservationEventBus(success, finalTicketsStr));
                 } else {
-                    //todo exit!! D:
                     Toast.makeText(getActivity(),getActivity().getString(R.string.cant_book_reservation_so_refresh),Toast.LENGTH_SHORT).show();
                     mRoom.refreshRoom();
                     mLoading.setVisibility(View.VISIBLE);
                     mRoom.setVisibility(View.INVISIBLE);
                     tickets.clear();
                     downloadTakenSeats();
-                    //todo refresh data on hall
                 }
 
                 mLoading.setVisibility(View.INVISIBLE);

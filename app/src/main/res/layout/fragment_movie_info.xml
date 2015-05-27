@@ -264,11 +264,30 @@
         android:text="Wybierz seans"
         android:layout_margin="@dimen/padding_small" />
 
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
     <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MyGridView
         android:layout_width="match_parent"
         android:layout_height="20dp"
         android:id="@+id/movie_seances"
         android:visibility="visible"/>
+
+            <TextView
+                android:id="@+id/no_seances"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Nie ma w planach żadnych seansów"
+                android:padding="@dimen/padding_big"
+                android:gravity="center"
+                android:visibility="gone"
+                android:textSize="20dp"/>
+
+        </FrameLayout>
 
     <FrameLayout
         android:layout_width="match_parent"

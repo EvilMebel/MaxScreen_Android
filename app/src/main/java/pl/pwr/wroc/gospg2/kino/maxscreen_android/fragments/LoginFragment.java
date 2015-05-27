@@ -63,10 +63,6 @@ public class LoginFragment extends RoboEventFragment {
     @InjectView (R.id.login)
     Button mLogin;
 
-    //not used - login needs extra permissions
-    @InjectView (R.id.fbLogin)
-    Button mFbLogin;
-
     @InjectView (R.id.register)
     Button mRegister;
 

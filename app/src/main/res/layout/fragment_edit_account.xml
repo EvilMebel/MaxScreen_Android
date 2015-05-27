@@ -1,0 +1,102 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_style"
+    tools:context="pl.pwr.wroc.gospg2.kino.maxscreen_android.fragments.EditAccountFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Imię:"
+            android:paddingLeft="@dimen/padding_tiny"
+            android:paddingTop="@dimen/padding_medium" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_name"
+            android:hint="Wpisz imię"
+            style="@style/InputStyle"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Nazwisko:"
+            android:paddingLeft="@dimen/padding_tiny"
+            android:paddingTop="@dimen/padding_medium" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_surname"
+            android:hint="Wpisz nazwisko"
+            style="@style/InputStyle"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Nr telefonu:"
+            android:paddingLeft="@dimen/padding_tiny"
+            android:paddingTop="@dimen/padding_medium" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_phone"
+            android:hint="Wpisz numer telefonu"
+            style="@style/InputStyle"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Nick:"
+            android:paddingLeft="@dimen/padding_tiny"
+            android:paddingTop="@dimen/padding_medium" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_nick"
+            android:hint="Wpisz nick"
+            style="@style/InputStyle"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Avatar?:"
+            android:paddingLeft="@dimen/padding_tiny"
+            android:paddingTop="@dimen/padding_medium" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_avatar"
+            android:hint="Wstaw obrazek lol"
+            style="@style/InputStyle"/>
+
+
+        <pl.pwr.wroc.gospg2.kino.maxscreen_android.view.MaterialProgressBar
+            android:id="@+id/loading"
+            android:layout_gravity="center"
+            android:layout_width="@dimen/material_progress_size_medium"
+            android:layout_height="@dimen/material_progress_size_medium" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zapisz zmiany"
+            style="@style/ButtonStyle"
+            android:id="@+id/edit_save" />
+
+    </LinearLayout>
+</ScrollView>

@@ -200,9 +200,6 @@ public class CommentDialogFragment extends RoboDialogFragment {
     }
 
     private void updateComment(Rate rate) {
-        RequestParams params = new RequestParams();
-
-
         JSONObject jsonParams = prepareJSON();
         try {
             jsonParams.put(Rate.IDRATE,rate.getIdRate());

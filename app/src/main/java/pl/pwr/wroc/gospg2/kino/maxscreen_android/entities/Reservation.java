@@ -65,6 +65,8 @@ public class Reservation {
 	public static Reservation parseEntity(JSONObject object, boolean inception) {
 		Reservation h = new Reservation();
 
+		Log.d("Reservation","parse:" + object.toString());
+
 		try {
 			h.setIdReservation(object.getInt(Reservation.IDRESERVATION));
 			h.setBought(object.getBoolean(Reservation.BOUGHT));

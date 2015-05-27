@@ -8,8 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -19,7 +26,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.adapters.MainNewsAdapter;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.News;
@@ -39,10 +48,15 @@ public class MainFragment extends RoboEventFragment {
 
     @InjectView (R.id.list)
     private ListView mList;
-    private MainNewsAdapter mAdapter;
+
+    @InjectView (R.id.empty_response)
+    TextView mEmptyResponse;
 
     @InjectView (R.id.loading)
     View mLoading;
+
+    private MainNewsAdapter mAdapter;
+    private String TAG = "DownloadNews";
 
 
     /**
@@ -88,20 +102,67 @@ public class MainFragment extends RoboEventFragment {
         super.onViewCreated(view, savedInstanceState);
 
 
-        //todo async
-        downloadNewsAsync();
+        //downloadNewsAsync();
+        downloadNewsValley();
 
     }
 
-    private void onLoadingFinished() {
-        ArrayList<News> items = new ArrayList<News>();
-        for(int i =0 ; i<5; i++) {
-            items.add(new News());
-        }
+    private void downloadNewsValley() {
+        // Tag used to cancel the request
+        String tag_json_obj = "news";
 
-        mList.setAdapter(new MainNewsAdapter(getActivity(), items));
-        mLoading.setVisibility(View.GONE);
+        mEmptyResponse.setVisibility(View.INVISIBLE);
+        mLoading.setVisibility(View.VISIBLE);
+
+        String url = Net.dbIp + "/news";
+        JsonArrayRequest req = new JsonArrayRequest(url,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.d(TAG, response.toString());
+
+                        ArrayList<News> items = new ArrayList<News>();
+                        try {
+                            int size = response.length();
+                            for(int i = 0; i<size; i++) {
+                                JSONObject item = response.getJSONObject(i);
+
+                                News n = News.parseEntity(item);
+                                items.add(n);
+                            }
+
+                        } catch (JSONException e) {
+                            // TODO Auto-generated catch block
+                            Toast.makeText(getActivity().getApplicationContext(), "Error Occured [Server's JSON response might be invalid]!", Toast.LENGTH_LONG).show();
+                            e.printStackTrace();
+                        }
+                        if(items!=null) {
+                            mList.setAdapter(new MainNewsAdapter(getActivity(), items));
+
+                            if(items.isEmpty()) {
+                                mEmptyResponse.setText(getActivity().getString(R.string.no_news_on_site));
+                                mEmptyResponse.setVisibility(View.VISIBLE);
+                            }
+                        }
+
+                        hideLoadingDialog();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                mEmptyResponse.setText(getActivity().getString(R.string.news_error_downloading));
+                mEmptyResponse.setVisibility(View.VISIBLE);
+                mLoading.setVisibility(View.INVISIBLE);
+                hideLoadingDialog();
+            }
+        });
+
+
+        // Adding request to request queue
+        MaxScreen.getInstance().addToRequestQueue(req, tag_json_obj);
     }
+
 
     @Override
     public void onAttach(Activity activity) {
