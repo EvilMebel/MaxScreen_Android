@@ -23,6 +23,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/finish_res_text_tickets"
         android:text="Informacje o seansie:"
         android:id="@+id/textView4"
         android:padding="@dimen/padding_medium"/>
@@ -38,6 +39,7 @@
             android:layout_width="@dimen/finres_left_width"
             android:layout_height="wrap_content"
             android:text="Seans"
+            android:textColor="@color/finish_res_text_one"
             android:textSize="14dp"/>
 
         <TextView
@@ -57,6 +59,7 @@
         <TextView
             android:layout_width="@dimen/finres_left_width"
             android:layout_height="wrap_content"
+            android:textColor="@color/finish_res_text_one"
             android:text="Data"
             android:textSize="14dp"/>
 
@@ -77,6 +80,7 @@
         <TextView
             android:layout_width="@dimen/finres_left_width"
             android:layout_height="wrap_content"
+            android:textColor="@color/finish_res_text_one"
             android:text="Godzina"
             android:textSize="14dp"/>
 
@@ -97,6 +101,7 @@
         <TextView
             android:layout_width="@dimen/finres_left_width"
             android:layout_height="wrap_content"
+            android:textColor="@color/finish_res_text_one"
             android:text="Sala"
             android:textSize="14dp"/>
 
@@ -111,6 +116,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/finish_res_text_tickets"
         android:text="Lista wybranych miejsc"
         android:padding="@dimen/padding_medium"/>
 
@@ -118,7 +124,8 @@
         android:id="@+id/tickets_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="@dimen/padding_small">
 
         <TextView
             android:layout_width="wrap_content"
@@ -147,6 +154,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textColor="@color/finish_res_text_reserv"
             android:text="5465"
             android:textSize="14dp"
             android:id="@+id/reservation_number" />

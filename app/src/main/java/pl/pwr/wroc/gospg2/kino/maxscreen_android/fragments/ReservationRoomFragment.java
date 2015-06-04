@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -196,10 +197,12 @@ public class ReservationRoomFragment extends RoboEventFragment {
         Date now = new Date(System.currentTimeMillis());
         GregorianCalendar n = new GregorianCalendar();
         n.setTime(now);
+        n.add(Calendar.MONTH, 1);
+        n.add(Calendar.MINUTE,30);
         Log.d("Now!", "now=" + Converter.gregToMySQLformat(n) + " h:" + Converter.getHourFromGreCale(n));
         Log.d("Now!","seance="+ Converter.gregToMySQLformat(seance.getDate()) + " h:" + Converter.getHourFromGreCale(seance.getDate()));
 
-        if(!seance.getDate().before(n)) {
+        if(!seance.getDate().after(n)) {
             Toast.makeText(getActivity(),getActivity().getString(R.string.cant_buy_ticket_for_old_seance), Toast.LENGTH_SHORT).show();
         } else {
 

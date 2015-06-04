@@ -786,7 +786,7 @@ public class MainActivity extends BaseFragmentActivity {
             ft.replace(R.id.content_frame1, mFragment, FRAGMENT_TAG_MY_RESERVATION).commit();
         }
 
-        mTitle.setText("Info filmu");
+        mTitle.setText("Moje rezerwacje");
         enableBackButton();
     }
 

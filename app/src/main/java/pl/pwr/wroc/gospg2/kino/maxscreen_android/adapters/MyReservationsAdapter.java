@@ -16,6 +16,7 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Coupon_DB;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Reservation;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.FinishReservationEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Converter;
 
@@ -72,8 +73,10 @@ public class MyReservationsAdapter extends BaseAdapter {
 
             itemViewHolder.nr = (TextView) currentView.findViewById(R.id.nr);
             itemViewHolder.root =  currentView.findViewById(R.id.root);
-            /*itemViewHolder.coupon_nr = (TextView) currentView.findViewById(R.id.coupon_nr);
-            itemViewHolder.coupon_date = (TextView) currentView.findViewById(R.id.coupon_date);*/
+            itemViewHolder.movie = (TextView) currentView.findViewById(R.id.movie);
+            itemViewHolder.date_info = (TextView) currentView.findViewById(R.id.date_info);
+            itemViewHolder.more = (TextView) currentView.findViewById(R.id.more);
+            //itemViewHolder.coupon_date = (TextView) currentView.findViewById(R.id.coupon_date);*/
 
             currentView.setTag(itemViewHolder);
         } else {
@@ -85,11 +88,14 @@ public class MyReservationsAdapter extends BaseAdapter {
 
 
         itemViewHolder.nr
-                .setText("" +
+                .setText("Nr rezerwacji: " +
                         r.
                                 getIdReservation());
 
-        itemViewHolder.root.setOnClickListener(new View.OnClickListener() {
+        itemViewHolder.movie.setText(r.getSeanceEntity().getMovieEntity().getTitle());
+        Seance s = r.getSeanceEntity();
+        itemViewHolder.date_info.setText(Converter.gregToStringWithDay(s.getDate()) + " " + Converter.getHourFromGreCale(s.getDate()) + "\nSala " + s.getHallsEntity().getName_Hall());
+        itemViewHolder.more.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 MaxScreen.getBus().post(new FinishReservationEventBus(r.getIdReservation(),null));
@@ -137,6 +143,9 @@ public class MyReservationsAdapter extends BaseAdapter {
 
     private class ItemViewHolder {
         public TextView nr;
+        public TextView movie;
+        public TextView date_info;
+        public View more;
 
         public View root;
         /*public TextView coupon_disc;

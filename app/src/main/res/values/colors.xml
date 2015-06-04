@@ -32,6 +32,14 @@
     <color name="actionbar_back_end">#242425</color>
     <color name="actionbar_text">@android:color/white</color>
 
+    <color name="finish_res_text_one">#7b5d5d</color>
+    <color name="finish_res_text_reserv">#c85353</color>
+    <color name="finish_res_text_tickets">#1b2735</color>
+
+
+
+
+
 
 
 </resources>

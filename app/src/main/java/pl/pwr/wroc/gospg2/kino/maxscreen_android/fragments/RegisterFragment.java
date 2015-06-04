@@ -30,7 +30,9 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.MaxScreen;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.R;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.LoadingDialogFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.AfterLoginEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.GoToLoginBus;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.OpenNewsEventBus;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.net.Net;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.preferences.ApplicationPreferences;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.utils.Utils;
@@ -287,8 +289,9 @@ public class RegisterFragment extends RoboEventFragment {
 
 
                 if(c!=null) {
-                    Toast.makeText(getActivity(), "Witamy " + c.getName() + "\n"+c.getSurname() , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getActivity().getString(R.string.account_created), Toast.LENGTH_SHORT).show();
                     ApplicationPreferences.getInstance().setCurrentCustomer(c);
+                    MaxScreen.getBus().post(new GoToLoginBus());
 
                 } else {
 

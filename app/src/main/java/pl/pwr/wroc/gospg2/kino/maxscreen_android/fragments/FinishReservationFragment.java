@@ -269,9 +269,10 @@ public class FinishReservationFragment extends RoboEventFragment {
                     for(int i =0; i<tickets.size(); i++) {
                         Tickets t = tickets.get(i);
                         TextView tv = new TextView(getActivity());
-                        tv.setText("Miejsce " + t.getLine()+" "+ getActivity().getString(R.string.row) +" "+  t.getRow() + getActivity().getString(R.string.relief) + t.
+                        tv.setText("Miejsce " + t.getLine()+" "+ getActivity().getString(R.string.row) +" "+  t.getRow() + getActivity().getString(R.string.relief) + " " + t.
                                 getReliefEntity()
                                 .getName());
+
 
                         mTicketList.addView(tv);
                     }
