@@ -175,7 +175,7 @@ public class MainActivity extends BaseFragmentActivity {
         profileTracker = new ProfileTracker() {
             @Override
             protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
-                showLoadingDialog();
+                //showLoadingDialog();
                 updateUI();
                 // It's possible that we were waiting for Profile to be populated in order to
                 // post a status update.

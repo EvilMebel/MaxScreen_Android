@@ -31,6 +31,7 @@ import pl.pwr.wroc.gospg2.kino.maxscreen_android.dialogs.ListDialogFragment;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Customers;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Halls;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Relief;
+import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Reservation;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Seance;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.entities.Tickets;
 import pl.pwr.wroc.gospg2.kino.maxscreen_android.events.ChoosedReliefEventBus;
@@ -222,7 +223,7 @@ public class ReservationRoomFragment extends RoboEventFragment {
                             t.setReliefEntity((Relief) object);
 
                             tickets.add(t);
-                            Toast.makeText(getActivity(), "sizeTickets=" + tickets.size(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getActivity().getString(R.string.tickets_count) + tickets.size(), Toast.LENGTH_SHORT).show();
                             mRoom.clickSeat(seatView);
                         }
                     }
@@ -424,14 +425,29 @@ public class ReservationRoomFragment extends RoboEventFragment {
             @Override
             public void onSuccess(String response) {
                 // Hide Progress Dialog
+                try {
+                    JSONObject obj = new JSONObject(response);
 
-                int success = Integer.parseInt(response);
+                    int success = obj.getInt(Reservation.IDRESERVATION);
 
 
-                if (success != -1) {
-                    Toast.makeText(getActivity(),"Dokonano Rezerwacji! : D id:"+success,Toast.LENGTH_SHORT).show();
-                    MaxScreen.getBus().post(new FinishReservationEventBus(success, finalTicketsStr));
-                } else {
+                    if (success >= 0) {
+                        Toast.makeText(getActivity(),getActivity().getString(R.string.reservation_finished),Toast.LENGTH_SHORT).show();
+                        MaxScreen.getBus().post(new FinishReservationEventBus(success, finalTicketsStr));
+                    } else {
+                        Toast.makeText(getActivity(),getActivity().getString(R.string.cant_book_reservation_so_refresh),Toast.LENGTH_SHORT).show();
+                        mRoom.refreshRoom();
+                        mLoading.setVisibility(View.VISIBLE);
+                        mRoom.setVisibility(View.INVISIBLE);
+                        tickets.clear();
+                        downloadTakenSeats();
+                    }
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                     Toast.makeText(getActivity(),getActivity().getString(R.string.cant_book_reservation_so_refresh),Toast.LENGTH_SHORT).show();
                     mRoom.refreshRoom();
                     mLoading.setVisibility(View.VISIBLE);
@@ -439,6 +455,7 @@ public class ReservationRoomFragment extends RoboEventFragment {
                     tickets.clear();
                     downloadTakenSeats();
                 }
+
 
                 mLoading.setVisibility(View.INVISIBLE);
             }

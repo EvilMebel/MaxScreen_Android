@@ -231,15 +231,19 @@ public class LoginFragment extends RoboEventFragment {
                 //todfokjfgnbfkjn
                 Log.d(getTag(), "response:" + response);
 
-                boolean status = true;
+                int status = -1;
                 String msg = "";
+                Customers c = null;
 
                 try {
                     JSONObject object = new JSONObject(response);
-                    status = object.getBoolean("status");
+                    status = object.getInt(Customers.IDCUSTOMER);
 
-                    if(!status) {
-                        msg = object.getString("error_msg");
+
+
+                    if(status!=-1) {
+                        c = Customers.parseEntity(object);
+
                     }
 
 
@@ -248,20 +252,27 @@ public class LoginFragment extends RoboEventFragment {
                 }
 
 
-                if(status) {
-                    msg = "Logowanie powiodlo sie!";
+                if(status!=-1) {
+
                 }
                 //todo zamknac okno logowania?
 
-                Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
 
-                hideLoadingDialog();
 
-                if(status) {
+
+
+                if(status!=-1) {
+                    msg = "Logowanie powiodlo sie!";
+                    Toast.makeText(getActivity(),msg,Toast.LENGTH_SHORT).show();
                     ApplicationPreferences preference = ApplicationPreferences.getInstance();
+                    ApplicationPreferences.getInstance().setCurrentCustomer(c);
                     preference.setBoolean(ApplicationPreference.LOGGED_IN_CLASSIC,true);
                     MaxScreen.getBus().post(new AfterLoginEventBus());
+                } else {
+                    Toast.makeText(getActivity(),getActivity().getString(R.string.fail_login),Toast.LENGTH_SHORT).show();
                 }
+
+                hideLoadingDialog();
             }
 
             // When the response returned by REST has Http response code other than '200'

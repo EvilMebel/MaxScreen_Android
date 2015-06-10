@@ -131,6 +131,7 @@ public class ApplicationPreferences {
         setString(ApplicationPreference.USER_SURNAME, null);
         setString(ApplicationPreference.USER_TELEFON, null);
         setString(ApplicationPreference.USER_TOKEN, null);
+        setString(ApplicationPreference.USER_PASSMD5, null);
     }
 
     public Customers getCurrentCustomer() {
@@ -148,6 +149,7 @@ public class ApplicationPreferences {
             c.setSurname(getString(ApplicationPreference.USER_SURNAME));
             c.setTelefon(getString(ApplicationPreference.USER_TELEFON));
             c.setToken(getString(ApplicationPreference.USER_TOKEN));
+            c.setPassMD5(getString(ApplicationPreference.USER_PASSMD5));
         }
 
         return c;

@@ -48,4 +48,7 @@
     <string name="error_downloading_taken_seants">Nie udało się pobrać zajętych miejsc!</string>
     <string name="cant_buy_ticket_for_old_seance">Seans się już odbył. Lub próbujesz kupić bilet z mniejszym wyprzedzeniem niż 30 minut. Niemożliwe jest kupno biletu</string>
     <string name="account_created">Konto zostało utworzone. Można się zalogować!</string>
+    <string name="tickets_count">"Ilość biletów "</string>
+    <string name="fail_login">Logowanie nieudane. Sprawdź login i/lub hasło</string>
+    <string name="reservation_finished">Dokonano Rezerwacji!</string>
 </resources>
